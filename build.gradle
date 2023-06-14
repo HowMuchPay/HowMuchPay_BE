@@ -6,7 +6,7 @@ plugins {
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
+sourceCompatibility = '11'
 
 configurations {
     compileOnly {
@@ -19,6 +19,17 @@ repositories {
 }
 
 dependencies {
+    // firebase fcm
+    implementation group: 'com.google.firebase', name: 'firebase-admin', version: '6.8.1'
+
+    // spring security
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.security:spring-security-test")
+
+    // oauth 2.0
+    implementation ("org.springframework.boot:spring-boot-starter-oauth2-client")
+
+
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
