@@ -1,0 +1,6 @@
+spring:
+  profiles:
+    group:
+      "local": "local,datasource,oauth"
+      "dev": "dev,datasource,oauth"
+      "prod": "prod,datasource, oauth"

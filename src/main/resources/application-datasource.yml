@@ -1,0 +1,21 @@
+spring:
+  config:
+    activate:
+      on-profile: "datasource"
+
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:howmuchpay
+    username: sa
+    password: 1111
+
+  h2:
+    console:
+      path: /h2-console
+      enabled: true
+
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
