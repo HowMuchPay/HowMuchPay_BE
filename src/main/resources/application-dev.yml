@@ -2,3 +2,17 @@ spring:
   config:
     activate:
       on-profile: "dev"
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  jpa:
+    open-in-view: true
+    hibernate:
+      ddl-auto: create-drop
+      naming:
+        physical-strategy: com.example.howmuch.config.UpperCaseNamingStrategy
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 100
