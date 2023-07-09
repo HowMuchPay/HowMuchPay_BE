@@ -10,6 +10,4 @@ public class HowMuchPayApplication {
         SpringApplication.run(HowMuchPayApplication.class, args);
     }
 
-    //PR : test
-
 }
