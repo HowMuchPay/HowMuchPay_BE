@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.howmuch;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,7 +9,5 @@ public class HowMuchPayApplication {
     public static void main(String[] args) {
         SpringApplication.run(HowMuchPayApplication.class, args);
     }
-
-    //PR : test
 
 }
