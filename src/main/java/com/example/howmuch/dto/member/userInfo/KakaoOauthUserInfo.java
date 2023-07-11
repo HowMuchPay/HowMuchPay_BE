@@ -1,34 +1,41 @@
 package com.example.howmuch.dto.member.userInfo;
 
-import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-
-import java.util.Collection;
 import java.util.Map;
 
-@Getter
-@Setter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class KakaoOauthUserInfo implements OAuth2User {
 
-    private Long id;
-    private String profileImgUrl;
+public class KakaoOauthUserInfo implements OauthUserInfo {
+
+    private final Map<String, Object> attributes;
+
+    public KakaoOauthUserInfo(Map<String, Object> attributes) {
+        this.attributes = attributes;
+    }
+
 
     @Override
-    public Map<String, Object> getAttributes() {
-        return null;
+    public String getProvider() {
+        return "kakao";
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+    public String getProviderId() {
+        return String.valueOf(attributes.get("id"));
     }
 
-    @Override
-    public String getName() {
-        return null;
+    public String getNickName() {
+        return (String) getProfile().get("nickname");
     }
+
+    public String getImageUrl() {
+        return (String) getProfile().get("thumbnail_image_url");
+    }
+
+    public Map<String, Object> getKakaoAccount() {
+        return (Map<String, Object>) attributes.get("kakao_account");
+    }
+
+    public Map<String, Object> getProfile() {
+        return (Map<String, Object>) getKakaoAccount().get("profile");
+    }
+
 }
