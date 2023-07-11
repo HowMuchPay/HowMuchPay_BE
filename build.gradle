@@ -19,19 +19,24 @@ repositories {
 }
 
 dependencies {
+
     // firebase fcm
     implementation group: 'com.google.firebase', name: 'firebase-admin', version: '6.8.1'
 
     // spring security
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.security:spring-security-test")
+    implementation "org.springframework.boot:spring-boot-starter-security"
+    implementation "org.springframework.security:spring-security-test"
 
     // oauth 2.0
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
+    // webflux
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
 
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'com.mysql:mysql-connector-j'
@@ -39,13 +44,16 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     // jwt
-    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-    implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
-    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+
+
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
     // swagger
     implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
+
+    // gson
+    implementation 'com.google.code.gson:gson:2.8.9'
 }
 
 tasks.named('test') {
