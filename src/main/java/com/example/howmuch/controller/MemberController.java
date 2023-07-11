@@ -1,16 +1,18 @@
 package com.example.howmuch.controller;
 
+import com.example.howmuch.contant.Token;
 import com.example.howmuch.domain.entity.User;
+import com.example.howmuch.service.member.AuthService;
 import com.example.howmuch.service.member.MemberService;
 import com.example.howmuch.service.member.OauthService;
+import com.example.howmuch.util.AuthTransformUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 import static com.example.howmuch.contant.UserStatus.NEED_DATA;
 
@@ -21,6 +23,7 @@ public class MemberController {
 
     private final MemberService memberService;
     private final OauthService oauthService;
+    private final AuthService authService;
 
     @GetMapping("/login/callback/{provider}")
     public ResponseEntity<?> oauthLogin(
@@ -34,5 +37,16 @@ public class MemberController {
         } else {
             return new ResponseEntity<>(this.oauthService.oauthLoginResult(user), HttpStatus.OK);
         }
+    }
+
+    @PostMapping("/reissue")
+    public ResponseEntity<Token> updateAccessToken(
+            HttpServletRequest request
+    ) {
+        String accessToken = AuthTransformUtil.resolveAccessTokenFromRequest(request);
+        String refreshToken = AuthTransformUtil.resolveRefreshTokenFromRequest(request);
+        return new ResponseEntity<>(
+                authService.accessTokenByRefreshToken(accessToken, refreshToken), HttpStatus.OK);
+
     }
 }
