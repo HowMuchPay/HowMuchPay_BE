@@ -36,6 +36,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
+        log.info(request.getRequestURI());
+        log.info(request.getMethod());
+
+
         /**
          * 전달 받은 Access token 부터 Authentication 인증 객체 Security Context에 저장
          */
