@@ -1,11 +1,12 @@
 package com.example.howmuch.config.security;
 
+
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -14,66 +15,49 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    public static final String AUTHORIZATION = "Authorization";
 
-    private static final List<String> EXCLUDE_URL =
-            List.of("/members/login",
-                    "/members/join"
-            );
-
-    private final JwtProvider jwtProvider;
+    public static String BEARER_TYPE = "Bearer";
+    private final JwtService jwtService;
+    private final AuthService authService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
-                                    FilterChain chain)
-            throws IOException, ServletException {
-
-        if (request.getRequestURI().contains("/h2-console")) {
-            chain.doFilter(request, response);
-        } else {
-
-
-            String token = resolveToken(request);
-
-        /*
-            jwtAuthenticationEntryPoint 로 넘어감.
-        */
-            if (token == null) {
-                log.error("JWT doesn't exist");
-                throw new JwtException("JWT is null!!");
-            }
-
-            if (this.jwtProvider.validateToken(token)) {
-                // 토큰이 유효할 경우 토큰에서 Authentication 객체를 가지고 와서 SecurityContext 에 저장
-                Authentication authentication = jwtProvider.getAuthentication(token);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            } else {
-                log.error("JWT is not valid");
-                throw new JwtException("JWT is not valid!");
-            }
-            chain.doFilter(request, response);
+                                    FilterChain filterChain) throws ServletException, IOException {
+        if (request.getMethod().equals("OPTIONS")) {
+            return;
         }
+
+        /**
+         * 전달 받은 Access token 부터 Authentication 인증 객체 Security Context에 저장
+         */
+        try {
+            String token = this.resolveTokenFromRequest(request);
+            // access token 이 있고 유효하다면
+            if (StringUtils.hasText(token) && this.jwtService.validateToken(token)) {
+                Long id = this.authService.findUserByToken(token);
+                UserAuthentication authentication = new UserAuthentication(id);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+        } catch (IllegalArgumentException | JwtException e) {
+            log.info("JwtAuthentication UnauthorizedUserException!");
+            request.setAttribute("UnauthorizedUserException", e);
+        }
+        filterChain.doFilter(request, response);
     }
 
-    private String resolveToken(HttpServletRequest request) {
-
-        String bearerToken = request.getHeader("Authorization");
-
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
-            return bearerToken.substring(7);
+    private String resolveTokenFromRequest(HttpServletRequest request) {
+        String token = request.getHeader(AUTHORIZATION);
+        if (!ObjectUtils.isEmpty(token) && token.toLowerCase().startsWith(BEARER_TYPE.toLowerCase())) {
+            return token.substring(BEARER_TYPE.length()).trim();
         }
         return null;
-    }
-
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws SecurityException {
-        return EXCLUDE_URL.stream().anyMatch(exclude -> exclude.equalsIgnoreCase(request.getRequestURI()));
     }
 }
