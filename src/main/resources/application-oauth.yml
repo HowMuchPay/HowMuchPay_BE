@@ -15,7 +15,6 @@ spring:
             scope:
               - profile_nickname
               - profile_image
-            client-name: kakao
         provider:
           kakao:
             authorization-uri: https://kauth.kakao.com/oauth/authorize
@@ -26,7 +25,7 @@ spring:
 # jwt
 jwt:
   secret: ${JWT_SECRET_KEY}
-  access:
-    expiration: ${JWT_ACCESS_EXPIRE:3600000}
-  refresh:
-    expiration: ${JWT_REFRESH_EXPIRE:86400000}
+  access-token:
+    expire-time: ${JWT_ACCESS_EXPIRE:3600000}
+  refresh-token:
+    expire-time: ${JWT_REFRESH_EXPIRE:86400000}

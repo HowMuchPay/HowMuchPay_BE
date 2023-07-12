@@ -1,4 +1,4 @@
-package com.example.howmuch.config.app;
+package com.example.howmuch.config;
 
 import org.hibernate.boot.model.naming.Identifier;
 import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;

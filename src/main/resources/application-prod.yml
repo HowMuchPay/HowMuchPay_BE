@@ -10,7 +10,7 @@ spring:
     hibernate:
       ddl-auto: validate
       naming:
-        physical-strategy: com.example.howmuch.config.app.UpperCaseNamingStrategy
+        physical-strategy: com.example.howmuch.config.UpperCaseNamingStrategy
     show-sql: true
     properties:
       hibernate:
