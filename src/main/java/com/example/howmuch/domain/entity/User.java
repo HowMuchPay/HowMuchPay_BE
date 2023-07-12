@@ -15,10 +15,14 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Member extends BaseTimeEntity {
+@Table(name = "users")
+public class User extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "mbr_oauth_id")
+    private String oauthId;
 
     @Column(name = "mbr_nickname")
     private String nickname;
@@ -26,3 +30,4 @@ public class Member extends BaseTimeEntity {
     @Column(name = "mbr_profile")
     private String profileImage;
 }
+
