@@ -1,4 +1,4 @@
-package com.example.howmuch.config.app;
+package com.example.howmuch.config.web;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;

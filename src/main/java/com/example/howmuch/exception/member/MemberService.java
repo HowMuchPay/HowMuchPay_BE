@@ -1,4 +1,4 @@
-package com.example.howmuch.service.member;
+package com.example.howmuch.exception.member;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

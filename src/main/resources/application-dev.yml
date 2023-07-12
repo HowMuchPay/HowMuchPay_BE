@@ -10,33 +10,9 @@ spring:
     hibernate:
       ddl-auto: create-drop
       naming:
-        physical-strategy: com.example.howmuch.config.app.UpperCaseNamingStrategy
+        physical-strategy: com.example.howmuch.config.UpperCaseNamingStrategy
     show-sql: true
     properties:
       hibernate:
         format_sql: true
         default_batch_fetch_size: 100
-
-# swagger
-springdoc:
-  packages-to-scan: com.example.user
-  default-consumes-media-type: application/json;charset=UTF-8
-  default-produces-media-type: application/json;charset=UTF-8
-  swagger-ui:
-    tags-sorter: alpha
-    operations-sorter: alpha
-    path: api-ui.html
-  api-docs:
-    path: /api-docs/json
-    groups:
-      enabled: true
-  cache:
-    disabled: true
-
-logging:
-  level:
-    org.hibernate.SQL: debug
-    org.hibernate.type.descriptor.sql.BasicBinder: trace
-  file:
-    name: logs/application.log
-# logging
