@@ -8,8 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.UUID;
 
@@ -39,7 +37,7 @@ public class JwtService {
         return getToken(token, refreshTokenExpiration);
     }
 
-    private String createToken(String payLoad, Long accessTokenExpiration) {
+    private String createToken(String payLoad, Long tokenExpiration) {
         Claims claims = Jwts.claims().setSubject(payLoad);
         Date accessTokenExpiresIn = new Date(new Date().getTime() + accessTokenExpiration);
 
@@ -54,12 +52,8 @@ public class JwtService {
     private Token getToken(String token, Long expiration) {
         return Token.builder()
                 .tokenValue(token)
-                .expiredTime(makeTimeFormat(LocalDateTime.now().plusSeconds(expiration / 1000)))
+                .expiredTime(expiration)
                 .build();
-    }
-
-    private String makeTimeFormat(LocalDateTime expiration) {
-        return expiration.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
     public String getPayLoad(String token) {

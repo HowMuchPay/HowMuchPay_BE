@@ -1,14 +1,13 @@
 package com.example.howmuch.service.member;
 
 import com.example.howmuch.contant.Token;
-import com.example.howmuch.contant.UserStatus;
 import com.example.howmuch.domain.entity.User;
 import com.example.howmuch.domain.repository.UserRepository;
-import com.example.howmuch.dto.member.ActiveUserOauthResponseDto;
-import com.example.howmuch.dto.member.NeedDataUserOauthResponseDto;
 import com.example.howmuch.dto.member.OauthTokenResponseDto;
+import com.example.howmuch.dto.member.UserOauthLoginResponseDto;
 import com.example.howmuch.dto.member.userInfo.KakaoOauthUserInfo;
 import com.example.howmuch.util.JwtService;
+import com.example.howmuch.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -22,6 +21,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -37,6 +38,7 @@ public class OauthService {
     private final InMemoryClientRegistrationRepository inMemoryClientRegistrationRepository;
     private final UserRepository userRepository;
     private final JwtService jwtService;
+    private final RedisUtil redisUtil;
 
     /* providerName = kakao, code = Authorization code */
     @Transactional
@@ -80,21 +82,17 @@ public class OauthService {
         Map<String, Object> attributes = getUserAttributes(provider, responseDto);
 
         KakaoOauthUserInfo oauthUserInfo = new KakaoOauthUserInfo(attributes);
-        String oauthNickName = oauthUserInfo.getNickName();
-        String oauthName = null;
+        String oauthNickName = oauthUserInfo.getNickName(); // nickName
         String oauthProvider = oauthUserInfo.getProvider(); // kakao
         String oauthProviderId = oauthUserInfo.getProviderId(); // oauthId
         String profileImage = oauthUserInfo.getImageUrl(); // profileImage
         Optional<User> optionalUser = this.userRepository.findByOauthId(oauthProviderId);
 
         return optionalUser.orElseGet(() -> this.userRepository.save(User.builder()
-                .name(oauthName)
-                .nickname(oauthNickName)
-                .userStatus(UserStatus.NEED_DATA)
                 .oauthId(oauthProviderId)
+                .nickname(oauthNickName)
                 .profileImage(profileImage)
-                .build()
-        ));
+                .build()));
     }
 
     /* 4. 발급 받은 access token 을 이용해 user attributes 요청 */
@@ -109,29 +107,23 @@ public class OauthService {
                 .block();
     }
 
-    /* 5. 처음 로그인한 회원(UserStatus = NEED_DATA) */
-    public NeedDataUserOauthResponseDto needDataResult(User user) {
-        return NeedDataUserOauthResponseDto.builder()
-                .nickName(user.getNickname())
-                .name(user.getName()) // null
-                .oauthId(user.getOauthId())
-                .build();
+
+    /* 5. 로그인 결과를 반환하는 메소드 */
+    public UserOauthLoginResponseDto oauthLoginResult(User user) {
+        return getOauthLoginResult(user);
     }
 
-    /* 6. 이미 로그인한 이력이 있는 회원(UserStatus = Active) */
-    public ActiveUserOauthResponseDto oauthLoginResult(User user) {
-        return getActiveUserLoginResponseDto(user);
-    }
+    private UserOauthLoginResponseDto getOauthLoginResult(User user) {
 
-    private ActiveUserOauthResponseDto getActiveUserLoginResponseDto(User user) {
         Token accessToken = this.jwtService.createAccessToken(String.valueOf(user.getId()));
         Token refreshToken = this.jwtService.createRefreshToken();
+        LocalDateTime expireTime = LocalDateTime.now().plusSeconds(accessToken.getExpiredTime() / 1000);
+        this.redisUtil.setDataExpire(String.valueOf(user.getId()), refreshToken.getTokenValue(), refreshToken.getExpiredTime());
 
-
-        return ActiveUserOauthResponseDto.builder()
+        return UserOauthLoginResponseDto.builder()
                 .tokenType(BEARER_TYPE)
                 .accessToken(accessToken.getTokenValue())
-                .expiredTime(accessToken.getExpiredTime())
+                .expiredTime(expireTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))) // 만료 Local Date Time
                 .refreshToken(refreshToken.getTokenValue())
                 .build();
 

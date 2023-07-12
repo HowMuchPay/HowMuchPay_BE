@@ -7,10 +7,10 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ActiveUserOauthResponseDto {
+public class UserOauthLoginResponseDto {
 
     private String tokenType;
     private String accessToken;
     private String refreshToken;
-    private String expiredTime;
+    private String expiredTime; // access token 의 만료날짜
 }

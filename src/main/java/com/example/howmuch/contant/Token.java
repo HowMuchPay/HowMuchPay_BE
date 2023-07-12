@@ -9,5 +9,5 @@ import lombok.*;
 @NoArgsConstructor
 public class Token {
     private String tokenValue;
-    private String expiredTime;
+    private Long expiredTime;
 }

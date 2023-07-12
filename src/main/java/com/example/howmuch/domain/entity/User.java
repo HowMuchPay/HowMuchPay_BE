@@ -1,6 +1,5 @@
 package com.example.howmuch.domain.entity;
 
-import com.example.howmuch.contant.UserStatus;
 import com.example.howmuch.domain.BaseTimeEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,9 +21,6 @@ public class User extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "mbr_name")
-    private String name;
-
     @Column(name = "mbr_oauth_id")
     private String oauthId;
 
@@ -33,8 +29,4 @@ public class User extends BaseTimeEntity {
 
     @Column(name = "mbr_profile")
     private String profileImage;
-
-    @Column(name = "mbr_status")
-    @Enumerated(EnumType.STRING)
-    private UserStatus userStatus;
 }
