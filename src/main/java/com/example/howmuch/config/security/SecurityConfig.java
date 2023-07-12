@@ -28,7 +28,7 @@ public class SecurityConfig {
         return web -> web.ignoring()
                 .antMatchers(HttpMethod.GET, "/login/callback/**")
                 .antMatchers(HttpMethod.POST, "/users/reissue")
-                .antMatchers("/h2-console/**");
+                .antMatchers("/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs");
     }
 
     @Bean
@@ -48,7 +48,7 @@ public class SecurityConfig {
                 .headers().frameOptions().disable()
                 .and()
                 .authorizeRequests()
-                .antMatchers("/h2-console/**", "/login/callback/**").permitAll()
+                .antMatchers("/login/callback/**", "/users/reissue").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling()
@@ -60,6 +60,5 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-
     }
 }

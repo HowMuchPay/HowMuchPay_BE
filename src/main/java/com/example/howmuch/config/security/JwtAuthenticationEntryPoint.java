@@ -22,8 +22,7 @@ import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @Component
-public class
-JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
+public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     private static void makeResultResponse(
             HttpServletResponse response,
