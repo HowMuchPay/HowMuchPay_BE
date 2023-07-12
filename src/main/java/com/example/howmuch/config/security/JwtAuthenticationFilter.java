@@ -36,8 +36,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        log.info(request.getRequestURI());
-        log.info(request.getMethod());
+//        log.info(request.getRequestURI());
+//        log.info(request.getMethod());
 
 
         /**

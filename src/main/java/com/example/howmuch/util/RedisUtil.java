@@ -37,8 +37,6 @@ public class RedisUtil {
         ValueOperations<String, String> valueOperations = getStringStringValueOperations();
         Duration expireDuration = Duration.ofSeconds(duration);
         valueOperations.set(key, value, expireDuration);
-
-        log.info(getData(key));
     }
 
     private ValueOperations<String, String> getStringStringValueOperations() {
