@@ -1,5 +1,6 @@
 package com.example.howmuch.domain.entity;
 
+
 import com.example.howmuch.domain.BaseTimeEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,23 +16,17 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "users")
-public class User extends BaseTimeEntity {
+@Table(name = "firebase_tokens")
+public class FirebaseToken extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "mbr_oauth_id")
-    private String oauthId;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    @Column(name = "mbr_nickname")
-    private String nickname;
+    @Column(name = "firebase_token")
+    private String token;
 
-    @Column(name = "mbr_profile")
-    private String profileImage;
-
-    // User와의 매핑 설정
-    @OneToOne(mappedBy = "user")
-    private FirebaseToken firebaseToken;
 }
-
