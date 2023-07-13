@@ -1,7 +1,7 @@
 package com.example.howmuch.controller;
 
 
-import com.example.howmuch.dto.user.fcm.FcmNotificationRequestDto;
+import com.example.howmuch.dto.fcm.FcmNotificationRequestDto;
 import com.example.howmuch.service.fcm.FcmNotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;

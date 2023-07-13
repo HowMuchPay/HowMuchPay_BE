@@ -1,4 +1,4 @@
-package com.example.howmuch.dto.user.fcm;
+package com.example.howmuch.dto.fcm;
 
 import lombok.*;
 

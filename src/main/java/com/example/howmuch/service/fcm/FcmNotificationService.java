@@ -2,7 +2,7 @@ package com.example.howmuch.service.fcm;
 
 import com.example.howmuch.domain.entity.User;
 import com.example.howmuch.domain.repository.UserRepository;
-import com.example.howmuch.dto.user.fcm.FcmNotificationRequestDto;
+import com.example.howmuch.dto.fcm.FcmNotificationRequestDto;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
