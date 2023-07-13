@@ -4,6 +4,8 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -11,10 +13,14 @@ import org.springframework.core.io.ClassPathResource;
 import java.io.IOException;
 import java.io.InputStream;
 
+@Slf4j
 @Configuration
 public class FcmConfig {
 
     // FirebaseMessaging 빈을 생성하는 메서드
+    @Value("${fcm.path}")
+    private String fcmPath;
+
     @Bean
     FirebaseMessaging firebaseMessaging() throws IOException {
         // FirebaseApp 인스턴스를 가져옴
@@ -27,8 +33,8 @@ public class FcmConfig {
     // FirebaseApp 인스턴스를 가져오는 메서드
     private FirebaseApp getFirebaseApp() throws IOException {
         // Firebase 서비스 계정 (비공개)키 파일을 가져옴
-        ClassPathResource resource = new ClassPathResource("firebase/howmuch-c4f1b-firebase-adminsdk-1vby5-12df3da75c" +
-                ".json");
+
+        ClassPathResource resource = new ClassPathResource(fcmPath);
         InputStream token = resource.getInputStream();
 
         // FirebaseApp 인스턴스를 가져옴

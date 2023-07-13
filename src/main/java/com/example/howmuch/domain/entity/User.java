@@ -19,19 +19,20 @@ import javax.persistence.*;
 public class User extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "usr_id")
     private Long id;
 
-    @Column(name = "mbr_oauth_id")
+    @Column(name = "usr_oauth_id")
     private String oauthId;
 
-    @Column(name = "mbr_nickname")
+    @Column(name = "usr_nickname")
     private String nickname;
 
-    @Column(name = "mbr_profile")
+    @Column(name = "usr_profile")
     private String profileImage;
 
     // User와의 매핑 설정
-    @OneToOne(mappedBy = "user")
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "user")
     private FirebaseToken firebaseToken;
 }
 
