@@ -60,6 +60,9 @@ dependencies {
     
     implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
 
+    // admin SDK
+    implementation 'com.google.firebase:firebase-admin:9.1.1'
+
 }
 
 tasks.named('test') {
