@@ -25,7 +25,7 @@ public class FcmNotificationService {
 
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            String firebaseToken = user.getFirebaseToken();
+            String firebaseToken = user.getFirebaseToken().getToken();
 
             if (firebaseToken != null) {
                 Notification notification = Notification.builder()
