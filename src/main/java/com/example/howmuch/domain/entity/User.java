@@ -29,5 +29,8 @@ public class User extends BaseTimeEntity {
 
     @Column(name = "mbr_profile")
     private String profileImage;
+
+    @Column(name = "firebase_token")
+    private String firebaseToken;
 }
 
