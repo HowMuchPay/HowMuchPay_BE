@@ -4,12 +4,12 @@ import com.example.howmuch.domain.entity.FirebaseToken;
 import com.example.howmuch.domain.entity.User;
 import com.example.howmuch.domain.repository.FirebaseTokenRepository;
 import com.example.howmuch.domain.repository.UserRepository;
+import com.example.howmuch.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,21 +19,18 @@ public class FireBaseTokenService {
     private final FirebaseTokenRepository firebaseTokenRepository;
     private final UserRepository userRepository;
 
+    @Transactional
+    public Long saveTokenForUser(String token) {
+        Long userId = SecurityUtil.getCurrentUserId();
 
-    public void saveTokenForUser(Long userId, String token) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            FirebaseToken firebaseToken = FirebaseToken.builder()
-                    .user(user)
-                    .token(token)
-                    .build();
-            firebaseTokenRepository.save(firebaseToken);
-            log.info("토큰이 유저에게 성공적으로 저장되었습니다. UserId={}", userId);
-        } else {
-            log.error("유저를 찾을 수 없습니다. UserId={}", userId);
-            throw new UsernameNotFoundException("User not found with id: " + userId);
-        }
+        User user = this.userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("일치하는 회원이 존재하지 않습니다."));
+
+        return this.firebaseTokenRepository.save(FirebaseToken.builder()
+                        .user(user)
+                        .token(token)
+                        .build())
+                .getId();
     }
 }
 

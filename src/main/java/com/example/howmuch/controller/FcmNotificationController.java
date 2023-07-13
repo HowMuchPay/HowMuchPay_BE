@@ -16,9 +16,9 @@ public class FcmNotificationController {
 
     private final FcmNotificationService fcmNotificationService;
 
+    // 동근 궁금 : 상대방 oauthId 를 어떻게 프론트에서 가져오나?
     @PostMapping("/send")
     public String sendNotificationByToken(@RequestBody FcmNotificationRequestDto requestDto) {
         return fcmNotificationService.sendNotificationByToken(requestDto);
     }
-
 }

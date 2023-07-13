@@ -10,6 +10,7 @@ import com.google.firebase.messaging.Notification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -20,8 +21,11 @@ public class FcmNotificationService {
     private final FirebaseMessaging firebaseMessaging;
     private final UserRepository userRepository;
 
+    // 1 대 1 으로
+    @Transactional
     public String sendNotificationByToken(FcmNotificationRequestDto requestDto) {
-        Optional<User> optionalUser = userRepository.findByOauthId(requestDto.getTargetUserid());
+        Optional<User> optionalUser
+                = userRepository.findByOauthId(requestDto.getTargetUserid()); // 상대방 user
 
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();

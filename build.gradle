@@ -19,8 +19,6 @@ repositories {
 }
 
 dependencies {
-    // firebase fcm
-    implementation group: 'com.google.firebase', name: 'firebase-admin', version: '6.8.1'
 
     // spring security
     implementation "org.springframework.boot:spring-boot-starter-security"
@@ -57,7 +55,7 @@ dependencies {
 
     // redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    
+
     implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
 
     // admin SDK
