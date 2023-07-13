@@ -30,7 +30,7 @@ public class AcEvent extends BaseTimeEntity {
     private LocalDate eventAt;
 
     @Column(name = "pay_amnt")
-    private Long payAmount;
+    private long payAmount;
 
 
     @Column(name = "event_category", nullable = false)
