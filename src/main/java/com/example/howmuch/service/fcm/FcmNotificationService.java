@@ -1,4 +1,4 @@
-package com.example.howmuch.service.user.fcm;
+package com.example.howmuch.service.fcm;
 
 import com.example.howmuch.domain.entity.User;
 import com.example.howmuch.domain.repository.UserRepository;
