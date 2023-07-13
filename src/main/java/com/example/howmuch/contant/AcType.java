@@ -7,11 +7,12 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum AcType {
 
-    FRIEND("친구"),
-    FAMILY("가족"),
-    COLLEAGUE("동료"),
-    ETC("기타");
+    FAMILY(0, "가족"),
+    FRIEND(1, "친구"),
+    COLLEAGUE(2, "동료"),
+    ETC(3, "기타");
 
+    private final Integer value;
     private final String typeName;
 
 }

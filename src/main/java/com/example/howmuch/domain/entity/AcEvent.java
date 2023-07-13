@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Slf4j
 @Getter
@@ -27,10 +27,11 @@ public class AcEvent extends BaseTimeEntity {
     private Long id;
 
     @Column(name = "event_at", nullable = false)
-    private Date eventAt;
+    private LocalDate eventAt;
 
     @Column(name = "pay_amnt")
     private Long payAmount;
+
 
     @Column(name = "event_category", nullable = false)
     private EventCategory eventCategory;

@@ -8,7 +8,7 @@ spring:
   jpa:
     open-in-view: true
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
       naming:
         physical-strategy: com.example.howmuch.config.app.UpperCaseNamingStrategy
     show-sql: true

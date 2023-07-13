@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Slf4j
 @Getter
@@ -26,7 +26,7 @@ public class MyEvent extends BaseTimeEntity {
     private Long id;
 
     @Column(name = "event_at", nullable = false)
-    private Date eventAt;
+    private LocalDate eventAt;
 
     @Column(name = "rcv_amnt")
     private Long receiveAmount;
