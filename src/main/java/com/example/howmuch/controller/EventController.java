@@ -1,5 +1,6 @@
 package com.example.howmuch.controller;
 
+import com.example.howmuch.dto.event.CreateAcEventRequestDto;
 import com.example.howmuch.dto.event.CreateMyEventRequestDto;
 import com.example.howmuch.dto.event.GetAllMyEventsResponseDto;
 import com.example.howmuch.service.event.EventService;
@@ -31,5 +32,14 @@ public class EventController {
     ) {
         return new ResponseEntity<>(
                 this.eventService.createMyEvent(request), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/acquaintance")
+    public ResponseEntity<Long> createAcEvent(
+            @Valid @RequestBody CreateAcEventRequestDto request
+    ) {
+        return new ResponseEntity<>(
+                this.eventService.createAcEvent(request), HttpStatus.CREATED);
+
     }
 }
