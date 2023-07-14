@@ -51,7 +51,7 @@ public class EventService {
 
 
     @Transactional(readOnly = true)
-    public GetAllAcEventsResponseDto getAllMyEventsByFilter(String acTypeList, String eventCategoryList) {
+    public GetAllAcEventsResponseDto getAllAcEventsByFilter(String acTypeList, String eventCategoryList) {
         List<String> acTypes = List.of(acTypeList.split(","));
         List<String> eventCategories = List.of(eventCategoryList.split(","));
 

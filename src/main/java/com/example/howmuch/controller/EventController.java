@@ -46,12 +46,12 @@ public class EventController {
     }
 
     @GetMapping("/acquaintance/filter")
-    public ResponseEntity<GetAllAcEventsResponseDto> getAllMyEventsByFilter(
+    public ResponseEntity<GetAllAcEventsResponseDto> getAllAcEventsByFilter(
             @RequestParam String acTypes,
             @RequestParam String eventCategories
     ) {
         return new ResponseEntity<>(
-                this.eventService.getAllMyEventsByFilter(acTypes, eventCategories), HttpStatus.OK);
+                this.eventService.getAllAcEventsByFilter(acTypes, eventCategories), HttpStatus.OK);
     }
 
 
