@@ -13,6 +13,7 @@ import com.example.howmuch.exception.user.NotFoundUserException;
 import com.example.howmuch.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,7 +48,8 @@ public class EventService {
         log.info(SecurityUtil.getCurrentUserId().toString());
         User user = getUser();
 
-        List<MyEvent> myEvents = this.myEventRepository.findAllByUser(user);
+        List<MyEvent> myEvents
+                = this.myEventRepository.findAllByUser(user, Sort.by(Sort.Direction.DESC, "eventAt"));
 
         Long totalReceiveAmount = myEvents.stream()
                 .mapToLong(MyEvent::getReceiveAmount)
