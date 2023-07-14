@@ -1,14 +1,12 @@
 package com.example.howmuch.service.event;
 
+import com.example.howmuch.domain.entity.AcEvent;
 import com.example.howmuch.domain.entity.MyEvent;
 import com.example.howmuch.domain.entity.User;
 import com.example.howmuch.domain.repository.AcEventRepository;
 import com.example.howmuch.domain.repository.MyEventRepository;
 import com.example.howmuch.domain.repository.UserRepository;
-import com.example.howmuch.dto.event.CreateAcEventRequestDto;
-import com.example.howmuch.dto.event.CreateMyEventRequestDto;
-import com.example.howmuch.dto.event.GetAllMyEventsResponse;
-import com.example.howmuch.dto.event.GetAllMyEventsResponseDto;
+import com.example.howmuch.dto.event.*;
 import com.example.howmuch.exception.user.NotFoundUserException;
 import com.example.howmuch.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -37,19 +35,14 @@ public class EventService {
     @Transactional(readOnly = true)
     public GetAllMyEventsResponseDto getAllMyEvents() {
 
-        log.info(SecurityUtil.getCurrentUserId().toString());
         User user = getUser();
+        Long totalReceiveAmount = user.getTotalRcv();
 
-        List<MyEvent> myEvents
-                = this.myEventRepository.findAllByUser(user, Sort.by(Sort.Direction.DESC, "eventAt"));
-
-        Long totalReceiveAmount = this.userRepository.findById(user.getId())
-                .orElseThrow(() -> new NotFoundUserException("일치하는 회원이 존재하지 않습니다."))
-                .getTotalRcv();
-
-        List<GetAllMyEventsResponse> allMyEvents = myEvents.stream()
-                .map(MyEvent::of)
-                .toList();
+        List<GetAllMyEventsResponse> allMyEvents =
+                this.myEventRepository.findAllByUser(user, Sort.by(Sort.Direction.DESC, "eventAt"))
+                        .stream()
+                        .map(MyEvent::of)
+                        .toList();
 
         return new GetAllMyEventsResponseDto(totalReceiveAmount, allMyEvents);
     }
@@ -58,6 +51,21 @@ public class EventService {
     public Long createAcEvent(CreateAcEventRequestDto request) {
         log.info(SecurityUtil.getCurrentUserId().toString());
         return this.acEventRepository.save(request.toEntity(getUser())).getId();
+    }
+
+    @Transactional(readOnly = true)
+    public GetAllAcEventsResponseDto getAllAcEvents() {
+
+        User user = getUser();
+        Long totalPayAmount = user.getTotalPay();
+
+        List<GetAllAcEventsResponse> allAcEvents
+                = this.acEventRepository.findAllByUser(user, Sort.by(Sort.Direction.DESC, "eventAt"))
+                .stream()
+                .map(AcEvent::of)
+                .toList();
+
+        return new GetAllAcEventsResponseDto(totalPayAmount, allAcEvents);
     }
 
     private User getUser() {

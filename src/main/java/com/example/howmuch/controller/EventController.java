@@ -2,6 +2,7 @@ package com.example.howmuch.controller;
 
 import com.example.howmuch.dto.event.CreateAcEventRequestDto;
 import com.example.howmuch.dto.event.CreateMyEventRequestDto;
+import com.example.howmuch.dto.event.GetAllAcEventsResponseDto;
 import com.example.howmuch.dto.event.GetAllMyEventsResponseDto;
 import com.example.howmuch.service.event.EventService;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,13 @@ public class EventController {
     ) {
         return new ResponseEntity<>(
                 this.eventService.createMyEvent(request), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/acquaintance")
+    public ResponseEntity<GetAllAcEventsResponseDto> getAllAcEvents() {
+        return new ResponseEntity<>(
+                this.eventService.getAllAcEvents(), HttpStatus.OK
+        );
     }
 
     @PostMapping("/acquaintance")

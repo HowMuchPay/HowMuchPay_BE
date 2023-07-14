@@ -3,6 +3,7 @@ package com.example.howmuch.domain.entity;
 import com.example.howmuch.contant.AcType;
 import com.example.howmuch.contant.EventCategory;
 import com.example.howmuch.domain.BaseTimeEntity;
+import com.example.howmuch.dto.event.GetAllAcEventsResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -46,4 +47,14 @@ public class AcEvent extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usr_id")
     private User user;
+
+    public GetAllAcEventsResponse of() {
+        return GetAllAcEventsResponse.builder()
+                .month(eventAt.getMonthValue())
+                .eventAt(eventAt)
+                .payAmount(payAmount)
+                .eventCategory(eventCategory.getValue())
+                .build();
+
+    }
 }
