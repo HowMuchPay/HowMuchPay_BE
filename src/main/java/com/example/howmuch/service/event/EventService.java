@@ -1,5 +1,7 @@
 package com.example.howmuch.service.event;
 
+import com.example.howmuch.contant.AcType;
+import com.example.howmuch.contant.EventCategory;
 import com.example.howmuch.domain.entity.AcEvent;
 import com.example.howmuch.domain.entity.MyEvent;
 import com.example.howmuch.domain.entity.User;
@@ -46,6 +48,28 @@ public class EventService {
 
         return new GetAllMyEventsResponseDto(totalReceiveAmount, allMyEvents);
     }
+
+
+    @Transactional(readOnly = true)
+    public GetAllAcEventsResponseDto getAllMyEventsByFilter(String acTypeList, String eventCategoryList) {
+        List<String> acTypes = List.of(acTypeList.split(","));
+        List<String> eventCategories = List.of(eventCategoryList.split(","));
+
+        List<AcEvent> result = acTypes.stream()
+                .map(acTypeString -> AcType.fromValue(Integer.parseInt(acTypeString.trim())))
+                .flatMap(acType -> eventCategories.stream()
+                        .map(eventCategoryString -> EventCategory.fromValue(Integer.parseInt(eventCategoryString.trim())))
+                        .flatMap(eventCategory -> this.acEventRepository.findAllByAcquaintanceTypeAndEventCategory(acType, eventCategory).stream()))
+                .toList();
+
+        List<GetAllAcEventsResponse> res = result.stream()
+                .map(AcEvent::of)
+                .toList();
+
+        return new GetAllAcEventsResponseDto(getUser().getTotalPay(), res);
+    }
+
+    /*********/
 
     @Transactional
     public Long createAcEvent(CreateAcEventRequestDto request) {

@@ -35,12 +35,25 @@ public class EventController {
                 this.eventService.createMyEvent(request), HttpStatus.CREATED);
     }
 
+    /********/
+
+
     @GetMapping("/acquaintance")
     public ResponseEntity<GetAllAcEventsResponseDto> getAllAcEvents() {
         return new ResponseEntity<>(
                 this.eventService.getAllAcEvents(), HttpStatus.OK
         );
     }
+
+    @GetMapping("/acquaintance/filter")
+    public ResponseEntity<GetAllAcEventsResponseDto> getAllMyEventsByFilter(
+            @RequestParam String acTypes,
+            @RequestParam String eventCategories
+    ) {
+        return new ResponseEntity<>(
+                this.eventService.getAllMyEventsByFilter(acTypes, eventCategories), HttpStatus.OK);
+    }
+
 
     @PostMapping("/acquaintance")
     public ResponseEntity<Long> createAcEvent(
