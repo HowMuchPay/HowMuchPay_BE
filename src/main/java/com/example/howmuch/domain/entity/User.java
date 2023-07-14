@@ -31,6 +31,12 @@ public class User extends BaseTimeEntity {
     @Column(name = "usr_profile")
     private String profileImage;
 
+    @Column(name = "usr_total_pay")
+    private long totalPay;
+
+    @Column(name = "usr_total_rcv")
+    private long totalRcv;
+
     // User와의 매핑 설정
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "user")
     private FirebaseToken firebaseToken;
