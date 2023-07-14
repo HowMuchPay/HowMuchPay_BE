@@ -3,6 +3,8 @@ package com.example.howmuch.contant;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Objects;
+
 @RequiredArgsConstructor
 @Getter
 public enum EventCategory {
@@ -17,7 +19,7 @@ public enum EventCategory {
 
     public static EventCategory fromValue(Integer value) {
         for (EventCategory category : EventCategory.values()) {
-            if (category.value.equals(value)) {
+            if (Objects.equals(category.value, value)) {
                 return category;
             }
         }

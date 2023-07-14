@@ -32,13 +32,18 @@ public class AcEvent extends BaseTimeEntity {
     @Column(name = "pay_amnt")
     private long payAmount;
 
-
+    @Enumerated(EnumType.STRING)
     @Column(name = "event_category", nullable = false)
     private EventCategory eventCategory;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "ac_type", nullable = false)
     private AcType acquaintanceType;
 
-    @Column(name = "ac_id", nullable = false)
-    private Long acquaintanceId;
+    @Column(name = "ac_name", nullable = false)
+    private String acName;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usr_id")
+    private User user;
 }
