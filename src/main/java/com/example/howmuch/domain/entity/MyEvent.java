@@ -42,6 +42,7 @@ public class MyEvent extends BaseTimeEntity {
 
     public GetAllMyEventsResponse of() {
         return GetAllMyEventsResponse.builder()
+                .month(eventAt.getMonthValue())
                 .eventAt(eventAt)
                 .receiveAmount(receiveAmount)
                 .eventCategory(eventCategory.getValue())

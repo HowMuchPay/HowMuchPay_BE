@@ -11,6 +11,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class GetAllMyEventsResponse {
 
+    private Integer month;
+
     private LocalDate eventAt;
 
     private Long receiveAmount;
