@@ -22,23 +22,32 @@ public class User extends BaseTimeEntity {
     @Column(name = "usr_id")
     private Long id;
 
-    @Column(name = "usr_oauth_id")
+    @Column(name = "usr_oauth_id", nullable = false)
     private String oauthId;
 
-    @Column(name = "usr_nickname")
+    @Column(name = "usr_nickname", nullable = false)
     private String nickname;
 
     @Column(name = "usr_profile")
     private String profileImage;
 
     @Column(name = "usr_total_pay")
-    private long totalPay;
+    private long totalPayAmount;
 
     @Column(name = "usr_total_rcv")
-    private long totalRcv;
+    private long totalReceiveAmount;
 
     // User와의 매핑 설정
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "user")
     private FirebaseToken firebaseToken;
+
+
+    public void addTotalPayAmount(long payAmount) {
+        this.totalPayAmount += payAmount;
+    }
+
+    public void addTotalReceiveAmount(long receiveAmount) {
+        this.totalReceiveAmount += receiveAmount;
+    }
 }
 

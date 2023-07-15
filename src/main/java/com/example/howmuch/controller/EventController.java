@@ -1,9 +1,6 @@
 package com.example.howmuch.controller;
 
-import com.example.howmuch.dto.event.CreateAcEventRequestDto;
-import com.example.howmuch.dto.event.CreateMyEventRequestDto;
-import com.example.howmuch.dto.event.GetAllAcEventsResponseDto;
-import com.example.howmuch.dto.event.GetAllMyEventsResponseDto;
+import com.example.howmuch.dto.event.*;
 import com.example.howmuch.service.event.EventService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,12 +18,14 @@ public class EventController {
 
     private final EventService eventService;
 
+    // 나의 경조사 조회
     @GetMapping("/my")
     public ResponseEntity<GetAllMyEventsResponseDto> getAllMyEvents() {
         return new ResponseEntity<>(
                 this.eventService.getAllMyEvents(), HttpStatus.OK);
     }
 
+    // 나의 경조사 등록
     @PostMapping("/my")
     public ResponseEntity<Long> createMyEvent(
             @Valid @RequestBody CreateMyEventRequestDto request
@@ -35,9 +34,20 @@ public class EventController {
                 this.eventService.createMyEvent(request), HttpStatus.CREATED);
     }
 
+    // 나의 경조사 세부사항 등록
+    @PostMapping("/my/{id}/details")
+    public ResponseEntity<?> createMyEventDetail(
+            @PathVariable Long id,
+            @Valid @RequestBody CreateMyEventDetailRequestDto request
+    ) {
+        return new ResponseEntity<>(
+                this.eventService.createMyEventDetail(id, request), HttpStatus.OK);
+    }
+
     /********/
 
 
+    // 지인 경조사 조회
     @GetMapping("/acquaintance")
     public ResponseEntity<GetAllAcEventsResponseDto> getAllAcEvents() {
         return new ResponseEntity<>(
@@ -45,6 +55,7 @@ public class EventController {
         );
     }
 
+    // 지인 경조사 필터링 조회
     @GetMapping("/acquaintance/filter")
     public ResponseEntity<GetAllAcEventsResponseDto> getAllAcEventsByFilter(
             @RequestParam String acTypes,
@@ -55,6 +66,7 @@ public class EventController {
     }
 
 
+    // 지인 경조사 생성
     @PostMapping("/acquaintance")
     public ResponseEntity<Long> createAcEvent(
             @Valid @RequestBody CreateAcEventRequestDto request

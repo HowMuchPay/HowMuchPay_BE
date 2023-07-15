@@ -42,7 +42,7 @@ public class AcEvent extends BaseTimeEntity {
     private AcType acquaintanceType;
 
     @Column(name = "ac_name", nullable = false)
-    private String acquaintanceName;
+    private String acquaintanceNickname;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usr_id")

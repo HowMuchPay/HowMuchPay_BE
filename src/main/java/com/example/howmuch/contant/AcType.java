@@ -25,5 +25,4 @@ public enum AcType {
         }
         throw new IllegalArgumentException("유효하지 않은 값입니다.");
     }
-
 }

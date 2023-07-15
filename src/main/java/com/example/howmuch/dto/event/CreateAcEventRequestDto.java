@@ -39,7 +39,7 @@ public class CreateAcEventRequestDto {
                 .payAmount(payAmount)
                 .eventCategory(EventCategory.fromValue(eventCategory))
                 .acquaintanceType(AcType.fromValue(acType))
-                .acquaintanceName(acName)
+                .acquaintanceNickname(acName)
                 .user(user)
                 .build();
     }
