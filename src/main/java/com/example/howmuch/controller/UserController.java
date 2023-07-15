@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/users")
+@RequestMapping("/user")
 @RestController
 public class UserController {
 

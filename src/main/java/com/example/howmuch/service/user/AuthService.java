@@ -34,8 +34,8 @@ public class AuthService {
     public NewAccessTokenResponseDto accessTokenByRefreshToken(String accessToken,
                                                                String refreshToken) {
         validationRefreshToken(refreshToken);
-        String id = this.jwtService.getPayLoad(accessToken);
         // key : 회원의 id(String) + value : refresh token
+        String id = this.jwtService.getPayLoad(accessToken);
         // key 로 redis 에서 refresh token 조회
         String storedRefreshToken = this.redisUtil.getData(id);
 
@@ -44,7 +44,10 @@ public class AuthService {
         }
 
         Token newAccessToken = this.jwtService.createAccessToken(id);
-        LocalDateTime expiredTime = LocalDateTime.now().plusSeconds(newAccessToken.getExpiredTime() / 1000);
+
+        LocalDateTime expiredTime
+                = LocalDateTime.now().plusSeconds(newAccessToken.getExpiredTime() / 1000);
+
         return NewAccessTokenResponseDto.builder()
                 .accessToken(newAccessToken.getTokenValue())
                 .expiredTime(expiredTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
