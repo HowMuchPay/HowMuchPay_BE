@@ -9,4 +9,6 @@ import java.util.List;
 
 public interface MyEventDetailRepository extends JpaRepository<MyEventDetail, Long> {
     List<MyEventDetail> findAllByMyEvent(MyEvent myEvent, Sort sort);
+
+    List<MyEventDetail> findAllByAcquaintanceNicknameContainingIgnoreCase(String acquaintanceNickname);
 }

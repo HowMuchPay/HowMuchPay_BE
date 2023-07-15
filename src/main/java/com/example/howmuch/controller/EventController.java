@@ -46,12 +46,22 @@ public class EventController {
 
     // 나의 경조사 세부사항 등록
     @PostMapping("/my/{id}/details")
-    public ResponseEntity<?> createMyEventDetail(
+    public ResponseEntity<Long> createMyEventDetail(
             @PathVariable Long id,
             @Valid @RequestBody CreateMyEventDetailRequestDto request
     ) {
         return new ResponseEntity<>(
                 this.eventService.createMyEventDetail(id, request), HttpStatus.CREATED);
+    }
+
+    // 나의 경조사 세부사항 이름 조회
+    @GetMapping("/my/{id}/details/filter")
+    public ResponseEntity<List<GetAllMyEventDetailResponseDto>> getAllMyEventDetailsByName(
+            @PathVariable Long id,
+            @RequestParam String name
+    ) {
+        return new ResponseEntity<>(
+                this.eventService.getAllMyEventDetailsByName(id, name), HttpStatus.OK);
     }
 
     /********/
