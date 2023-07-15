@@ -38,10 +38,11 @@ public class UserController {
 
     // logout 메소드
     @PostMapping("/logout/me")
-    public ResponseEntity<String> logout(
+    public ResponseEntity<Void> logout(
             HttpServletRequest request
     ) {
-        return new ResponseEntity<>(this.authService.logout(request), HttpStatus.OK);
+        this.authService.logout(request);
+        return ResponseEntity.ok().build();
     }
 
     // 회원 탈퇴 메소드
