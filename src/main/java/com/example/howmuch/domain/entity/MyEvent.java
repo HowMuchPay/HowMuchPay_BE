@@ -29,8 +29,8 @@ public class MyEvent extends BaseTimeEntity {
     @Column(name = "event_at", nullable = false)
     private LocalDate eventAt;
 
-    @Column(name = "rcv_amnt")
-    private long receiveAmount;
+    @Column(name = "total_rcv_amnt")
+    private long totalReceiveAmount;
 
     @Column(name = "event_category", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -44,8 +44,12 @@ public class MyEvent extends BaseTimeEntity {
         return GetAllMyEventsResponse.builder()
                 .month(eventAt.getMonthValue())
                 .eventAt(eventAt)
-                .receiveAmount(receiveAmount)
+                .receiveAmount(totalReceiveAmount)
                 .eventCategory(eventCategory.getValue())
                 .build();
+    }
+
+    public void addReceiveAmount(Long receiveAmount) {
+        this.totalReceiveAmount += receiveAmount;
     }
 }

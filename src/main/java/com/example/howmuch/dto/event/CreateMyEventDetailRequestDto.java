@@ -17,7 +17,8 @@ public class CreateMyEventDetailRequestDto {
 
     public MyEventDetail toEntity(MyEvent myEvent) {
         return MyEventDetail.builder()
-                .acquaintanceName(acquaintanceNickname)
+                .acquaintanceNickname(acquaintanceNickname)
+                .receiveAmount(receiveAmount)
                 .myEvent(myEvent)
                 .build();
     }

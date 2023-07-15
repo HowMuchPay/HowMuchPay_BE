@@ -4,6 +4,7 @@ import com.example.howmuch.contant.AcType;
 import com.example.howmuch.contant.EventCategory;
 import com.example.howmuch.domain.entity.AcEvent;
 import com.example.howmuch.domain.entity.MyEvent;
+import com.example.howmuch.domain.entity.MyEventDetail;
 import com.example.howmuch.domain.entity.User;
 import com.example.howmuch.domain.repository.AcEventRepository;
 import com.example.howmuch.domain.repository.MyEventDetailRepository;
@@ -43,7 +44,7 @@ public class EventService {
     public GetAllMyEventsResponseDto getAllMyEvents() {
 
         User user = getUser();
-        Long totalReceiveAmount = user.getTotalReceiveAmount();
+        Long totalReceiveAmount = user.getUserTotalReceiveAmount();
 
         List<GetAllMyEventsResponse> allMyEvents =
                 this.myEventRepository.findAllByUser(user, Sort.by(Sort.Direction.DESC, "eventAt"))
@@ -58,12 +59,22 @@ public class EventService {
     @Transactional
     public Long createMyEventDetail(Long id, CreateMyEventDetailRequestDto request) {
 
-        MyEvent myEvent = this.myEventRepository.findById(id)
-                .orElseThrow(() -> new NotFoundEventException("일치하는 경조사 정보가 존재하지 않습니다."));
+        MyEvent myEvent = getMyEvent(id);
 
-        getUser().addTotalReceiveAmount(request.getReceiveAmount());
+        getUser().addTotalReceiveAmount(request.getReceiveAmount()); // 내가 받은 총 금액 추가
+        myEvent.addReceiveAmount(request.getReceiveAmount()); // 해당 경조사 받은 금액 추가
 
         return this.myEventDetailRepository.save(request.toEntity(myEvent)).getId();
+    }
+
+    @Transactional(readOnly = true)
+    public List<GetAllMyEventDetailResponseDto> getAllMyEventDetails(Long id) {
+
+        MyEvent myEvent = getMyEvent(id);
+        return this.myEventDetailRepository.findAllByMyEvent(myEvent, Sort.by(Sort.Direction.DESC, "createdAt"))
+                .stream()
+                .map(MyEventDetail::from)
+                .toList();
     }
 
 
@@ -93,7 +104,7 @@ public class EventService {
                 .map(AcEvent::of)
                 .toList();
 
-        return new GetAllAcEventsResponseDto(getUser().getTotalPayAmount(), res);
+        return new GetAllAcEventsResponseDto(getUser().getUserTotalPayAmount(), res);
     }
 
     // 지인 모든 경조사 조회
@@ -101,7 +112,7 @@ public class EventService {
     public GetAllAcEventsResponseDto getAllAcEvents() {
 
         User user = getUser();
-        Long totalPayAmount = user.getTotalPayAmount();
+        Long totalPayAmount = user.getUserTotalPayAmount();
 
         List<GetAllAcEventsResponse> allAcEvents
                 = this.acEventRepository.findAllByUser(user, Sort.by(Sort.Direction.DESC, "eventAt"))
@@ -116,4 +127,10 @@ public class EventService {
         return this.userRepository.findById(SecurityUtil.getCurrentUserId())
                 .orElseThrow(() -> new NotFoundUserException("일치하는 회원이 존재하지 않습니다."));
     }
+
+    private MyEvent getMyEvent(Long id) {
+        return this.myEventRepository.findById(id)
+                .orElseThrow(() -> new NotFoundEventException("일치하는 경조사 정보가 존재하지 않습니다."));
+    }
+
 }
