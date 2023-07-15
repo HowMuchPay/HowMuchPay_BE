@@ -101,8 +101,8 @@ public class OauthService {
                 .oauthId(oauthId)
                 .nickname(oauthNickName)
                 .profileImage(profileImage)
-                .totalPay(0L)
-                .totalRcv(0L)
+                .totalPayAmount(0L)
+                .totalReceiveAmount(0L)
                 .build()));
     }
 

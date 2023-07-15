@@ -21,4 +21,12 @@ public class EventExceptionHandler {
         return ResponseEntity.badRequest()
                 .body(ErrorMessage.of(exception, errorStatus));
     }
+
+    @ExceptionHandler(NotFoundEventException.class)
+    public ResponseEntity<ErrorMessage> notFoundEventException(
+            NotFoundEventException exception
+    ) {
+        return ResponseEntity.badRequest()
+                .body(ErrorMessage.of(exception, errorStatus));
+    }
 }

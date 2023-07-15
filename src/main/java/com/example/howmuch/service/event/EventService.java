@@ -6,9 +6,11 @@ import com.example.howmuch.domain.entity.AcEvent;
 import com.example.howmuch.domain.entity.MyEvent;
 import com.example.howmuch.domain.entity.User;
 import com.example.howmuch.domain.repository.AcEventRepository;
+import com.example.howmuch.domain.repository.MyEventDetailRepository;
 import com.example.howmuch.domain.repository.MyEventRepository;
 import com.example.howmuch.domain.repository.UserRepository;
 import com.example.howmuch.dto.event.*;
+import com.example.howmuch.exception.event.NotFoundEventException;
 import com.example.howmuch.exception.user.NotFoundUserException;
 import com.example.howmuch.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +28,9 @@ public class EventService {
     private final UserRepository userRepository;
     private final MyEventRepository myEventRepository;
     private final AcEventRepository acEventRepository;
+    private final MyEventDetailRepository myEventDetailRepository;
 
+    // 나의 경조사 등록
     @Transactional
     public Long createMyEvent(CreateMyEventRequestDto request) {
 
@@ -34,11 +38,12 @@ public class EventService {
         return this.myEventRepository.save(request.toEntity(getUser())).getId();
     }
 
+    // 나의 모든 경조사 조회
     @Transactional(readOnly = true)
     public GetAllMyEventsResponseDto getAllMyEvents() {
 
         User user = getUser();
-        Long totalReceiveAmount = user.getTotalRcv();
+        Long totalReceiveAmount = user.getTotalReceiveAmount();
 
         List<GetAllMyEventsResponse> allMyEvents =
                 this.myEventRepository.findAllByUser(user, Sort.by(Sort.Direction.DESC, "eventAt"))
@@ -49,7 +54,29 @@ public class EventService {
         return new GetAllMyEventsResponseDto(totalReceiveAmount, allMyEvents);
     }
 
+    // 나의 경조사 지인으로부터 받은 금액 등록
+    @Transactional
+    public Long createMyEventDetail(Long id, CreateMyEventDetailRequestDto request) {
 
+        MyEvent myEvent = this.myEventRepository.findById(id)
+                .orElseThrow(() -> new NotFoundEventException("일치하는 경조사 정보가 존재하지 않습니다."));
+
+        getUser().addTotalReceiveAmount(request.getReceiveAmount());
+
+        return this.myEventDetailRepository.save(request.toEntity(myEvent)).getId();
+    }
+
+
+    /*********/
+
+    // 지인 경조사 등록
+    @Transactional
+    public Long createAcEvent(CreateAcEventRequestDto request) {
+        log.info(SecurityUtil.getCurrentUserId().toString());
+        return this.acEventRepository.save(request.toEntity(getUser())).getId();
+    }
+
+    // 지인 경조사 필터링 조회
     @Transactional(readOnly = true)
     public GetAllAcEventsResponseDto getAllAcEventsByFilter(String acTypeList, String eventCategoryList) {
         List<String> acTypes = List.of(acTypeList.split(","));
@@ -66,22 +93,15 @@ public class EventService {
                 .map(AcEvent::of)
                 .toList();
 
-        return new GetAllAcEventsResponseDto(getUser().getTotalPay(), res);
+        return new GetAllAcEventsResponseDto(getUser().getTotalPayAmount(), res);
     }
 
-    /*********/
-
-    @Transactional
-    public Long createAcEvent(CreateAcEventRequestDto request) {
-        log.info(SecurityUtil.getCurrentUserId().toString());
-        return this.acEventRepository.save(request.toEntity(getUser())).getId();
-    }
-
+    // 지인 모든 경조사 조회
     @Transactional(readOnly = true)
     public GetAllAcEventsResponseDto getAllAcEvents() {
 
         User user = getUser();
-        Long totalPayAmount = user.getTotalPay();
+        Long totalPayAmount = user.getTotalPayAmount();
 
         List<GetAllAcEventsResponse> allAcEvents
                 = this.acEventRepository.findAllByUser(user, Sort.by(Sort.Direction.DESC, "eventAt"))
