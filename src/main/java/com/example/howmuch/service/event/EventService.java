@@ -77,6 +77,16 @@ public class EventService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<GetAllMyEventDetailResponseDto> getAllMyEventDetailsByName(Long id, String name) {
+
+        getMyEvent(id);
+        return this.myEventDetailRepository.findAllByAcquaintanceNicknameContainingIgnoreCase(name)
+                .stream()
+                .map(MyEventDetail::from)
+                .toList();
+    }
+
 
     /*********/
 
@@ -132,5 +142,4 @@ public class EventService {
         return this.myEventRepository.findById(id)
                 .orElseThrow(() -> new NotFoundEventException("일치하는 경조사 정보가 존재하지 않습니다."));
     }
-
 }
