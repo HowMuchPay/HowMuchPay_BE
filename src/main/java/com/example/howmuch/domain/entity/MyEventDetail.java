@@ -1,6 +1,7 @@
 package com.example.howmuch.domain.entity;
 
 import com.example.howmuch.domain.BaseTimeEntity;
+import com.example.howmuch.dto.event.GetAllMyEventDetailResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,9 +25,19 @@ public class MyEventDetail extends BaseTimeEntity {
     private Long id;
 
     @Column(name = "ac_name", nullable = false)
-    private String acquaintanceName;
+    private String acquaintanceNickname;
+
+    @Column(name = "rcv_amnt", nullable = false)
+    private Long receiveAmount;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "my_event_id")
     private MyEvent myEvent;
+
+    public GetAllMyEventDetailResponseDto from() {
+        return GetAllMyEventDetailResponseDto.builder()
+                .acquaintanceNickname(acquaintanceNickname)
+                .receiveAmount(receiveAmount)
+                .build();
+    }
 }

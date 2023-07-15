@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Slf4j
 @RequestMapping("/event")
@@ -34,6 +35,15 @@ public class EventController {
                 this.eventService.createMyEvent(request), HttpStatus.CREATED);
     }
 
+    // 나의 경조사 세부사항 조회
+    @GetMapping("/my/{id}/details")
+    public ResponseEntity<List<GetAllMyEventDetailResponseDto>> getAllMyEventDetails(
+            @PathVariable Long id
+    ) {
+        return new ResponseEntity<>(
+                this.eventService.getAllMyEventDetails(id), HttpStatus.OK);
+    }
+
     // 나의 경조사 세부사항 등록
     @PostMapping("/my/{id}/details")
     public ResponseEntity<?> createMyEventDetail(
@@ -41,7 +51,7 @@ public class EventController {
             @Valid @RequestBody CreateMyEventDetailRequestDto request
     ) {
         return new ResponseEntity<>(
-                this.eventService.createMyEventDetail(id, request), HttpStatus.OK);
+                this.eventService.createMyEventDetail(id, request), HttpStatus.CREATED);
     }
 
     /********/

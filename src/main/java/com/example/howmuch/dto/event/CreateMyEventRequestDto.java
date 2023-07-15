@@ -24,7 +24,7 @@ public class CreateMyEventRequestDto {
     public MyEvent toEntity(User user) {
         return MyEvent.builder()
                 .eventAt(eventAt)
-                .receiveAmount(0L)
+                .totalReceiveAmount(0L)
                 .eventCategory(EventCategory.fromValue(eventCategory))
                 .user(user)
                 .build();

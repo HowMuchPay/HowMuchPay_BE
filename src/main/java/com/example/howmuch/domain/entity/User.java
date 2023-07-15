@@ -32,10 +32,10 @@ public class User extends BaseTimeEntity {
     private String profileImage;
 
     @Column(name = "usr_total_pay")
-    private long totalPayAmount;
+    private long userTotalPayAmount;
 
     @Column(name = "usr_total_rcv")
-    private long totalReceiveAmount;
+    private long userTotalReceiveAmount;
 
     // User와의 매핑 설정
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "user")
@@ -43,11 +43,11 @@ public class User extends BaseTimeEntity {
 
 
     public void addTotalPayAmount(long payAmount) {
-        this.totalPayAmount += payAmount;
+        this.userTotalPayAmount += payAmount;
     }
 
     public void addTotalReceiveAmount(long receiveAmount) {
-        this.totalReceiveAmount += receiveAmount;
+        this.userTotalReceiveAmount += receiveAmount;
     }
 }
 
