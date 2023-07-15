@@ -27,7 +27,7 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring()
                 .antMatchers(HttpMethod.GET, "/login/callback/**")
-                .antMatchers(HttpMethod.POST, "/users/reissue")
+                .antMatchers(HttpMethod.POST, "/user/reissue")
                 .antMatchers("/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs");
     }
 
@@ -48,7 +48,7 @@ public class SecurityConfig {
                 .headers().frameOptions().disable()
                 .and()
                 .authorizeRequests()
-                .antMatchers("/login/callback/**", "/users/reissue").permitAll()
+                .antMatchers("/login/callback/**", "/user/reissue").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling()
