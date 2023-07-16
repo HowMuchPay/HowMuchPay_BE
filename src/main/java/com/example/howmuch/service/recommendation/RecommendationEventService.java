@@ -2,10 +2,9 @@ package com.example.howmuch.service.recommendation;
 
 import com.example.howmuch.domain.entity.RecommendationEvent;
 import com.example.howmuch.domain.repository.RecommendationEventRepository;
-import com.example.howmuch.dto.recommednation.RecommendationEventRequestDto;
+import com.example.howmuch.dto.recommednation.CreateRecommendationEventRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +19,7 @@ public class RecommendationEventService {
 
     //승현 : 추후 지인 경조사를 등록하는 과정에서 호출해도 좋을것 같다는 생각이 듭니다.
     @Transactional
-    public Long createRecommendationEvent(RecommendationEventRequestDto requestDto) {
+    public Long createRecommendationEvent(CreateRecommendationEventRequestDto requestDto) {
         int intimacyLevel = calculateIntimacyLevel(requestDto.getIntimacyAnswers());
 
         RecommendationEvent recommendationEvent = RecommendationEvent.builder()

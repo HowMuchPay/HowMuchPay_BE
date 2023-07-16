@@ -1,8 +1,7 @@
 package com.example.howmuch.controller;
 
 
-import com.example.howmuch.domain.entity.RecommendationEvent;
-import com.example.howmuch.dto.recommednation.RecommendationEventRequestDto;
+import com.example.howmuch.dto.recommednation.CreateRecommendationEventRequestDto;
 import com.example.howmuch.service.recommendation.RecommendationEventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,7 +21,7 @@ public class RecommendationEventController {
 
     @PostMapping
     public ResponseEntity<Long> createRecommendationEvent(
-            @Valid @RequestBody RecommendationEventRequestDto request
+            @Valid @RequestBody CreateRecommendationEventRequestDto request
     ) {
         return new ResponseEntity<>(recommendationEventService.createRecommendationEvent(request), HttpStatus.CREATED);
     }
