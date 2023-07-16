@@ -22,7 +22,7 @@ public class FcmNotificationService {
     private final UserRepository userRepository;
 
     // 1 대 1 으로
-    @Transactional
+    @Transactional(readOnly = true)
     public String sendNotificationByToken(FcmNotificationRequestDto requestDto) {
         Optional<User> optionalUser
                 = userRepository.findByOauthId(requestDto.getTargetUserid()); // 상대방 user
