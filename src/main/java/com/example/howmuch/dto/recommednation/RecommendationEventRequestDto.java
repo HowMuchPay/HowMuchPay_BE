@@ -6,6 +6,7 @@ import com.example.howmuch.domain.entity.MyEvent;
 import com.example.howmuch.domain.entity.User;
 import lombok.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Getter
@@ -15,9 +16,14 @@ import java.util.List;
 @Builder
 
 public class RecommendationEventRequestDto {
+
+    @NotNull
     private EventCategory eventCategory;
+    @NotNull
     private AcType acquaintanceType;
+    @NotNull
     private long payAmount;
+    @NotNull
     private List<Boolean> intimacyAnswers;
 
 }
