@@ -2,6 +2,7 @@ package com.example.howmuch.controller;
 
 
 import com.example.howmuch.dto.fcm.FcmNotificationRequestDto;
+import com.example.howmuch.dto.fcm.FcmNotificationRequestListDto;
 import com.example.howmuch.service.fcm.FcmNotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,5 +22,10 @@ public class FcmNotificationController {
     @PostMapping("/send")
     public String sendNotificationByToken(@RequestBody FcmNotificationRequestDto requestDto) {
         return fcmNotificationService.sendNotificationByToken(requestDto);
+    }
+
+    @PostMapping("/sends")
+    public String sendNotificationToGroupByToken(@RequestBody FcmNotificationRequestListDto requestListDto) {
+        return fcmNotificationService.sendNotificationToGroup(requestListDto);
     }
 }
