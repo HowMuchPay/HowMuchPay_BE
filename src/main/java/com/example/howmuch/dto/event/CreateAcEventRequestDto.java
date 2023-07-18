@@ -28,7 +28,7 @@ public class CreateAcEventRequestDto {
     @Max(4)
     private Integer eventCategory;
 
-    private Long payAmount;
+    private long payAmount;
 
     @NotNull
     private LocalDate eventAt;
