@@ -19,7 +19,7 @@ public class EventController {
 
     private final EventService eventService;
 
-    // 나의 경조사 조회
+    // 나의 경조사 전체 조회
     @GetMapping("/my")
     public ResponseEntity<GetAllMyEventsResponseDto> getAllMyEvents() {
         return new ResponseEntity<>(
@@ -67,7 +67,7 @@ public class EventController {
     /********/
 
 
-    // 지인 경조사 조회
+    // 지인 경조사 전체 조회
     @GetMapping("/acquaintance")
     public ResponseEntity<GetAllAcEventsResponseDto> getAllAcEvents() {
         return new ResponseEntity<>(
@@ -86,7 +86,7 @@ public class EventController {
     }
 
 
-    // 지인 경조사 생성
+    // 지인 경조사 등록
     @PostMapping("/acquaintance")
     public ResponseEntity<Long> createAcEvent(
             @Valid @RequestBody CreateAcEventRequestDto request
