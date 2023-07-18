@@ -14,5 +14,5 @@ public interface AcEventRepository extends JpaRepository<AcEvent, Long> {
 
     List<AcEvent> findAllByAcquaintanceType(AcType type);
 
-    List<AcEvent> findAllByAcquaintanceTypeAndEventCategory(AcType acType, EventCategory category);
+    List<AcEvent> findAllByAcquaintanceTypeAndEventCategoryOrderByEventAtDesc(AcType acType, EventCategory category);
 }

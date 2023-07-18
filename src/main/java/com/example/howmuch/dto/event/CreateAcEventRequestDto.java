@@ -20,10 +20,12 @@ public class CreateAcEventRequestDto {
     @Size(max = 255)
     private String acName;
 
+    @NotNull
     @Min(0)
     @Max(4)
     private Integer acType;
 
+    @NotNull
     @Min(0)
     @Max(4)
     private Integer eventCategory;
