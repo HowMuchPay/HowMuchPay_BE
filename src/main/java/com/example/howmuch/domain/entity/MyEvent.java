@@ -1,6 +1,7 @@
 package com.example.howmuch.domain.entity;
 
 import com.example.howmuch.contant.EventCategory;
+import com.example.howmuch.contant.MyType;
 import com.example.howmuch.domain.BaseTimeEntity;
 import com.example.howmuch.dto.event.GetAllMyEventsResponse;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,10 @@ public class MyEvent extends BaseTimeEntity {
 
     @Column(name = "total_rcv_amnt")
     private long totalReceiveAmount;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "my_type", nullable = false)
+    private MyType myType;
 
     @Column(name = "event_category", nullable = false)
     @Enumerated(EnumType.STRING)
