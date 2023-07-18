@@ -21,14 +21,14 @@ public class CreateAcEventRequestDto {
     private String acName;
 
     @Min(0)
-    @Max(3)
+    @Max(4)
     private Integer acType;
 
     @Min(0)
-    @Max(3)
+    @Max(4)
     private Integer eventCategory;
 
-    private Long payAmount;
+    private long payAmount;
 
     @NotNull
     private LocalDate eventAt;
