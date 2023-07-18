@@ -9,10 +9,15 @@ import java.util.Objects;
 @Getter
 public enum EventCategory {
 
+    /**
+     * 0번: 결혼, 1번: 상, 2번: 생일, 3번: 돌잔치, 4: 기타
+     */
+
     WEDDING(0, "결혼식"),
     FUNERAL(1, "장례식"),
-    FIRST_BIRTHDAY(2, "돌잔치"),
-    ETC(3, "기타");
+    BIRTHDAY(2, "생일"),
+    FIRST_BIRTHDAY(3, "돌잔치"),
+    ETC(4, "기타");
 
     private final Integer value;
     private final String categoryName;
