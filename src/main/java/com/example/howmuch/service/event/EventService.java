@@ -67,6 +67,7 @@ public class EventService {
         return this.myEventDetailRepository.save(request.toEntity(myEvent)).getId();
     }
 
+    // 나의 경조사 지인으로부터 받은 금액 전체 조회
     @Transactional(readOnly = true)
     public List<GetAllMyEventDetailResponseDto> getAllMyEventDetails(Long id) {
 
@@ -77,6 +78,7 @@ public class EventService {
                 .toList();
     }
 
+    // 나의 경조사 지인으로부터 받은 금액 이름 조회
     @Transactional(readOnly = true)
     public List<GetAllMyEventDetailResponseDto> getAllMyEventDetailsByName(Long id, String name) {
 
