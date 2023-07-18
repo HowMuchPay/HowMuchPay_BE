@@ -2,6 +2,7 @@ package com.example.howmuch.service.event;
 
 import com.example.howmuch.contant.AcType;
 import com.example.howmuch.contant.EventCategory;
+import com.example.howmuch.contant.MyType;
 import com.example.howmuch.domain.entity.AcEvent;
 import com.example.howmuch.domain.entity.MyEvent;
 import com.example.howmuch.domain.entity.MyEventDetail;
@@ -55,6 +56,27 @@ public class EventService {
         return new GetAllMyEventsResponseDto(totalReceiveAmount, allMyEvents);
     }
 
+    // 나의 경조사 필터링 조회
+    @Transactional(readOnly = true)
+    public GetAllMyEventsResponseDto getAllMyEventsByFilter(String myTypes, String eventCategories) {
+
+        List<String> myTypeList = List.of(myTypes.split(","));
+        List<String> eventCategoryList = List.of(eventCategories.split(","));
+
+        List<MyEvent> result = myTypeList.stream()
+                .map(myTypeString -> MyType.fromValue(Integer.parseInt(myTypeString.trim())))
+                .flatMap(myType -> eventCategoryList.stream()
+                        .map(eventCategoryString -> EventCategory.fromValue(Integer.parseInt(eventCategoryString.trim())))
+                        .flatMap(eventCategory -> this.myEventRepository.findAllByMyTypeAndEventCategoryOrderByEventAtDesc(myType, eventCategory).stream()))
+                .toList();
+
+        List<GetAllMyEventsResponse> res = result.stream()
+                .map(MyEvent::of)
+                .toList();
+
+        return new GetAllMyEventsResponseDto(getUser().getUserTotalPayAmount(), res);
+    }
+
     // 나의 경조사 지인으로부터 받은 금액 등록
     @Transactional
     public Long createMyEventDetail(Long id, CreateMyEventDetailRequestDto request) {
@@ -101,15 +123,16 @@ public class EventService {
 
     // 지인 경조사 필터링 조회
     @Transactional(readOnly = true)
-    public GetAllAcEventsResponseDto getAllAcEventsByFilter(String acTypeList, String eventCategoryList) {
-        List<String> acTypes = List.of(acTypeList.split(","));
-        List<String> eventCategories = List.of(eventCategoryList.split(","));
+    public GetAllAcEventsResponseDto getAllAcEventsByFilter(String acTypes, String eventCategories) {
 
-        List<AcEvent> result = acTypes.stream()
+        List<String> acTypeList = List.of(acTypes.split(","));
+        List<String> eventCategoryList = List.of(eventCategories.split(","));
+
+        List<AcEvent> result = acTypeList.stream()
                 .map(acTypeString -> AcType.fromValue(Integer.parseInt(acTypeString.trim())))
-                .flatMap(acType -> eventCategories.stream()
+                .flatMap(acType -> eventCategoryList.stream()
                         .map(eventCategoryString -> EventCategory.fromValue(Integer.parseInt(eventCategoryString.trim())))
-                        .flatMap(eventCategory -> this.acEventRepository.findAllByAcquaintanceTypeAndEventCategory(acType, eventCategory).stream()))
+                        .flatMap(eventCategory -> this.acEventRepository.findAllByAcquaintanceTypeAndEventCategoryOrderByEventAtDesc(acType, eventCategory).stream()))
                 .toList();
 
         List<GetAllAcEventsResponse> res = result.stream()

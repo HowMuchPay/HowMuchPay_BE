@@ -35,6 +35,16 @@ public class EventController {
                 this.eventService.createMyEvent(request), HttpStatus.CREATED);
     }
 
+    // 나의 경조사 필터링 조회
+    @GetMapping("/my/filter")
+    public ResponseEntity<GetAllMyEventsResponseDto> getAllMyEventsByFilter(
+            @RequestParam String myTypes,
+            @RequestParam String eventCategories
+    ) {
+        return new ResponseEntity<>(
+                this.eventService.getAllMyEventsByFilter(myTypes, eventCategories), HttpStatus.OK);
+    }
+
     // 나의 경조사 세부사항 조회
     @GetMapping("/my/{id}/details")
     public ResponseEntity<List<GetAllMyEventDetailResponseDto>> getAllMyEventDetails(

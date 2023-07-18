@@ -6,6 +6,8 @@ import com.example.howmuch.domain.entity.MyEvent;
 import com.example.howmuch.domain.entity.User;
 import lombok.*;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
@@ -20,9 +22,13 @@ public class CreateMyEventRequestDto {
     private LocalDate eventAt;
 
     @NotNull
+    @Min(0)
+    @Max(3)
     private Integer myType;
 
     @NotNull
+    @Min(0)
+    @Max(4)
     private Integer eventCategory;
 
     public MyEvent toEntity(User user) {
