@@ -16,7 +16,7 @@ import java.util.List;
 public class CreateRecommendationEventRequestDto {
 
     @NotNull
-    private EventCategory eventCategory;
+    private Integer eventCategory;
     @NotNull
     private AcType acquaintanceType;
     @NotNull

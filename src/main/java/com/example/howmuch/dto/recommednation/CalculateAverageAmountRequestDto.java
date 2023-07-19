@@ -15,7 +15,7 @@ import java.util.List;
 public class CalculateAverageAmountRequestDto {
 
     @NotNull
-    private EventCategory eventCategory;
+    private Integer eventCategory;
 
     @NotNull
     private AcType acquaintanceType;
