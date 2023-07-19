@@ -37,4 +37,12 @@ public class RecommendationEvent extends BaseTimeEntity {
 
     @Column(name = "intimacy_level", nullable = false)
     private int intimacyLevel;
+
+    @Column(name = "age_group", nullable = false)
+    private String ageGroup;
+
+    //연소득 : 100만원 단위
+    @Column(name = "annual_income", nullable = false)
+    private int annualIncome;
+
 }
