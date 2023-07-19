@@ -23,5 +23,9 @@ public class CreateRecommendationEventRequestDto {
     private long payAmount;
     @NotNull
     private List<Boolean> intimacyAnswers;
+    @NotNull
+    private String ageGroup;
+    @NotNull
+    private int annualIncome;
 
 }

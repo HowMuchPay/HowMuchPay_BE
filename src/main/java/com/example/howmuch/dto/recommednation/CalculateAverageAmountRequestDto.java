@@ -22,4 +22,11 @@ public class CalculateAverageAmountRequestDto {
 
     @NotNull
     private List<Boolean> intimacyAnswers;
+
+    @NotNull
+    private String ageGroup;
+
+    @NotNull
+    private int annualIncome;
+
 }
