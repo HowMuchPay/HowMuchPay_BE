@@ -4,6 +4,8 @@ import com.example.howmuch.contant.AcType;
 import com.example.howmuch.contant.EventCategory;
 import lombok.*;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -23,10 +25,8 @@ public class CalculateAverageAmountRequestDto {
     @NotNull
     private List<Boolean> intimacyAnswers;
 
-    @NotNull
-    private String ageGroup;
-
-    @NotNull
+    @Min(1)
+    @Max(10)
+    private int ageGroup;
     private int annualIncome;
-
 }
