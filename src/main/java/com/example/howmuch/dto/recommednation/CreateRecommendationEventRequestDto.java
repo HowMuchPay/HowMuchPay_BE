@@ -18,7 +18,7 @@ public class CreateRecommendationEventRequestDto {
     @NotNull
     private Integer eventCategory;
     @NotNull
-    private AcType acquaintanceType;
+    private Integer acquaintanceType;
     @NotNull
     private long payAmount;
     @NotNull

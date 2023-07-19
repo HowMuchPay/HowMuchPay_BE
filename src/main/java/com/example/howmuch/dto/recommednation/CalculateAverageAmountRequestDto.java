@@ -18,7 +18,7 @@ public class CalculateAverageAmountRequestDto {
     private Integer eventCategory;
 
     @NotNull
-    private AcType acquaintanceType;
+    private Integer acquaintanceType;
 
     @NotNull
     private List<Boolean> intimacyAnswers;
