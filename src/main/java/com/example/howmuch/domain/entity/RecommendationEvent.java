@@ -42,7 +42,7 @@ public class RecommendationEvent extends BaseTimeEntity {
     @Column(name = "age_group", nullable = false)
     private int ageGroup;
 
-    //연소득 : 100만원 단위
+    //연소득 : 1000만원 단위
     @Column(name = "annual_income")
     private int annualIncome;
 
