@@ -1,8 +1,7 @@
 package com.example.howmuch.controller;
 
 
-import com.example.howmuch.contant.AcType;
-import com.example.howmuch.contant.EventCategory;
+
 import com.example.howmuch.dto.recommednation.CalculateAverageAmountRequestDto;
 import com.example.howmuch.dto.recommednation.CreateRecommendationEventRequestDto;
 import com.example.howmuch.service.recommendation.RecommendationEventService;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -24,30 +22,33 @@ public class RecommendationEventController {
     private final RecommendationEventService recommendationEventService;
 
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<Long> createRecommendationEvent(
             @Valid @RequestBody CreateRecommendationEventRequestDto request
     ) {
         return new ResponseEntity<>(recommendationEventService.createRecommendationEvent(request), HttpStatus.CREATED);
     }
 
-    @GetMapping("/recommendation")
+    @GetMapping("/get")
     public ResponseEntity<Integer> getRecommendation(
-            @Valid @RequestParam EventCategory eventCategory,
-            @Valid @RequestParam AcType acquaintanceType,
-            @Valid @RequestParam List<Boolean> intimacyAnswers) {
-        CalculateAverageAmountRequestDto requestDto = CalculateAverageAmountRequestDto.builder()
-                .eventCategory(eventCategory)
-                .acquaintanceType(acquaintanceType)
-                .intimacyAnswers(intimacyAnswers)
-                .build();
+            CalculateAverageAmountRequestDto requestDto) {
 
-        int result = recommendationEventService.CalculateRecommendationEvent(requestDto);
+        if (requestDto.getAnnualIncome() == 0) {
+            int result = recommendationEventService.CalculateRecommendationEvent(requestDto);
 
-        if (result == 0) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(result);
+            if (result == 0) {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(result);
+            } else {
+                return ResponseEntity.ok(result);
+            }
         } else {
-            return ResponseEntity.ok(result);
+            int result = recommendationEventService.CalculateRecommendationEventByIncome(requestDto);
+
+            if (result == 0) {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(result);
+            } else {
+                return ResponseEntity.ok(result);
+            }
         }
     }
 }
