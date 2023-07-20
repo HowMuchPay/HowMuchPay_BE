@@ -17,9 +17,11 @@ import java.util.List;
 
 public class CreateRecommendationEventRequestDto {
 
-    @NotNull
+    @Min(0)
+    @Max(3)
     private Integer eventCategory;
-    @NotNull
+    @Min(0)
+    @Max(3)
     private Integer acquaintanceType;
     @NotNull
     private long payAmount;
