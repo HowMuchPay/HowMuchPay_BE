@@ -20,7 +20,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final RedisUtil redisUtil;
 
-
     /**
      * 회원 탈퇴를 한다는 건
      * 1. Redis 데이터 삭제
@@ -44,4 +43,7 @@ public class UserService {
                 .orElseThrow(() -> new NotFoundUserException("일치하는 회원 정보를 찾을 수 없습니다."));
     }
 
+    public Object showMain() {
+        return null;
+    }
 }
