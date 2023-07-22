@@ -1,7 +1,8 @@
 package com.example.howmuch.service.user;
 
 
-import com.example.howmuch.contant.Token;
+import com.example.howmuch.config.security.Token;
+import com.example.howmuch.constant.RoleType;
 import com.example.howmuch.domain.entity.User;
 import com.example.howmuch.domain.repository.UserRepository;
 import com.example.howmuch.dto.user.OauthTokenResponseDto;
@@ -101,6 +102,7 @@ public class OauthService {
                 .oauthId(oauthId)
                 .nickname(oauthNickName)
                 .profileImage(profileImage)
+                .roleType(RoleType.ROLE_USER)
                 .userTotalPayAmount(0L)
                 .userTotalReceiveAmount(0L)
                 .build()));

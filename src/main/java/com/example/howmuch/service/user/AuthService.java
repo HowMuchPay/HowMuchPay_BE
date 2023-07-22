@@ -1,7 +1,7 @@
 package com.example.howmuch.service.user;
 
 
-import com.example.howmuch.contant.Token;
+import com.example.howmuch.config.security.Token;
 import com.example.howmuch.domain.entity.User;
 import com.example.howmuch.dto.user.NewAccessTokenResponseDto;
 import com.example.howmuch.exception.user.InvalidTokenException;
