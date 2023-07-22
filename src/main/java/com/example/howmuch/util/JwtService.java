@@ -1,7 +1,7 @@
 package com.example.howmuch.util;
 
 
-import com.example.howmuch.contant.Token;
+import com.example.howmuch.config.security.Token;
 import com.example.howmuch.exception.user.UnauthorizedUserException;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
