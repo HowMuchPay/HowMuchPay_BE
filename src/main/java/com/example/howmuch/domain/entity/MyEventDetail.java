@@ -2,10 +2,7 @@ package com.example.howmuch.domain.entity;
 
 import com.example.howmuch.domain.BaseTimeEntity;
 import com.example.howmuch.dto.event.GetAllMyEventDetailResponseDto;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
@@ -14,7 +11,7 @@ import javax.persistence.*;
 @Getter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "my_event_details")
 public class MyEventDetail extends BaseTimeEntity {

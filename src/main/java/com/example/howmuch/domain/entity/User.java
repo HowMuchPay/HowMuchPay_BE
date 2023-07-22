@@ -1,19 +1,21 @@
 package com.example.howmuch.domain.entity;
 
 import com.example.howmuch.domain.BaseTimeEntity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Slf4j
 @Getter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Where(clause = "USR_DELETED_AT is null")
+@SQLDelete(sql = "UPDATE USERS SET USR_DELETED_AT = CURRENT_TIMESTAMP WHERE USERS.USR_ID = ?")
 @Entity
 @Table(name = "users")
 public class User extends BaseTimeEntity {
@@ -36,6 +38,9 @@ public class User extends BaseTimeEntity {
 
     @Column(name = "usr_total_rcv")
     private long userTotalReceiveAmount;
+
+    @Column(name = "usr_deleted_at")
+    private LocalDateTime deletedAt;
 
     // User와의 매핑 설정
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "user")

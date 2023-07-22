@@ -3,10 +3,7 @@ package com.example.howmuch.domain.entity;
 import com.example.howmuch.contant.AcType;
 import com.example.howmuch.contant.EventCategory;
 import com.example.howmuch.domain.BaseTimeEntity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
@@ -15,7 +12,7 @@ import javax.persistence.*;
 @Getter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "recommendation_events")
 public class RecommendationEvent extends BaseTimeEntity {

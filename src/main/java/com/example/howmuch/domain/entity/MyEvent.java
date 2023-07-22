@@ -4,10 +4,7 @@ import com.example.howmuch.contant.EventCategory;
 import com.example.howmuch.contant.MyType;
 import com.example.howmuch.domain.BaseTimeEntity;
 import com.example.howmuch.dto.event.GetAllMyEventsResponse;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
@@ -17,7 +14,7 @@ import java.time.LocalDate;
 @Getter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "my_events")
 public class MyEvent extends BaseTimeEntity {
