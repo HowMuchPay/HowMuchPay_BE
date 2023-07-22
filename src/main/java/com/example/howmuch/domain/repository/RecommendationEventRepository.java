@@ -1,7 +1,7 @@
 package com.example.howmuch.domain.repository;
 
-import com.example.howmuch.contant.AcType;
-import com.example.howmuch.contant.EventCategory;
+import com.example.howmuch.constant.AcType;
+import com.example.howmuch.constant.EventCategory;
 import com.example.howmuch.domain.entity.RecommendationEvent;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

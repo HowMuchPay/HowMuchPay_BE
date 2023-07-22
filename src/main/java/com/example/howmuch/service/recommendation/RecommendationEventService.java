@@ -1,7 +1,7 @@
 package com.example.howmuch.service.recommendation;
 
-import com.example.howmuch.contant.AcType;
-import com.example.howmuch.contant.EventCategory;
+import com.example.howmuch.constant.AcType;
+import com.example.howmuch.constant.EventCategory;
 import com.example.howmuch.domain.entity.RecommendationEvent;
 import com.example.howmuch.domain.repository.RecommendationEventRepository;
 import com.example.howmuch.dto.recommednation.CalculateAverageAmountRequestDto;

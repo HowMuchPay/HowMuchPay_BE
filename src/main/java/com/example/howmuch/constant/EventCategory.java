@@ -1,4 +1,4 @@
-package com.example.howmuch.contant;
+package com.example.howmuch.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

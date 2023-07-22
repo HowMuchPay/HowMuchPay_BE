@@ -1,8 +1,8 @@
 package com.example.howmuch.service.event;
 
-import com.example.howmuch.contant.AcType;
-import com.example.howmuch.contant.EventCategory;
-import com.example.howmuch.contant.MyType;
+import com.example.howmuch.constant.AcType;
+import com.example.howmuch.constant.EventCategory;
+import com.example.howmuch.constant.MyType;
 import com.example.howmuch.domain.entity.AcEvent;
 import com.example.howmuch.domain.entity.MyEvent;
 import com.example.howmuch.domain.entity.MyEventDetail;

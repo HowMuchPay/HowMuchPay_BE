@@ -1,7 +1,5 @@
 package com.example.howmuch.dto.recommednation;
 
-import com.example.howmuch.contant.AcType;
-import com.example.howmuch.contant.EventCategory;
 import lombok.*;
 
 import javax.validation.constraints.Max;

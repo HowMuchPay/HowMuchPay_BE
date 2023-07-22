@@ -1,5 +1,6 @@
 package com.example.howmuch.domain.entity;
 
+import com.example.howmuch.constant.RoleType;
 import com.example.howmuch.domain.BaseTimeEntity;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +42,10 @@ public class User extends BaseTimeEntity {
 
     @Column(name = "usr_deleted_at")
     private LocalDateTime deletedAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "usr_role", nullable = false)
+    private RoleType roleType;
 
     // User와의 매핑 설정
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "user")

@@ -1,5 +1,8 @@
 package com.example.howmuch.config.security;
 
+import com.example.howmuch.domain.entity.User;
+import com.example.howmuch.domain.repository.UserRepository;
+import com.example.howmuch.exception.user.NotFoundUserException;
 import com.example.howmuch.service.user.AuthService;
 import com.example.howmuch.util.JwtService;
 import io.jsonwebtoken.JwtException;
@@ -27,6 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public static String BEARER_TYPE = "Bearer";
     private final JwtService jwtService;
     private final AuthService authService;
+    private final UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -48,7 +52,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // access token 이 있고 유효하다면
             if (StringUtils.hasText(token) && this.jwtService.validateToken(token)) {
                 Long id = this.authService.findUserByToken(token);
-                UserAuthentication authentication = new UserAuthentication(id);
+                User user = this.userRepository.findById(id).orElseThrow(
+                        () -> new NotFoundUserException("일치하는 회원이 존재하지 않습니다."));
+                UserAuthentication authentication = new UserAuthentication(user);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (IllegalArgumentException | JwtException e) {
