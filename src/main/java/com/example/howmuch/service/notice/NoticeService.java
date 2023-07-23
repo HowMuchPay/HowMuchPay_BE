@@ -2,8 +2,10 @@ package com.example.howmuch.service.notice;
 
 import com.example.howmuch.domain.entity.Notice;
 import com.example.howmuch.domain.repository.NoticeRepository;
+import com.example.howmuch.dto.UpdateNoticeRequestDto;
 import com.example.howmuch.dto.notice.GetAllNoticeResponseDto;
 import com.example.howmuch.dto.notice.createNoticeRequestDto;
+import com.example.howmuch.exception.notice.NotFoundNoticeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,5 +33,12 @@ public class NoticeService {
                 .stream()
                 .map(Notice::from)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void updateNotice(Long id, UpdateNoticeRequestDto request) {
+        Notice notice = this.noticeRepository.findById(id)
+                .orElseThrow(() -> new NotFoundNoticeException("일치하는 공지사항 정보가 존재하지 않습니다."));
+        notice.updateNotice(request);
     }
 }
