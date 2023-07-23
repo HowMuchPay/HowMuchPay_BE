@@ -44,4 +44,9 @@ public class UserService {
                 .orElseThrow(() -> new NotFoundUserException("일치하는 회원 정보를 찾을 수 없습니다."));
     }
 
+    @Transactional
+    public void addUserPhoneNumber(String phone) {
+        User user = findUserFromToken();
+        user.addPhoneNumber(phone);
+    }
 }

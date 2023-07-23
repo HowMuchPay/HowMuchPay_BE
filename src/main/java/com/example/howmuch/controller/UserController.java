@@ -8,10 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -33,7 +30,6 @@ public class UserController {
         String refreshToken = AuthTransformUtil.resolveRefreshTokenFromRequest(request);
         return new ResponseEntity<>(
                 authService.accessTokenByRefreshToken(accessToken, refreshToken), HttpStatus.OK);
-
     }
 
     // logout 메소드
@@ -49,6 +45,15 @@ public class UserController {
     @DeleteMapping
     public ResponseEntity<Void> withDrawUser() {
         this.userService.deleteUser();
+        return ResponseEntity.ok().build();
+    }
+    
+    // 회원 전화번호 추가
+    @PutMapping("/phone")
+    public ResponseEntity<Void> addUserPhoneNumber(
+            @RequestParam String phone
+    ) {
+        this.userService.addUserPhoneNumber(phone);
         return ResponseEntity.ok().build();
     }
 }
