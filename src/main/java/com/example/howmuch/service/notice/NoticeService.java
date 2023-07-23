@@ -37,8 +37,18 @@ public class NoticeService {
 
     @Transactional
     public void updateNotice(Long id, UpdateNoticeRequestDto request) {
-        Notice notice = this.noticeRepository.findById(id)
-                .orElseThrow(() -> new NotFoundNoticeException("일치하는 공지사항 정보가 존재하지 않습니다."));
+        Notice notice = getNotice(id);
         notice.updateNotice(request);
+    }
+
+    @Transactional
+    public void deleteNotice(Long id) {
+        Notice notice = getNotice(id);
+        this.noticeRepository.delete(notice);
+    }
+
+    private Notice getNotice(Long id) {
+        return this.noticeRepository.findById(id)
+                .orElseThrow(() -> new NotFoundNoticeException("일치하는 공지사항 정보가 존재하지 않습니다."));
     }
 }
