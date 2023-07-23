@@ -1,6 +1,7 @@
 package com.example.howmuch.domain.entity;
 
 import com.example.howmuch.domain.BaseTimeEntity;
+import com.example.howmuch.dto.notice.GetAllNoticeResponseDto;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,4 +21,11 @@ public class Notice extends BaseTimeEntity {
 
     private String title;
     private String content;
+
+    public GetAllNoticeResponseDto from() {
+        return GetAllNoticeResponseDto.builder()
+                .title(title)
+                .content(content)
+                .build();
+    }
 }

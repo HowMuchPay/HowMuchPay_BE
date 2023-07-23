@@ -18,10 +18,10 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @RequestMapping("/admin")
 @RestController
-public class AdminController extends BaseTimeEntity {
+public class NoticeController extends BaseTimeEntity {
     private final NoticeService noticeService;
 
-    @PostMapping
+    @PostMapping("/notice")
     public ResponseEntity<Long> createNotice(
             @Valid @RequestBody createNoticeRequestDto request
     ) {

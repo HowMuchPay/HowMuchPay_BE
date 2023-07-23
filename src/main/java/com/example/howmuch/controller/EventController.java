@@ -1,7 +1,9 @@
 package com.example.howmuch.controller;
 
 import com.example.howmuch.dto.event.*;
+import com.example.howmuch.dto.notice.GetAllNoticeResponseDto;
 import com.example.howmuch.service.event.EventService;
+import com.example.howmuch.service.notice.NoticeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,7 @@ import java.util.List;
 public class EventController {
 
     private final EventService eventService;
+    private final NoticeService noticeService;
 
     // 나의 경조사 전체 조회
     @GetMapping("/my")
@@ -104,5 +107,13 @@ public class EventController {
         return new ResponseEntity<>(
                 this.eventService.createAcEvent(request), HttpStatus.CREATED);
 
+    }
+
+
+    /*********/
+    // 사용자 공지사항 조회
+    @GetMapping("/notice")
+    public ResponseEntity<List<GetAllNoticeResponseDto>> getAllNoticeResponseDto() {
+        return new ResponseEntity<>(this.noticeService.getAllNotices(), HttpStatus.OK);
     }
 }
