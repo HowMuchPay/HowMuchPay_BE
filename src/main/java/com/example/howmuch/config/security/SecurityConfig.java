@@ -50,7 +50,6 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers("/login/callback/**", "/user/reissue").permitAll()
                 .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers("/user/**").access("hasRole('ADMIN') or hasRole('USER')")
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling()
