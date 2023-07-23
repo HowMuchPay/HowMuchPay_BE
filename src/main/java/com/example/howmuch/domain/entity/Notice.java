@@ -23,10 +23,12 @@ public class Notice extends BaseTimeEntity {
     private String title;
     private String content;
 
+
     public GetAllNoticeResponseDto from() {
         return GetAllNoticeResponseDto.builder()
                 .title(title)
                 .content(content)
+                .updatedAt(getUpdatedAt().toLocalDate())
                 .build();
     }
 

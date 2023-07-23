@@ -2,6 +2,8 @@ package com.example.howmuch.dto.notice;
 
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @Builder
@@ -10,4 +12,5 @@ import lombok.*;
 public class GetAllNoticeResponseDto {
     private String title;
     private String content;
+    private LocalDate updatedAt;
 }

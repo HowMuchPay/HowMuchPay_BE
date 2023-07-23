@@ -36,7 +36,7 @@ public class AdminController extends BaseTimeEntity {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Long> deleteNotice(
+    public ResponseEntity<Void> deleteNotice(
             @PathVariable Long id
     ) {
         this.noticeService.deleteNotice(id);
