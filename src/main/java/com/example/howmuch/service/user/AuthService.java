@@ -70,13 +70,12 @@ public class AuthService {
         // 클라이언트 에서 access token 삭제해야 하나?...
     }
 
-    public Long findUserByToken(String accessToken) {
+    public User findUserByToken(String accessToken) {
         if (!accessToken.isEmpty()) {
             validationAccessToken(accessToken);
         }
         Long id = Long.parseLong(jwtService.getPayLoad(accessToken));
-        User member = userService.findById(id);
-        return member.getId();
+        return userService.findById(id);
     }
 
     private void validationAccessToken(String accessToken) {

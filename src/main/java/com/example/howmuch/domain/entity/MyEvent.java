@@ -38,6 +38,12 @@ public class MyEvent extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private EventCategory eventCategory;
 
+    @Column(name = "my_event_name")
+    private String myEventName;
+
+    @Column(name = "character_name")
+    private String myEventCharacterName;
+
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "usr_id")
     private User user;
