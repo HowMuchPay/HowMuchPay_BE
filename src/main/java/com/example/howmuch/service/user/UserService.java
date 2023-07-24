@@ -5,6 +5,7 @@ import com.example.howmuch.domain.entity.User;
 import com.example.howmuch.domain.repository.UserRepository;
 import com.example.howmuch.exception.user.NotFoundUserException;
 import com.example.howmuch.exception.user.NotMatchUserException;
+import com.example.howmuch.exception.user.PhoneNumberAlreadyExistsException;
 import com.example.howmuch.util.RedisUtil;
 import com.example.howmuch.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,13 @@ public class UserService {
     @Transactional
     public void addUserPhoneNumber(String phone) {
         User user = findUserFromToken();
+        if (isPhoneNumberExists(phone)) {
+            throw new PhoneNumberAlreadyExistsException("이미 등록된 전화번호 입니다");
+        }
         user.addPhoneNumber(phone);
+    }
+
+    private boolean isPhoneNumberExists(String phone) {
+        return userRepository.existsByPhoneNumber(phone);
     }
 }
