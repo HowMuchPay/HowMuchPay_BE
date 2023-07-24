@@ -27,18 +27,18 @@ public class FcmNotificationService {
     //그룹으로 알림 메시지 전송
     @Transactional(readOnly = true)
     public String sendNotificationToGroup(FcmNotificationRequestListDto requestDto) {
-        List<String> targetUserIds = requestDto.getTargetUserIds();
+        List<String> targetUserPhoneNumber = requestDto.getTargetUserPhoneNumber();
 
-        List<String> validUserIds = new ArrayList<>();
-        List<String> invalidUserIds = new ArrayList<>();
+        List<String> validUserPhoneNumber = new ArrayList<>();
+        List<String> invalidUserPhoneNumber = new ArrayList<>();
 
-        for (String userId : targetUserIds) {
-            Optional<User> optionalUser = userRepository.findByOauthId(userId);
+        for (String phoneNumber : targetUserPhoneNumber) {
+            Optional<User> optionalUser = userRepository.findByPhoneNumber(phoneNumber);
             if (optionalUser.isPresent()) {
                 User user = optionalUser.get();
                 String firebaseToken = user.getFirebaseToken().getToken();
                 if (firebaseToken != null) {
-                    validUserIds.add(userId);
+                    validUserPhoneNumber.add(phoneNumber);
                     Notification notification = Notification.builder()
                             .setTitle(requestDto.getTitle())
                             .setBody(requestDto.getBody())
@@ -51,26 +51,26 @@ public class FcmNotificationService {
 
                     try {
                         firebaseMessaging.send(message);
-                        log.info("알림을 성공적으로 전달하였습니다. targetUserId= {}", userId);
+                        log.info("알림을 성공적으로 전달하였습니다. targetUserId= {}", phoneNumber);
                     } catch (FirebaseMessagingException e) {
-                        log.error("알림 보내기를 실패하였습니다. targetUserId={}", userId, e);
+                        log.error("알림 보내기를 실패하였습니다. targetUserId={}", phoneNumber, e);
                     }
                 } else {
-                    invalidUserIds.add(userId);
+                    invalidUserPhoneNumber.add(phoneNumber);
                 }
             } else {
-                invalidUserIds.add(userId);
+                invalidUserPhoneNumber.add(phoneNumber);
             }
         }
 
-        if (validUserIds.isEmpty()) {
-            log.info("모든 유저가 유효하지 않습니다. targetUserIds: {}", targetUserIds);
-            return "모든 유저가 유효하지 않습니다. targetUserIds: " + targetUserIds;
+        if (validUserPhoneNumber.isEmpty()) {
+            log.info("모든 유저가 유효하지 않습니다. targetUserIds: {}", targetUserPhoneNumber);
+            return "모든 유저가 유효하지 않습니다. targetUserIds: " + targetUserPhoneNumber;
         }
 
-        log.info("알림을 성공적으로 전달하였습니다. 유효한 유저 수: {}", validUserIds.size());
-        log.info("유효하지 않은 유저 수: {}", invalidUserIds.size());
-        return "알림을 성공적으로 전달하였습니다. 유효한 유저 수: " + validUserIds.size();
+        log.info("알림을 성공적으로 전달하였습니다. 유효한 유저 수: {}", validUserPhoneNumber.size());
+        log.info("유효하지 않은 유저 수: {}", invalidUserPhoneNumber.size());
+        return "알림을 성공적으로 전달하였습니다. 유효한 유저 수: " + validUserPhoneNumber.size();
     }
 
 
@@ -78,7 +78,7 @@ public class FcmNotificationService {
     @Transactional(readOnly = true)
     public String sendNotificationByToken(FcmNotificationRequestDto requestDto) {
         Optional<User> optionalUser
-                = userRepository.findByOauthId(requestDto.getTargetUserId()); // 상대방 user
+                = userRepository.findByPhoneNumber(requestDto.getTargetUserPhoneNumber()); // 상대방 user
 
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
@@ -97,19 +97,19 @@ public class FcmNotificationService {
 
                 try {
                     firebaseMessaging.send(message);
-                    log.info("알림을 성공적으로 전달하였습니다. targetUserId= {}", requestDto.getTargetUserId());
-                    return "알림을 성공적으로 전달하였습니다. targetUserId= " + requestDto.getTargetUserId();
+                    log.info("알림을 성공적으로 전달하였습니다. targetUserId= {}", requestDto.getTargetUserPhoneNumber());
+                    return "알림을 성공적으로 전달하였습니다. targetUserId= " + requestDto.getTargetUserPhoneNumber();
                 } catch (FirebaseMessagingException e) {
-                    log.error("알림 보내기를 실패하였습니다. targetUserId={}", requestDto.getTargetUserId(), e);
-                    return "알림 보내기를 실패하였습니다. targetUserId" + requestDto.getTargetUserId();
+                    log.error("알림 보내기를 실패하였습니다. targetUserId={}", requestDto.getTargetUserPhoneNumber(), e);
+                    return "알림 보내기를 실패하였습니다. targetUserId" + requestDto.getTargetUserPhoneNumber();
                 }
             } else {
-                log.info("서버에 저장된 해당 유저의 토큰이 존재하지 않습니다. targetUserId={}", requestDto.getTargetUserId());
-                return "서버에 저장된 해당 유저의 토큰이 존재하지 않습니다." + requestDto.getTargetUserId();
+                log.info("서버에 저장된 해당 유저의 토큰이 존재하지 않습니다. targetUserId={}", requestDto.getTargetUserPhoneNumber());
+                return "서버에 저장된 해당 유저의 토큰이 존재하지 않습니다." + requestDto.getTargetUserPhoneNumber();
             }
         } else {
-            log.info("해당 유저가 존재하지 않습니다. targetUserId={}", requestDto.getTargetUserId());
-            return "해당 유저가 존재하지 않습니다." + requestDto.getTargetUserId();
+            log.info("해당 유저가 존재하지 않습니다. targetUserId={}", requestDto.getTargetUserPhoneNumber());
+            return "해당 유저가 존재하지 않습니다." + requestDto.getTargetUserPhoneNumber();
         }
     }
 }

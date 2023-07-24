@@ -54,4 +54,12 @@ public class UserExceptionHandler {
         return ResponseEntity.badRequest()
                 .body(ErrorMessage.of(exception, errorStatus));
     }
+
+    @ExceptionHandler(PhoneNumberAlreadyExistsException.class)
+    public ResponseEntity<ErrorMessage> phoneNumberAlreadyExistsException(
+            PhoneNumberAlreadyExistsException exception
+    ) {
+        return ResponseEntity.badRequest()
+                .body(ErrorMessage.of(exception, errorStatus));
+    }
 }

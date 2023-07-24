@@ -34,7 +34,7 @@ public class User extends BaseTimeEntity {
     @Column(name = "usr_profile")
     private String profileImage;
 
-    @Column(name = "usr_phone")
+    @Column(name = "usr_phone", unique = true)
     private String phoneNumber;
 
     @Column(name = "usr_total_pay")
