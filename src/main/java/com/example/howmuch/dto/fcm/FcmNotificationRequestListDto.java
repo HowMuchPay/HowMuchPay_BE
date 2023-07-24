@@ -11,8 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FcmNotificationRequestListDto {
-
-    private List<String> targetUserIds; // oauth Id (String)
+    private List<String> targetUserPhoneNumber;
     private String title;
     private String body;
 }
