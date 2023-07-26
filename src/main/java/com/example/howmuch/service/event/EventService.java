@@ -12,6 +12,7 @@ import com.example.howmuch.domain.repository.MyEventDetailRepository;
 import com.example.howmuch.domain.repository.MyEventRepository;
 import com.example.howmuch.domain.repository.UserRepository;
 import com.example.howmuch.dto.event.*;
+import com.example.howmuch.exception.event.NotFoundEventDetailException;
 import com.example.howmuch.exception.event.NotFoundEventException;
 import com.example.howmuch.exception.user.NotFoundUserException;
 import com.example.howmuch.util.SecurityUtil;
@@ -111,10 +112,21 @@ public class EventService {
                 .toList();
     }
 
+    // 나의 경조사 삭제
     @Transactional
     public void deleteMyEvent(Long id) {
         MyEvent myEvent = getMyEvent(id);
         this.myEventRepository.delete(myEvent);
+    }
+
+    // 나의 경조사 세부사항 삭제
+    @Transactional
+    public void deleteMyEventDetail(Long eventId, Long detailId) {
+        MyEvent myEvent = getMyEvent(eventId);
+        MyEventDetail myEventDetail = this.myEventDetailRepository.findById(detailId)
+                .orElseThrow(() -> new NotFoundEventDetailException("일치하는 경조사 세부사항 정보가 존재하지 않습니다."));
+
+        this.myEventDetailRepository.delete(myEventDetail);
     }
 
 
@@ -173,5 +185,4 @@ public class EventService {
         return this.myEventRepository.findById(id)
                 .orElseThrow(() -> new NotFoundEventException("일치하는 경조사 정보가 존재하지 않습니다."));
     }
-
 }

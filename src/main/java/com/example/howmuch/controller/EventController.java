@@ -77,6 +77,16 @@ public class EventController {
                 this.eventService.getAllMyEventDetailsByName(id, name), HttpStatus.OK);
     }
 
+    // 나의 경조사 세부사항 삭제
+    @DeleteMapping("/my/{eventId}/details/{detailId}")
+    public ResponseEntity<Void> deleteMyEventDetail(
+            @PathVariable Long eventId,
+            @PathVariable Long detailId
+    ) {
+        this.eventService.deleteMyEventDetail(eventId, detailId);
+        return ResponseEntity.ok().build();
+    }
+
     // 나의 경조사 삭제
     @DeleteMapping("/my/{id}")
     public ResponseEntity<Void> deleteMyEvent(

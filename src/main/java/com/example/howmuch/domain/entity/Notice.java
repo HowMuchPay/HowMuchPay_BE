@@ -1,8 +1,8 @@
 package com.example.howmuch.domain.entity;
 
 import com.example.howmuch.domain.BaseTimeEntity;
-import com.example.howmuch.dto.UpdateNoticeRequestDto;
 import com.example.howmuch.dto.notice.GetAllNoticeResponseDto;
+import com.example.howmuch.dto.notice.UpdateNoticeRequestDto;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 

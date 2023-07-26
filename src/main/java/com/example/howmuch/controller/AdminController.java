@@ -1,7 +1,7 @@
 package com.example.howmuch.controller;
 
 import com.example.howmuch.domain.BaseTimeEntity;
-import com.example.howmuch.dto.UpdateNoticeRequestDto;
+import com.example.howmuch.dto.notice.UpdateNoticeRequestDto;
 import com.example.howmuch.dto.notice.createNoticeRequestDto;
 import com.example.howmuch.service.notice.NoticeService;
 import lombok.RequiredArgsConstructor;
