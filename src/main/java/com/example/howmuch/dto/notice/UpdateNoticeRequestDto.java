@@ -1,4 +1,4 @@
-package com.example.howmuch.dto;
+package com.example.howmuch.dto.notice;
 
 import lombok.*;
 
