@@ -77,6 +77,15 @@ public class EventController {
                 this.eventService.getAllMyEventDetailsByName(id, name), HttpStatus.OK);
     }
 
+    // 나의 경조사 삭제
+    @DeleteMapping("/my/{id}")
+    public ResponseEntity<Void> deleteMyEvent(
+            @PathVariable Long id
+    ) {
+        this.eventService.deleteMyEvent(id);
+        return ResponseEntity.ok().build();
+    }
+
     /********/
 
 
