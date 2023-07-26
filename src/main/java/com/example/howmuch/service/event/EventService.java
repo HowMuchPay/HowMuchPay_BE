@@ -111,6 +111,12 @@ public class EventService {
                 .toList();
     }
 
+    @Transactional
+    public void deleteMyEvent(Long id) {
+        MyEvent myEvent = getMyEvent(id);
+        this.myEventRepository.delete(myEvent);
+    }
+
 
     /*********/
 
@@ -167,4 +173,5 @@ public class EventService {
         return this.myEventRepository.findById(id)
                 .orElseThrow(() -> new NotFoundEventException("일치하는 경조사 정보가 존재하지 않습니다."));
     }
+
 }
