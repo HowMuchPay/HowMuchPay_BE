@@ -49,8 +49,8 @@ public class CreateMyEventRequestDto {
                 .totalReceiveAmount(0L)
                 .myType(MyType.fromValue(myType))
                 .eventCategory(EventCategory.fromValue(eventCategory))
-                .myEventName(myEventName == null ? "나" : myEventName)
-                .myEventCharacterName(myEventCharacterName)
+                .myEventName(myEventName)
+                .myEventCharacterName(myEventCharacterName == null ? "나" : myEventCharacterName)
                 .user(user)
                 .build();
     }

@@ -18,4 +18,6 @@ public class GetAllMyEventsResponse {
     private Long receiveAmount;
 
     private Integer eventCategory;
+
+    private String myEventDisplayName;
 }
