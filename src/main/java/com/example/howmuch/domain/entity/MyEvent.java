@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Getter
@@ -44,16 +46,27 @@ public class MyEvent extends BaseTimeEntity {
     @Column(name = "character_name")
     private String myEventCharacterName;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usr_id")
     private User user;
 
+    @OneToMany(mappedBy = "myEvent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MyEventDetail> myEventDetails = new ArrayList<>();
+
     public GetAllMyEventsResponse of() {
+
+        String myEventDisplayName;
+        if (myEventName == null) {
+            myEventDisplayName = myEventCharacterName + "의 " + eventCategory;
+        } else {
+            myEventDisplayName = myEventCharacterName + "의 " + myEventName;
+        }
         return GetAllMyEventsResponse.builder()
                 .month(eventAt.getMonthValue())
                 .eventAt(eventAt)
                 .receiveAmount(totalReceiveAmount)
                 .eventCategory(eventCategory.getValue())
+                .myEventDisplayName(myEventDisplayName)
                 .build();
     }
 

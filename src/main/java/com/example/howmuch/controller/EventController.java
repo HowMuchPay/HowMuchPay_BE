@@ -22,7 +22,7 @@ public class EventController {
     private final EventService eventService;
     private final NoticeService noticeService;
 
-    // 나의 경조사 전체 조회
+    // 나의 모든 경조사 조회
     @GetMapping("/my")
     public ResponseEntity<GetAllMyEventsResponseDto> getAllMyEvents() {
         return new ResponseEntity<>(
