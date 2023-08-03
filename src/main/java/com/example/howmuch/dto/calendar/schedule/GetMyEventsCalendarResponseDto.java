@@ -1,4 +1,4 @@
-package com.example.howmuch.dto.calendar;
+package com.example.howmuch.dto.calendar.schedule;
 
 import com.example.howmuch.domain.entity.MyEvent;
 import lombok.*;
@@ -20,7 +20,7 @@ public class GetMyEventsCalendarResponseDto {
 
         String myEventDisplayName;
         if (myEvent.getMyEventName() == null) {
-            myEventDisplayName = myEvent.getMyEventCharacterName() + "의 " + myEvent.getEventCategory();
+            myEventDisplayName = myEvent.getMyEventCharacterName() + "의 " + myEvent.getEventCategory().getCategoryName();
         } else {
             myEventDisplayName = myEvent.getMyEventCharacterName() + "의 " + myEvent.getMyEventName();
         }

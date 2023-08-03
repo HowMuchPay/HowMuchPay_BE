@@ -130,7 +130,7 @@ public class EventController {
 
 
     /*********/
-    // 사용자 공지사항 조회
+    // 사용자 공지 사항 조회
     @GetMapping("/notice")
     public ResponseEntity<List<GetAllNoticeResponseDto>> getAllNoticeResponseDto() {
         return new ResponseEntity<>(this.noticeService.getAllNotices(), HttpStatus.OK);
