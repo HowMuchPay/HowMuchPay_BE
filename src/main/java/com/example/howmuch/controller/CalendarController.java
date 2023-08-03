@@ -1,6 +1,7 @@
 package com.example.howmuch.controller;
 
-import com.example.howmuch.dto.calendar.GetCalendarResponseDto;
+import com.example.howmuch.dto.calendar.schedule.GetCalendarResponseDto;
+import com.example.howmuch.dto.calendar.statistics.GetStatisticsResponseDto;
 import com.example.howmuch.service.calendar.CalendarService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,5 +28,12 @@ public class CalendarController {
             @RequestParam(value = "time") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate time
     ) {
         return new ResponseEntity<>(this.calendarService.getSchedule(time), HttpStatus.OK);
+    }
+
+    @GetMapping("/statistics")
+    public ResponseEntity<GetStatisticsResponseDto> getStatistics(
+            @RequestParam(value = "time") @DateTimeFormat(pattern = "yyyy-MM") String yearAndMonth
+    ) {
+        return new ResponseEntity<>(this.calendarService.getStatistics(yearAndMonth), HttpStatus.OK);
     }
 }

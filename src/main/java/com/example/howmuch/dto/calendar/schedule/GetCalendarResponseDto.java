@@ -1,4 +1,4 @@
-package com.example.howmuch.dto.calendar;
+package com.example.howmuch.dto.calendar.schedule;
 
 import lombok.*;
 

@@ -54,20 +54,13 @@ public class AuthService {
                 .build();
     }
 
-    private void validationRefreshToken(String refreshToken) {
-        if (!this.jwtService.validateToken(refreshToken)) {
-            {
-                throw new UnauthorizedUserException("인가되지 않은 Refresh Token 입니다.");
-            }
-        }
-    }
 
     public void logout(HttpServletRequest request) {
         // access token 가져오기
         String accessToken = AuthTransformUtil.resolveAccessTokenFromRequest(request);
         String id = this.jwtService.getPayLoad(accessToken);
         this.redisUtil.deleteData(id);
-        // 클라이언트 에서 access token 삭제해야 하나?...
+        // 클라이언트 에서 access token 삭제해야 함
     }
 
     public User findUserByToken(String accessToken) {
@@ -76,6 +69,14 @@ public class AuthService {
         }
         Long id = Long.parseLong(jwtService.getPayLoad(accessToken));
         return userService.findById(id);
+    }
+
+    private void validationRefreshToken(String refreshToken) {
+        if (!this.jwtService.validateToken(refreshToken)) {
+            {
+                throw new UnauthorizedUserException("인가되지 않은 Refresh Token 입니다.");
+            }
+        }
     }
 
     private void validationAccessToken(String accessToken) {

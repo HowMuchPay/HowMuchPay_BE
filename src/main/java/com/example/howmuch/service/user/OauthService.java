@@ -45,7 +45,7 @@ public class OauthService {
     /* providerName = kakao, code = Authorization code */
 
     /**
-     * Spring security 에서는 어플리케이션 실행 시 ynl 에 기재되어 있는 Oauth 설정 값들을 Oauth2ClientProperties 빈으로 등록
+     * Spring security 에서는 어플리케이션 실행 시 yml 에 기재되어 있는 Oauth 설정 값들을 Oauth2ClientProperties 빈으로 등록
      * Oauth2ClientProperties 는 내부 값들을 통해 각 OAuth2 서버 별로
      * ClientRegistration 이라는 객체를 만들어 InMemoryClientRegistrationRepository 에 저장
      */
