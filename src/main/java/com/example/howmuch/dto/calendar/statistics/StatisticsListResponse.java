@@ -2,26 +2,23 @@ package com.example.howmuch.dto.calendar.statistics;
 
 import com.example.howmuch.domain.entity.AcEvent;
 import com.example.howmuch.domain.entity.MyEvent;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 
 import java.util.List;
 
 @Getter
-@Setter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
-
 public class StatisticsListResponse {
     private String eventAt;
     private List<MyEventStatisticList> myEvents;
     private List<AcEventStatisticList> acEvents;
 
     @Getter
-    @Setter
     @Builder
     @AllArgsConstructor
-    @NoArgsConstructor
     public static class MyEventStatisticList {
         private String eventName;
         private long totalReceiveAmount;
@@ -41,10 +38,8 @@ public class StatisticsListResponse {
     }
 
     @Getter
-    @Setter
     @Builder
     @AllArgsConstructor
-    @NoArgsConstructor
     public static class AcEventStatisticList {
         private String eventName;
         private long payAmount;

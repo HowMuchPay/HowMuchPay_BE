@@ -32,12 +32,6 @@ public class CalendarService {
     private final MyEventRepository myEventRepository;
     private final AcEventRepository acEventRepository;
 
-    private static String getFormattedDate(LocalDate date) {
-        String month = date.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
-        int day = date.getDayOfMonth();
-        String dayOfWeek = date.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault());
-        return month + " " + day + "일 " + dayOfWeek;
-    }
 
     @Transactional(readOnly = true)
     public GetCalendarResponseDto getSchedule(LocalDate time) {
@@ -109,5 +103,14 @@ public class CalendarService {
                                 .collect(Collectors.toList())
                 )
                 .build();
+
+
+    }
+
+    private String getFormattedDate(LocalDate date) {
+        String month = date.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
+        int day = date.getDayOfMonth();
+        String dayOfWeek = date.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault());
+        return month + " " + day + "일 " + dayOfWeek;
     }
 }
