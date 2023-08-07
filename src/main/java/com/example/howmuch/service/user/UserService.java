@@ -35,11 +35,13 @@ public class UserService {
         this.userRepository.delete(user);
     }
 
+    @Transactional(readOnly = true)
     public User findUserFromToken() {
         return this.userRepository.findById(SecurityUtil.getCurrentUserId())
                 .orElseThrow(() -> new NotMatchUserException("토큰 정보와 일치하는 회원 정보가 없습니다."));
     }
 
+    @Transactional(readOnly = true)
     public User findById(Long id) {
         return this.userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundUserException("일치하는 회원 정보를 찾을 수 없습니다."));

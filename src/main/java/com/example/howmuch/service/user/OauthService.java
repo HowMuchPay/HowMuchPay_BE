@@ -136,7 +136,7 @@ public class OauthService {
 
         return UserOauthLoginResponseDto.builder()
                 .tokenType(BEARER_TYPE)
-                .accessToken(accessToken.getTokenValue())
+                .accessToken(BEARER_TYPE + " " + accessToken.getTokenValue())
                 .expiredTime(expireTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))) // 만료 Local Date Time
                 .refreshToken(refreshToken.getTokenValue())
                 .build();

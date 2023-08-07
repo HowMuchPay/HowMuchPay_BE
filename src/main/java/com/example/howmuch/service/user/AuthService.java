@@ -1,9 +1,8 @@
 package com.example.howmuch.service.user;
 
 
-import com.example.howmuch.config.security.Token;
 import com.example.howmuch.domain.entity.User;
-import com.example.howmuch.dto.user.NewAccessTokenResponseDto;
+import com.example.howmuch.dto.user.UserOauthLoginResponseDto;
 import com.example.howmuch.exception.user.InvalidTokenException;
 import com.example.howmuch.exception.user.UnauthorizedUserException;
 import com.example.howmuch.util.AuthTransformUtil;
@@ -14,8 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 /*
     access token 재 발급시 access token + refresh token 같이 보내는 이유
    -> refresh token 은 redis 에 저장되어 있는데 회원의 id가 필요 이 정보는 access token 에 저장되어 있음
@@ -28,30 +25,25 @@ public class AuthService {
 
     private final JwtService jwtService;
     private final UserService userService;
+    private final OauthService oauthService;
     private final RedisUtil redisUtil;
 
     /* jwt 만료시 access token 재발급 해주는 메소드 with 만료된 access token + refresh token */
-    public NewAccessTokenResponseDto accessTokenByRefreshToken(String accessToken,
-                                                               String refreshToken) {
+    public UserOauthLoginResponseDto accessTokenByRefreshToken(String accessToken, String refreshToken) {
+        // 1. refresh token 유효성
         validationRefreshToken(refreshToken);
-        // key : 회원의 id(String) + value : refresh token
-        String id = this.jwtService.getPayLoad(accessToken);
-        // key 로 redis 에서 refresh token 조회
-        String storedRefreshToken = this.redisUtil.getData(id);
+        // 2. 요청 refresh token 과 redis refresh token 동일성 검증
+        isRefreshTokenMatch(accessToken, refreshToken);
 
-        if (!storedRefreshToken.equals(refreshToken)) {
-            throw new InvalidTokenException("유효하지 않은 엑세스 토큰입니다.");
-        }
+        // 3. 기존 refresh token 을 redis 삭제 + 새로운 refresh token & access token 재발급
+        User user = this.userService.findUserFromToken();
+        this.deleteRefreshTokenFromRedis(String.valueOf(user.getId()));
+        return this.oauthService.oauthLoginResult(user);
+    }
 
-        Token newAccessToken = this.jwtService.createAccessToken(id);
 
-        LocalDateTime expiredTime
-                = LocalDateTime.now().plusSeconds(newAccessToken.getExpiredTime() / 1000);
-
-        return NewAccessTokenResponseDto.builder()
-                .accessToken(newAccessToken.getTokenValue())
-                .expiredTime(expiredTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
-                .build();
+    private void deleteRefreshTokenFromRedis(String oauthId) {
+        this.redisUtil.deleteData(oauthId);
     }
 
 
@@ -82,6 +74,16 @@ public class AuthService {
     private void validationAccessToken(String accessToken) {
         if (!jwtService.validateToken(accessToken)) {
             throw new UnauthorizedUserException("인가되지 않은 access 토큰입니다.");
+        }
+    }
+
+    private void isRefreshTokenMatch(String accessToken, String refreshToken) {
+        String id = this.jwtService.getPayLoad(accessToken);
+        // key 로 redis 에서 refresh token 조회
+        String storedRefreshToken = this.redisUtil.getData(id);
+
+        if (!storedRefreshToken.equals(refreshToken)) {
+            throw new InvalidTokenException("유효하지 않은 리프레시 토큰입니다.");
         }
     }
 }
