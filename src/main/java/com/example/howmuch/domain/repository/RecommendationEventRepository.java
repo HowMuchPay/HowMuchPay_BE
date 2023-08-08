@@ -14,11 +14,7 @@ public interface RecommendationEventRepository extends JpaRepository<Recommendat
     @Query(value = "SELECT AVG(pay_amnt) FROM recommendation_events WHERE event_category = ?1 AND ac_type = ?2 AND " +
             "intimacy_level BETWEEN ?3 AND ?4 AND ageGroup = ?5 AND annualIncome BETWEEN ?6 AND  ?7 ORDER BY  " +
             "created_at DESC LIMIT 20", nativeQuery = true)
-    OptionalDouble findByEventAndIntimacyAndIncome(EventCategory eventCategory, AcType acquaintanceType, int minIntimacyLevel, int maxIntimacyLevel, int AgeGroup, int minAnnualIncome, int maxAnnualIncome);
-
-    @Query(value = "SELECT AVG(pay_amnt) FROM recommendation_events WHERE event_category = ?1 AND ac_type = ?2 AND " +
-            "intimacy_level BETWEEN ?3 AND ?4 AND ageGroup = ?5 ORDER BY  " +
-            "created_at DESC LIMIT 20", nativeQuery = true)
-    OptionalDouble findByEventAndIntimacy(EventCategory eventCategory, AcType acquaintanceType, int minIntimacyLevel, int maxIntimacyLevel, int AgeGroup);
-
+    OptionalDouble findByEventAndIntimacyAndIncome(EventCategory eventCategory, AcType acquaintanceType,
+                                                   int minIntimacyLevel, int maxIntimacyLevel, int AgeGroup,
+                                                   int minAnnualIncome, int maxAnnualIncome);
 }
