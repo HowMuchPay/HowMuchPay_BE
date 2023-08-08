@@ -22,6 +22,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Slf4j
@@ -132,7 +134,7 @@ public class EventService {
 
     /*********/
 
-    // 지인 경조사 등록
+    // 지인 경조사 등록 (등록 과정에서 추천 컨트롤러 호출)
     @Transactional
     public Long createAcEvent(CreateAcEventRequestDto request) {
         log.info(SecurityUtil.getCurrentUserId().toString());
@@ -176,6 +178,26 @@ public class EventService {
         return new GetAllAcEventsResponseDto(totalPayAmount, allAcEvents);
     }
 
+    // 지인 단일 경조사 조회 (디데이)
+    @Transactional(readOnly = true)
+    public GetAcEventsResponseDto getAcEventsWithDay(Long acId) {
+        AcEvent acEvent = getAcEvent(acId); // 특정 지인의 경조사 정보를 가져옴
+        //dDay 로직
+        LocalDate currentDate = LocalDate.now();
+        long daysUntilEvent = ChronoUnit.DAYS.between(currentDate, acEvent.getEventAt());
+
+        return GetAcEventsResponseDto.from(acEvent, (int) daysUntilEvent);
+
+
+    }
+    // 지인 경조사 삭제
+    @Transactional
+    public void deleteAcEvent(Long id) {
+        AcEvent acEvent = getAcEvent(id);
+        this.acEventRepository.delete(acEvent);
+    }
+
+
     private User getUser() {
         return this.userRepository.findById(SecurityUtil.getCurrentUserId())
                 .orElseThrow(() -> new NotFoundUserException("일치하는 회원이 존재하지 않습니다."));
@@ -184,5 +206,10 @@ public class EventService {
     private MyEvent getMyEvent(Long id) {
         return this.myEventRepository.findById(id)
                 .orElseThrow(() -> new NotFoundEventException("일치하는 경조사 정보가 존재하지 않습니다."));
+    }
+
+    private AcEvent getAcEvent(Long id) {
+        return this.acEventRepository.findById(id)
+                .orElseThrow(() -> new NotFoundEventException("일치하는 경조사 정보가 존재하지 않습니다,"));
     }
 }

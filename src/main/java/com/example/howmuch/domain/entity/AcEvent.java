@@ -52,6 +52,5 @@ public class AcEvent extends BaseTimeEntity {
                 .payAmount(payAmount)
                 .eventCategory(eventCategory.getValue())
                 .build();
-
     }
 }
