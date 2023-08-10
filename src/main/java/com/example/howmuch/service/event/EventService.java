@@ -12,6 +12,7 @@ import com.example.howmuch.domain.repository.MyEventDetailRepository;
 import com.example.howmuch.domain.repository.MyEventRepository;
 import com.example.howmuch.domain.repository.UserRepository;
 import com.example.howmuch.dto.event.*;
+import com.example.howmuch.dto.event.GetAllMyEventDetailResponseDto.GetAllMyEventDetails;
 import com.example.howmuch.exception.event.NotFoundEventDetailException;
 import com.example.howmuch.exception.event.NotFoundEventException;
 import com.example.howmuch.exception.user.NotFoundUserException;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -51,7 +53,7 @@ public class EventService {
         List<GetAllMyEventsResponse> allMyEvents =
                 this.myEventRepository.findAllByUser(user, Sort.by(Sort.Direction.DESC, "eventAt"))
                         .stream()
-                        .map(MyEvent::of)
+                        .map(MyEvent::toGetAllByEventsResponse)
                         .toList();
 
         return new GetAllMyEventsResponseDto(totalReceiveAmount, allMyEvents);
@@ -72,7 +74,7 @@ public class EventService {
                 .toList();
 
         List<GetAllMyEventsResponse> res = result.stream()
-                .map(MyEvent::of)
+                .map(MyEvent::toGetAllByEventsResponse)
                 .toList();
 
         return new GetAllMyEventsResponseDto(getUser().getUserTotalPayAmount(), res);
@@ -92,23 +94,40 @@ public class EventService {
 
     // 나의 경조사 지인으로부터 받은 금액 전체 조회
     @Transactional(readOnly = true)
-    public List<GetAllMyEventDetailResponseDto> getAllMyEventDetails(Long id) {
-
+    public GetAllMyEventDetailResponseDto getAllMyEventDetails(Long id, String sort) {
         MyEvent myEvent = getMyEvent(id);
-        return this.myEventDetailRepository.findAllByMyEvent(myEvent, Sort.by(Sort.Direction.DESC, "createdAt"))
-                .stream()
-                .map(MyEventDetail::from)
-                .toList();
+
+        // MyEventInfo
+        GetMyEventInfoResponseDto myEventInfo
+                = myEvent.toGetMyEventInfoResponsedto(calculateRemainedDay(myEvent));
+
+        if (sort.equals("asc")) { // 오름 차순
+            return GetAllMyEventDetailResponseDto.builder()
+                    .myEventInfo(myEventInfo)
+                    .myDetails(this.myEventDetailRepository.findAllByMyEventOrderByReceiveAmountAsc(myEvent)
+                            .stream()
+                            .map(MyEventDetail::toGetAllMyEventDetails)
+                            .collect(Collectors.toList()))
+                    .build();
+        } else { // 내림 차순
+            return GetAllMyEventDetailResponseDto.builder()
+                    .myEventInfo(myEventInfo)
+                    .myDetails(this.myEventDetailRepository.findAllByMyEventOrderByReceiveAmountDesc(myEvent)
+                            .stream()
+                            .map(MyEventDetail::toGetAllMyEventDetails)
+                            .collect(Collectors.toList()))
+                    .build();
+        }
     }
 
     // 나의 경조사 지인으로부터 받은 금액 이름 조회
     @Transactional(readOnly = true)
-    public List<GetAllMyEventDetailResponseDto> getAllMyEventDetailsByName(Long id, String name) {
+    public List<GetAllMyEventDetails> getAllMyEventDetailsByName(Long id, String name) {
 
         getMyEvent(id);
         return this.myEventDetailRepository.findAllByAcquaintanceNicknameContainingIgnoreCase(name)
                 .stream()
-                .map(MyEventDetail::from)
+                .map(MyEventDetail::toGetAllMyEventDetails)
                 .toList();
     }
 
@@ -210,5 +229,11 @@ public class EventService {
     private AcEvent getAcEvent(Long id) {
         return this.acEventRepository.findById(id)
                 .orElseThrow(() -> new NotFoundEventException("일치하는 경조사 정보가 존재하지 않습니다,"));
+    }
+
+
+    // 현재 로부터 남은 일자 계산 하는 메소드
+    private long calculateRemainedDay(MyEvent myEvent) {
+        return ChronoUnit.DAYS.between(myEvent.getEventAt(), LocalDate.now());
     }
 }
