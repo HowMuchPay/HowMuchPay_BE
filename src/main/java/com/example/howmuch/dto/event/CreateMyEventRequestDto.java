@@ -42,6 +42,8 @@ public class CreateMyEventRequestDto {
     @Size(max = 255)
     private String myEventCharacterName; // myType 이 '나' 가 아닌 경우
 
+    private String eventTime; // 경조사 시각
+
 
     public MyEvent toEntity(User user) {
         return MyEvent.builder()
@@ -51,6 +53,7 @@ public class CreateMyEventRequestDto {
                 .eventCategory(EventCategory.fromValue(eventCategory))
                 .myEventName(myEventName)
                 .myEventCharacterName(myEventCharacterName == null ? "나" : myEventCharacterName)
+                .eventTime(eventTime)
                 .user(user)
                 .build();
     }

@@ -38,8 +38,6 @@ public class EventService {
     // 나의 경조사 등록
     @Transactional
     public Long createMyEvent(CreateMyEventRequestDto request) {
-
-        log.info(SecurityUtil.getCurrentUserId().toString());
         return this.myEventRepository.save(request.toEntity(getUser())).getId();
     }
 
@@ -190,6 +188,7 @@ public class EventService {
 
 
     }
+
     // 지인 경조사 삭제
     @Transactional
     public void deleteAcEvent(Long id) {
