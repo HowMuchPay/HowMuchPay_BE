@@ -4,6 +4,7 @@ import com.example.howmuch.constant.EventCategory;
 import com.example.howmuch.constant.MyType;
 import com.example.howmuch.domain.BaseTimeEntity;
 import com.example.howmuch.dto.event.GetAllMyEventsResponse;
+import com.example.howmuch.dto.event.GetMyEventInfoResponseDto;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,10 +42,10 @@ public class MyEvent extends BaseTimeEntity {
     private EventCategory eventCategory;
 
     @Column(name = "my_event_name")
-    private String myEventName;
+    private String myEventName; // 경조사 타입이 기타인 경우 not null
 
     @Column(name = "character_name")
-    private String myEventCharacterName;
+    private String myEventCharacterName; // 경조사 대상이 기타 혹은 가족인 경우 not null
 
     @Column(name = "event_time")
     private String eventTime;
@@ -56,7 +57,7 @@ public class MyEvent extends BaseTimeEntity {
     @OneToMany(mappedBy = "myEvent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MyEventDetail> myEventDetails = new ArrayList<>();
 
-    public GetAllMyEventsResponse of() {
+    public GetAllMyEventsResponse toGetAllByEventsResponse() {
 
         String myEventDisplayName;
         if (myEventName == null) {
@@ -70,6 +71,26 @@ public class MyEvent extends BaseTimeEntity {
                 .receiveAmount(totalReceiveAmount)
                 .eventCategory(eventCategory.getValue())
                 .myEventDisplayName(myEventDisplayName)
+                .build();
+    }
+
+    /**
+     * 나의 경조사 세부사항 조회시 상단에 나타나는 나의 경조사 정보 DTO
+     **/
+    public GetMyEventInfoResponseDto toGetMyEventInfoResponsedto(long remainedDay) {
+        String myEventDisplayName;
+
+        if (myEventName == null) {
+            myEventDisplayName = myEventCharacterName + "의 " + eventCategory;
+        } else {
+            myEventDisplayName = myEventCharacterName + "의 " + myEventName;
+        }
+
+        return GetMyEventInfoResponseDto.builder()
+                .myEventDisplayName(myEventDisplayName)
+                .eventAt(eventAt)
+                .eventTime(eventTime)
+                .remainedDay(remainedDay)
                 .build();
     }
 

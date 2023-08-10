@@ -1,6 +1,7 @@
 package com.example.howmuch.controller;
 
 import com.example.howmuch.dto.event.*;
+import com.example.howmuch.dto.event.GetAllMyEventDetailResponseDto.GetAllMyEventDetails;
 import com.example.howmuch.dto.notice.GetAllNoticeResponseDto;
 import com.example.howmuch.service.event.EventService;
 import com.example.howmuch.service.notice.NoticeService;
@@ -50,11 +51,12 @@ public class EventController {
 
     // 나의 경조사 세부사항 조회
     @GetMapping("/my/{id}/details")
-    public ResponseEntity<List<GetAllMyEventDetailResponseDto>> getAllMyEventDetails(
-            @PathVariable Long id
+    public ResponseEntity<GetAllMyEventDetailResponseDto> getAllMyEventDetails(
+            @PathVariable Long id,
+            @RequestParam String sort
     ) {
         return new ResponseEntity<>(
-                this.eventService.getAllMyEventDetails(id), HttpStatus.OK);
+                this.eventService.getAllMyEventDetails(id, sort), HttpStatus.OK);
     }
 
     // 나의 경조사 세부사항 등록
@@ -69,7 +71,7 @@ public class EventController {
 
     // 나의 경조사 세부사항 이름 조회
     @GetMapping("/my/{id}/details/filter")
-    public ResponseEntity<List<GetAllMyEventDetailResponseDto>> getAllMyEventDetailsByName(
+    public ResponseEntity<List<GetAllMyEventDetails>> getAllMyEventDetailsByName(
             @PathVariable Long id,
             @RequestParam String name
     ) {
