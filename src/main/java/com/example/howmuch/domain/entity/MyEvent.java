@@ -46,6 +46,9 @@ public class MyEvent extends BaseTimeEntity {
     @Column(name = "character_name")
     private String myEventCharacterName;
 
+    @Column(name = "event_time")
+    private String eventTime;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usr_id")
     private User user;
