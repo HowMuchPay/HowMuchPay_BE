@@ -49,6 +49,16 @@ public class EventController {
                 this.eventService.getAllMyEventsByFilter(myTypes, eventCategories), HttpStatus.OK);
     }
 
+    // 나의 경조사 삭제
+    @DeleteMapping("/my/{id}")
+    public ResponseEntity<Void> deleteMyEvent(
+            @PathVariable Long id
+    ) {
+        this.eventService.deleteMyEvent(id);
+        return ResponseEntity.ok().build();
+    }
+
+
     // 나의 경조사 세부사항 조회
     @GetMapping("/my/{id}/details")
     public ResponseEntity<GetAllMyEventDetailResponseDto> getAllMyEventDetails(
@@ -86,15 +96,6 @@ public class EventController {
             @PathVariable Long detailId
     ) {
         this.eventService.deleteMyEventDetail(eventId, detailId);
-        return ResponseEntity.ok().build();
-    }
-
-    // 나의 경조사 삭제
-    @DeleteMapping("/my/{id}")
-    public ResponseEntity<Void> deleteMyEvent(
-            @PathVariable Long id
-    ) {
-        this.eventService.deleteMyEvent(id);
         return ResponseEntity.ok().build();
     }
 
