@@ -2,13 +2,17 @@ package com.example.howmuch.service.recommendation;
 
 import com.example.howmuch.constant.AcType;
 import com.example.howmuch.constant.EventCategory;
+import com.example.howmuch.domain.entity.RecommendationEvent;
 import com.example.howmuch.domain.repository.RecommendationEventRepository;
 import com.example.howmuch.dto.recommednation.CalculateAverageAmountRequestDto;
+import com.example.howmuch.dto.recommednation.CreateAverageAmountRequestDto;
+import com.example.howmuch.dto.recommednation.RelationInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalDouble;
 
@@ -18,6 +22,29 @@ import java.util.OptionalDouble;
 public class RecommendationEventService {
 
     private final RecommendationEventRepository recommendationEventRepository;
+
+    @Transactional
+    public void createRecommendationEvent(CreateAverageAmountRequestDto requestDto) {
+        Integer ageGroup = requestDto.getAgeGroup();
+        Integer annualIncome = requestDto.getAnnualIncome();
+        List<RelationInfo> relationInfoList = requestDto.getRelationInfoList();
+
+        List<RecommendationEvent> recommendationEvents = new ArrayList<>();
+
+        for (RelationInfo relationInfo : relationInfoList) {
+            RecommendationEvent recommendationEvent = RecommendationEvent.builder()
+                    .ageGroup(ageGroup)
+                    .annualIncome(annualIncome)
+                    .acquaintanceType(AcType.fromValue(relationInfo.getAcquaintanceType()))
+                    .eventCategory(EventCategory.fromValue(relationInfo.getEventCategory()))
+                    .intimacyLevel(relationInfo.getIntimacyLevel())
+                    .payAmount(relationInfo.getPayAmount())
+                    .build();
+
+            recommendationEvents.add(recommendationEvent);
+        }
+        recommendationEventRepository.saveAll(recommendationEvents);
+    }
 
 
     @Transactional(readOnly = true)
