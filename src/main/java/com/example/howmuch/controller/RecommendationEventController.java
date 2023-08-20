@@ -2,6 +2,7 @@ package com.example.howmuch.controller;
 
 
 import com.example.howmuch.dto.recommednation.CalculateAverageAmountRequestDto;
+import com.example.howmuch.dto.recommednation.CreateAverageAmountRequestDto;
 import com.example.howmuch.service.recommendation.RecommendationEventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -9,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 
 @Controller
 @RequiredArgsConstructor
@@ -18,6 +18,14 @@ import javax.validation.Valid;
 public class RecommendationEventController {
 
     private final RecommendationEventService recommendationEventService;
+
+    @PostMapping("/save")
+    public ResponseEntity<Void> SaveRecommendation(
+            CreateAverageAmountRequestDto requestDto) {
+        recommendationEventService.createRecommendationEvent(requestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
 
     @GetMapping("/get")
     public ResponseEntity<Integer> getRecommendation(
@@ -28,6 +36,7 @@ public class RecommendationEventController {
         }
         return ResponseEntity.ok(result);
     }
+
 }
 
 
