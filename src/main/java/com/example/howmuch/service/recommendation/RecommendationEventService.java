@@ -6,6 +6,7 @@ import com.example.howmuch.domain.entity.RecommendationEvent;
 import com.example.howmuch.domain.repository.RecommendationEventRepository;
 import com.example.howmuch.dto.recommednation.CalculateAverageAmountRequestDto;
 import com.example.howmuch.dto.recommednation.CreateAverageAmountRequestDto;
+import com.example.howmuch.dto.recommednation.GetAverageAmountRequestDto;
 import com.example.howmuch.dto.recommednation.RelationInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +45,23 @@ public class RecommendationEventService {
             recommendationEvents.add(recommendationEvent);
         }
         recommendationEventRepository.saveAll(recommendationEvents);
+    }
+
+    @Transactional(readOnly = true)
+    public int getRecommendationEvent(GetAverageAmountRequestDto requestDto) {
+        Integer intimacyLevel = requestDto.getIntimacyLevel();
+
+        int minIntimacyLevel = Math.max(0, intimacyLevel - 1); // 친밀도가 0 미만인 경우 0으로 설정
+        int maxIntimacyLevel = Math.min(5, intimacyLevel + 1); // 친밀도가 5 이상인 경우 5로 설정
+
+        return recommendationEventRepository.getPayAmountByRecommendationEvent(
+                EventCategory.fromValue(requestDto.getEventCategory()),
+                AcType.fromValue(requestDto.getAcquaintanceType()),
+                minIntimacyLevel,
+                maxIntimacyLevel,
+                requestDto.getAgeGroup(),
+                requestDto.getAnnualIncome()
+        ).orElse(0);
     }
 
 
