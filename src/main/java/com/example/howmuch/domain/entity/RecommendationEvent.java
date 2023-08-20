@@ -29,8 +29,8 @@ public class RecommendationEvent extends BaseTimeEntity {
     @Column(name = "ac_type", nullable = false)
     private AcType acquaintanceType;
 
-    @Column(name = "pay_amnt", nullable = false)
-    private long payAmount;
+    @Column(name = "pay_amount", nullable = false)
+    private int payAmount;
 
     @Column(name = "intimacy_level", nullable = false)
     private int intimacyLevel;
