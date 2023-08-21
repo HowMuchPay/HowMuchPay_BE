@@ -54,6 +54,7 @@ public class MyEvent extends BaseTimeEntity {
     @JoinColumn(name = "usr_id")
     private User user;
 
+    @Builder.Default
     @OneToMany(mappedBy = "myEvent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MyEventDetail> myEventDetails = new ArrayList<>();
 

@@ -48,9 +48,11 @@ public class User extends BaseTimeEntity {
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "user")
     private FirebaseToken firebaseToken;
 
+    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MyEvent> myEvents = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AcEvent> acEvents = new ArrayList<>();
 
