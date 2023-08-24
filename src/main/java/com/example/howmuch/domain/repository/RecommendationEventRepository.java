@@ -6,8 +6,8 @@ import com.example.howmuch.domain.entity.RecommendationEvent;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Optional;
 import java.util.OptionalDouble;
-import java.util.OptionalInt;
 
 public interface RecommendationEventRepository extends JpaRepository<RecommendationEvent, Long> {
 
@@ -19,10 +19,11 @@ public interface RecommendationEventRepository extends JpaRepository<Recommendat
                                                    int minIntimacyLevel, int maxIntimacyLevel, int AgeGroup,
                                                    int minAnnualIncome, int maxAnnualIncome);
 
-    @Query(value = "SELECT AVG(pay_amnt) FROM recommendation_events WHERE event_category = ?1 AND ac_type = ?2 AND " +
-            "intimacy_level BETWEEN ?3 AND ?4 AND ageGroup = ?5 AND annualIncome ?6 ORDER BY  " +
-            "created_at DESC", nativeQuery = true)
-    OptionalInt getPayAmountByRecommendationEvent(EventCategory eventCategory, AcType acquaintanceType,
-                                                  int minIntimacyLevel, int maxIntimacyLevel,
-                                                  int AgeGroup, int AnnualIncome);
+//    @Query(value = "SELECT AVG(pay_amount) FROM recommendation_events WHERE event_category = ?1 AND ac_type = ?2 AND " +
+//            "intimacy_level BETWEEN ?3 AND ?4 AND ageGroup = ?5 AND annualIncome = ?6 ", nativeQuery = true)
+    @Query(value = "SELECT AVG(r.payAmount) FROM RecommendationEvent r WHERE r.eventCategory = ?1 AND r.acquaintanceType = ?2 AND " +
+            "r.intimacyLevel BETWEEN ?3 AND ?4 AND r.ageGroup = ?5 AND r.annualIncome = ?6 ")
+    Optional<Double> getPayAmountByRecommendationEvent(EventCategory eventCategory, AcType acquaintanceType,
+                                               int minIntimacyLevel, int maxIntimacyLevel,
+                                               int AgeGroup, int AnnualIncome);
 }
