@@ -48,8 +48,9 @@ public class RecommendationEventService {
     }
 
     @Transactional(readOnly = true)
-    public int getRecommendationEvent(GetAverageAmountRequestDto requestDto) {
+    public double getRecommendationEvent(GetAverageAmountRequestDto requestDto) {
         Integer intimacyLevel = requestDto.getIntimacyLevel();
+
 
         int minIntimacyLevel = Math.max(0, intimacyLevel - 1); // 친밀도가 0 미만인 경우 0으로 설정
         int maxIntimacyLevel = Math.min(5, intimacyLevel + 1); // 친밀도가 5 이상인 경우 5로 설정
@@ -61,7 +62,7 @@ public class RecommendationEventService {
                 maxIntimacyLevel,
                 requestDto.getAgeGroup(),
                 requestDto.getAnnualIncome()
-        ).orElse(0);
+        ).orElse(0d);
     }
 
 

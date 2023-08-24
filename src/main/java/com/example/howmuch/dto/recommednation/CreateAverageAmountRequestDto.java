@@ -4,6 +4,7 @@ import lombok.*;
 
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -21,5 +22,5 @@ public class CreateAverageAmountRequestDto {
     private Integer annualIncome;
 
     @NotNull
-    private List<RelationInfo> relationInfoList;
+    private List<RelationInfo> relationInfoList = new ArrayList<>();
 }
