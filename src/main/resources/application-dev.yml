@@ -19,3 +19,8 @@ spring:
 fcm:
   path: ${FCM_PATH}
 
+logging:
+  level:
+    org.hibernate.sql: debug
+    org.hibernate.type: trace
+
