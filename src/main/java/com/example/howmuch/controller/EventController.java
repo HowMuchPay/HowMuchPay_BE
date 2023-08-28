@@ -109,6 +109,14 @@ public class EventController {
                 this.eventService.getAllAcEvents(), HttpStatus.OK
         );
     }
+    //지인 경조사 삭제
+    @DeleteMapping("/acquaintance/{id}")
+    public ResponseEntity<Void> deleteAcEvent(
+            @PathVariable Long id
+    ) {
+        this.eventService.deleteAcEvent(id);
+        return ResponseEntity.ok().build();
+    }
 
     // 지인 경조사 필터링 조회
     @GetMapping("/acquaintance/filter")
