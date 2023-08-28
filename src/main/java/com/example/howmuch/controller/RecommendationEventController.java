@@ -1,8 +1,8 @@
 package com.example.howmuch.controller;
 
 
-import com.example.howmuch.dto.recommednation.CalculateAverageAmountRequestDto;
 import com.example.howmuch.dto.recommednation.CreateAverageAmountRequestDto;
+import com.example.howmuch.dto.recommednation.GetAppAverageAmountRequestDto;
 import com.example.howmuch.dto.recommednation.GetAverageAmountRequestDto;
 import com.example.howmuch.service.recommendation.RecommendationEventService;
 import lombok.RequiredArgsConstructor;
@@ -43,14 +43,11 @@ public class RecommendationEventController {
     }
 
 
-    @GetMapping("/app-Get")
+    @GetMapping("/app-get")
     public ResponseEntity<Integer> getRecommendationApp(
-            CalculateAverageAmountRequestDto requestDto) {
-        int result = recommendationEventService.calculateRecommendationEventByIncome(requestDto);
-        if (result == 0) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(result);
-        }
-        return ResponseEntity.ok(result);
+            @RequestBody @Valid GetAppAverageAmountRequestDto requestDto) {
+        double recommendationAmount = recommendationEventService.getRecommendationApp(requestDto);
+        return ResponseEntity.ok((int) recommendationAmount);
     }
 }
 
