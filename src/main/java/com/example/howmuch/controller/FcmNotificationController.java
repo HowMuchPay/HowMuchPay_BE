@@ -3,6 +3,7 @@ package com.example.howmuch.controller;
 
 import com.example.howmuch.dto.fcm.FcmNotificationRequestDto;
 import com.example.howmuch.dto.fcm.FcmNotificationRequestListDto;
+import com.example.howmuch.dto.fcm.FcmNotificationResponseDto;
 import com.example.howmuch.service.fcm.FcmNotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +20,12 @@ public class FcmNotificationController {
     private final FcmNotificationService fcmNotificationService;
 
     @PostMapping("/send")
-    public ResponseEntity<String> sendNotificationByToken(@RequestBody FcmNotificationRequestDto requestDto) {
+    public ResponseEntity<FcmNotificationResponseDto> sendNotificationByToken(@RequestBody FcmNotificationRequestDto requestDto) {
         return ResponseEntity.ok(fcmNotificationService.sendNotificationByToken(requestDto));
     }
 
     @PostMapping("/sends")
-    public ResponseEntity<String> sendNotificationToGroupByToken(@RequestBody FcmNotificationRequestListDto requestListDto) {
+    public ResponseEntity<FcmNotificationResponseDto> sendNotificationToGroupByToken(@RequestBody FcmNotificationRequestListDto requestListDto) {
         return ResponseEntity.ok(fcmNotificationService.sendNotificationToGroup(requestListDto));
     }
 }
