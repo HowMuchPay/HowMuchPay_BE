@@ -4,7 +4,7 @@ import com.example.howmuch.constant.AcType;
 import com.example.howmuch.constant.EventCategory;
 import com.example.howmuch.domain.entity.RecommendationEvent;
 import com.example.howmuch.domain.repository.RecommendationEventRepository;
-import com.example.howmuch.dto.recommednation.CalculateAverageAmountRequestDto;
+import com.example.howmuch.dto.recommednation.GetAppAverageAmountRequestDto;
 import com.example.howmuch.dto.recommednation.CreateAverageAmountRequestDto;
 import com.example.howmuch.dto.recommednation.GetAverageAmountRequestDto;
 import com.example.howmuch.dto.recommednation.RelationInfo;
@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.OptionalDouble;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -52,8 +51,8 @@ public class RecommendationEventService {
         Integer intimacyLevel = requestDto.getIntimacyLevel();
 
 
-        int minIntimacyLevel = Math.max(0, intimacyLevel - 1); // 친밀도가 0 미만인 경우 0으로 설정
-        int maxIntimacyLevel = Math.min(5, intimacyLevel + 1); // 친밀도가 5 이상인 경우 5로 설정
+        int minIntimacyLevel = calculateMinIntimacyLevel(intimacyLevel);
+        int maxIntimacyLevel = calculateMaxIntimacyLevel(intimacyLevel);
 
         return recommendationEventRepository.getPayAmountByRecommendationEvent(
                 EventCategory.fromValue(requestDto.getEventCategory()),
@@ -67,34 +66,20 @@ public class RecommendationEventService {
 
 
     @Transactional(readOnly = true)
-    public int calculateRecommendationEventByIncome(CalculateAverageAmountRequestDto requestDto) {
+    public double getRecommendationApp(GetAppAverageAmountRequestDto requestDto) {
         int intimacyLevel = calculateIntimacyLevel(requestDto.getIntimacyAnswers());
 
-        int minIntimacyLevel = Math.max(0, intimacyLevel - 1); // 친밀도가 0 미만인 경우 0으로 설정
-        int maxIntimacyLevel = Math.min(5, intimacyLevel + 1); // 친밀도가 5 이상인 경우 5로 설정
+        int minIntimacyLevel = calculateMinIntimacyLevel(intimacyLevel);
+        int maxIntimacyLevel = calculateMaxIntimacyLevel(intimacyLevel);
 
-        int minAnnualIncome = Math.max(0, intimacyLevel - 1);
-        int maxAnnualIncome = Math.min(5, intimacyLevel + 1);
-
-
-        OptionalDouble AverageAmount = recommendationEventRepository.findByEventAndIntimacyAndIncome(
+        return recommendationEventRepository.getPayAmountByRecommendationEvent(
                 EventCategory.fromValue(requestDto.getEventCategory()),
                 AcType.fromValue(requestDto.getAcquaintanceType()),
                 minIntimacyLevel,
                 maxIntimacyLevel,
                 requestDto.getAgeGroup(),
-                minAnnualIncome,
-                maxAnnualIncome
-        );
-        if (AverageAmount.isPresent()) {
-            double averageAmount = AverageAmount.getAsDouble();
-            int amountInTenThousand = (int) (averageAmount / 10000) * 10000;
-
-            return amountInTenThousand;
-        } else {
-            return 0;
-            //데이터가 부족한 경우 0을 리턴
-        }
+                requestDto.getAnnualIncome()
+        ).orElse(0d);
     }
 
 
@@ -109,6 +94,14 @@ public class RecommendationEventService {
         }
 
         return intimacyLevel;
+    }
+
+    private int calculateMinIntimacyLevel(int intimacyLevel) {
+        return Math.max(0, intimacyLevel - 1);
+    }
+
+    private int calculateMaxIntimacyLevel(int intimacyLevel) {
+        return Math.min(5, intimacyLevel + 1);
     }
 }
 
