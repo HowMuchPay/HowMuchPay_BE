@@ -109,6 +109,7 @@ public class EventController {
                 this.eventService.getAllAcEvents(), HttpStatus.OK
         );
     }
+
     //지인 경조사 삭제
     @DeleteMapping("/acquaintance/{id}")
     public ResponseEntity<Void> deleteAcEvent(
@@ -117,6 +118,16 @@ public class EventController {
         this.eventService.deleteAcEvent(id);
         return ResponseEntity.ok().build();
     }
+
+    //지인 경조사 단일(디데이) 조회
+    @GetMapping("/acquaintance/{id}/detail")
+    public ResponseEntity<GetAcEventsResponseDto> getAcEventDetail(
+            @PathVariable Long id
+    ){
+        return new ResponseEntity<>(
+                this.eventService.getAcEventsWithDay(id), HttpStatus.OK);
+    }
+
 
     // 지인 경조사 필터링 조회
     @GetMapping("/acquaintance/filter")
