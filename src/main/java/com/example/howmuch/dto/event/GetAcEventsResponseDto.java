@@ -21,7 +21,7 @@ public class GetAcEventsResponseDto {
 
     private Integer eventCategory;
 
-    private Integer AcType;
+    private Integer acType;
 
     public static GetAcEventsResponseDto from(AcEvent acEvent, int dDay) {
         return GetAcEventsResponseDto.builder()
@@ -30,6 +30,7 @@ public class GetAcEventsResponseDto {
                 .dDay(dDay)
                 .payAmount(acEvent.getPayAmount())
                 .eventCategory(acEvent.getEventCategory().getValue())
+                .acType(acEvent.getAcquaintanceType().getValue())
                 .build();
     }
 }
