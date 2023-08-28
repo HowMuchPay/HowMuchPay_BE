@@ -12,19 +12,23 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CalculateAverageAmountRequestDto {
+public class GetAppAverageAmountRequestDto {
 
     @NotNull
+    @Min(0)
+    @Max(4)
     private Integer eventCategory;
 
     @NotNull
+    @Min(0)
+    @Max(4)
     private Integer acquaintanceType;
 
     @NotNull
     private List<Boolean> intimacyAnswers;
 
-    @Min(1)
-    @Max(10)
+    @NotNull
     private int ageGroup;
+    @NotNull
     private int annualIncome;
 }
