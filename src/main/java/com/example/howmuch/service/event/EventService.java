@@ -151,12 +151,15 @@ public class EventService {
 
     /*********/
 
-    // 지인 경조사 등록 (등록 과정에서 추천 컨트롤러 호출)
+    // 지인 경조사 등록 + payAmount 누적
     @Transactional
     public Long createAcEvent(CreateAcEventRequestDto request) {
         log.info(SecurityUtil.getCurrentUserId().toString());
+
+        getUser().addTotalPayAmount(request.getPayAmount()); //내가 지불한 총 금액 추가
         return this.acEventRepository.save(request.toEntity(getUser())).getId();
     }
+
 
     // 지인 경조사 필터링 조회
     @Transactional(readOnly = true)
@@ -204,8 +207,6 @@ public class EventService {
         long daysUntilEvent = ChronoUnit.DAYS.between(currentDate, acEvent.getEventAt());
 
         return GetAcEventsResponseDto.from(acEvent, (int) daysUntilEvent);
-
-
     }
 
     // 지인 경조사 삭제
