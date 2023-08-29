@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface AcEventRepository extends JpaRepository<AcEvent, Long> {
     List<AcEvent> findAllByUser(User user, Sort sort);
@@ -19,6 +20,12 @@ public interface AcEventRepository extends JpaRepository<AcEvent, Long> {
     List<AcEvent> findAllByAcquaintanceTypeAndEventCategoryOrderByEventAtDesc(AcType acType, EventCategory category);
 
     List<AcEvent> findAllByEventAt(LocalDate eventAt);
+
+
+//    @Query("select a from AcEvent a where a.user = :user and a.eventAt > CURRENT_DATE order by a.eventAt asc limit 1")
+//    Optional<AcEvent> findClosestFutureEventByUser(User user);
+    Optional<AcEvent> findFirstByUserAndEventAtGreaterThanOrderByEventAtAsc(User user, LocalDate currentDate);
+
 
     @Query("select a from AcEvent a where year(a.eventAt) = :year and month(a.eventAt) = :month")
     List<AcEvent> findAllByYearAndMonth(int year, int month);
