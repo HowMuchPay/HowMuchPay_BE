@@ -46,7 +46,8 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/login/callback/**", "/user/reissue",
-                        "/test", "/recommendation/get", "/recommendation/save")
+                        "/test",
+                        "/recommendation/get", "/recommendation/save")
                 .permitAll()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()

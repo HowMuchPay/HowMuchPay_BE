@@ -1,6 +1,7 @@
 package com.example.howmuch.config.security;
 
 import com.example.howmuch.domain.entity.User;
+import lombok.Getter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -8,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class UserAuthentication extends AbstractAuthenticationToken {
 
 
@@ -24,10 +26,6 @@ public class UserAuthentication extends AbstractAuthenticationToken {
         List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(user.getRoleType().name()));
         return authorities;
-    }
-
-    public Long getUserId() {
-        return userId;
     }
 
     @Override
