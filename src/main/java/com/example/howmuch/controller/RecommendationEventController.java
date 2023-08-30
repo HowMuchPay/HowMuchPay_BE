@@ -34,14 +34,12 @@ public class RecommendationEventController {
         return ResponseEntity.ok((int) recommendationAmount);
     }
 
-
     @PostMapping("/save")
     public ResponseEntity<Void> SaveRecommendation(
             @RequestBody @Valid CreateAverageAmountRequestDto requestDto) {
         recommendationEventService.createRecommendationEvent(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
-
 
     @GetMapping("/app-get")
     public ResponseEntity<Integer> getRecommendationApp(

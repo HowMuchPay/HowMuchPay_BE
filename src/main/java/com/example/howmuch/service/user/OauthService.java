@@ -132,7 +132,7 @@ public class OauthService {
         Token accessToken = this.jwtService.createAccessToken(String.valueOf(user.getId()));
         Token refreshToken = this.jwtService.createRefreshToken();
         LocalDateTime expireTime = LocalDateTime.now().plusSeconds(accessToken.getExpiredTime() / 1000);
-        this.redisUtil.setDataExpire(String.valueOf(user.getId()), refreshToken.getTokenValue(), refreshToken.getExpiredTime());
+//        this.redisUtil.setDataExpire(String.valueOf(user.getId()), refreshToken.getTokenValue(), refreshToken.getExpiredTime());
 
         log.info("accessToken = {}", accessToken.getTokenValue());
         log.info("refreshToken = {}", refreshToken.getTokenValue());
