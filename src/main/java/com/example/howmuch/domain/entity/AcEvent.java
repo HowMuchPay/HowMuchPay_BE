@@ -27,7 +27,7 @@ public class AcEvent extends BaseTimeEntity {
     @Column(name = "event_at", nullable = false)
     private LocalDate eventAt;
 
-    @Column(name = "pay_amnt")
+    @Column(name = "pay_amount")
     private long payAmount;
 
     @Enumerated(EnumType.STRING)
