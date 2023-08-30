@@ -4,7 +4,6 @@ import com.example.howmuch.constant.AcType;
 import com.example.howmuch.constant.EventCategory;
 import com.example.howmuch.domain.entity.RecommendationEvent;
 import com.example.howmuch.domain.repository.RecommendationEventRepository;
-import com.example.howmuch.dto.recommednation.GetAppAverageAmountRequestDto;
 import com.example.howmuch.dto.recommednation.CreateAverageAmountRequestDto;
 import com.example.howmuch.dto.recommednation.GetAverageAmountRequestDto;
 import com.example.howmuch.dto.recommednation.RelationInfo;
@@ -62,38 +61,6 @@ public class RecommendationEventService {
                 requestDto.getAgeGroup(),
                 requestDto.getAnnualIncome()
         ).orElse(0d);
-    }
-
-
-    @Transactional(readOnly = true)
-    public double getRecommendationApp(GetAppAverageAmountRequestDto requestDto) {
-        int intimacyLevel = calculateIntimacyLevel(requestDto.getIntimacyAnswers());
-
-        int minIntimacyLevel = calculateMinIntimacyLevel(intimacyLevel);
-        int maxIntimacyLevel = calculateMaxIntimacyLevel(intimacyLevel);
-
-        return recommendationEventRepository.getPayAmountByRecommendationEvent(
-                EventCategory.fromValue(requestDto.getEventCategory()),
-                AcType.fromValue(requestDto.getAcquaintanceType()),
-                minIntimacyLevel,
-                maxIntimacyLevel,
-                requestDto.getAgeGroup(),
-                requestDto.getAnnualIncome()
-        ).orElse(0d);
-    }
-
-
-    //YES, NO 질문을 통해 친밀도 계산 질문(5개)
-    private int calculateIntimacyLevel(List<Boolean> intimacyAnswers) {
-        int intimacyLevel = 0;
-
-        for (boolean answer : intimacyAnswers) {
-            if (answer) {
-                intimacyLevel++;
-            }
-        }
-
-        return intimacyLevel;
     }
 
     private int calculateMinIntimacyLevel(int intimacyLevel) {
