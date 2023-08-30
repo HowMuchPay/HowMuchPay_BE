@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -163,15 +164,13 @@ public class EventService {
 
     // 지인 경조사 필터링 조회
     @Transactional(readOnly = true)
-    public GetAllAcEventsResponseDto getAllAcEventsByFilter(String acTypes, String eventCategories) {
+    public GetAllAcEventsResponseDto getAllAcEventsByFilter(Integer acTypes, Integer eventCategories) {
 
-        List<String> acTypeList = List.of(acTypes.split(","));
-        List<String> eventCategoryList = List.of(eventCategories.split(","));
+        List<AcType> acTypeList = Arrays.asList(AcType.fromValue(acTypes));
+        List<EventCategory> eventCategoryList = Arrays.asList(EventCategory.fromValue(eventCategories));
 
         List<AcEvent> result = acTypeList.stream()
-                .map(acTypeString -> AcType.fromValue(Integer.parseInt(acTypeString.trim())))
                 .flatMap(acType -> eventCategoryList.stream()
-                        .map(eventCategoryString -> EventCategory.fromValue(Integer.parseInt(eventCategoryString.trim())))
                         .flatMap(eventCategory -> this.acEventRepository.findAllByAcquaintanceTypeAndEventCategoryOrderByEventAtDesc(acType, eventCategory).stream()))
                 .toList();
 
@@ -179,7 +178,9 @@ public class EventService {
                 .map(AcEvent::of)
                 .toList();
 
-        return new GetAllAcEventsResponseDto(getUser().getUserTotalPayAmount(), res);
+        long totalPayAmount = sumPayAmount(getUser(), AcType.fromValue(acTypes), EventCategory.fromValue(eventCategories));
+
+        return new GetAllAcEventsResponseDto(totalPayAmount, res);
     }
 
     // 지인 모든 경조사 조회
@@ -236,5 +237,10 @@ public class EventService {
     // 현재 로부터 남은 일자 계산 하는 메소드
     private long calculateRemainedDay(MyEvent myEvent) {
         return ChronoUnit.DAYS.between(myEvent.getEventAt(), LocalDate.now());
+    }
+
+    private long sumPayAmount(User user, AcType acType, EventCategory eventCategory) {
+        return this.acEventRepository.sumPayAmountByUserAndCategoryAndType(user, eventCategory, acType)
+                .orElse(0L);
     }
 }

@@ -26,6 +26,9 @@ public interface AcEventRepository extends JpaRepository<AcEvent, Long> {
 //    Optional<AcEvent> findClosestFutureEventByUser(User user);
     Optional<AcEvent> findFirstByUserAndEventAtGreaterThanOrderByEventAtAsc(User user, LocalDate currentDate);
 
+    @Query("SELECT SUM(a.payAmount) FROM AcEvent a WHERE a.user = ?1 AND a.eventCategory = ?2 AND a.acquaintanceType = ?3")
+    Optional<Long> sumPayAmountByUserAndCategoryAndType(User user, EventCategory eventCategory, AcType acType);
+
 
     @Query("select a from AcEvent a where year(a.eventAt) = :year and month(a.eventAt) = :month")
     List<AcEvent> findAllByYearAndMonth(int year, int month);
