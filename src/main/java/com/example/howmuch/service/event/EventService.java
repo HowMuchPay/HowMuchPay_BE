@@ -178,7 +178,9 @@ public class EventService {
                 .map(AcEvent::of)
                 .toList();
 
-        return new GetAllAcEventsResponseDto(getUser().getUserTotalPayAmount(), res);
+        long totalPayAmount = sumPayAmount(getUser(), AcType.fromValue(acTypes), EventCategory.fromValue(eventCategories));
+
+        return new GetAllAcEventsResponseDto(totalPayAmount, res);
     }
 
     // 지인 모든 경조사 조회
@@ -235,5 +237,10 @@ public class EventService {
     // 현재 로부터 남은 일자 계산 하는 메소드
     private long calculateRemainedDay(MyEvent myEvent) {
         return ChronoUnit.DAYS.between(myEvent.getEventAt(), LocalDate.now());
+    }
+
+    private long sumPayAmount(User user, AcType acType, EventCategory eventCategory) {
+        return this.acEventRepository.sumPayAmountByUserAndCategoryAndType(user, eventCategory, acType)
+                .orElse(0L);
     }
 }
