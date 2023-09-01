@@ -26,7 +26,6 @@ public class KakaoOauthController {
             @PathVariable String provider,
             @RequestParam String code
     ) {
-        // oauth 로그인한 회원
         User user = this.oauthService.getOauth(provider, code);
         return new ResponseEntity<>(this.oauthService.oauthLoginResult(user), HttpStatus.OK);
     }
