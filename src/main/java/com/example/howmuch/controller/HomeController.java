@@ -1,7 +1,7 @@
 package com.example.howmuch.controller;
 
 
-import com.example.howmuch.dto.Home.HomeResponseDto;
+import com.example.howmuch.dto.home.HomeResponseDto;
 import com.example.howmuch.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,7 @@ public class HomeController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<HomeResponseDto> getHome(){
+    public ResponseEntity<HomeResponseDto> getHome() {
         return ResponseEntity.ok(userService.getHome());
     }
 }

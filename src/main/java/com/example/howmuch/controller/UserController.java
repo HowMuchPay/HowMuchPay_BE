@@ -1,6 +1,6 @@
 package com.example.howmuch.controller;
 
-import com.example.howmuch.dto.user.UserOauthLoginResponseDto;
+import com.example.howmuch.dto.user.login.UserOauthLoginResponseDto;
 import com.example.howmuch.service.user.AuthService;
 import com.example.howmuch.service.user.UserService;
 import com.example.howmuch.util.AuthTransformUtil;

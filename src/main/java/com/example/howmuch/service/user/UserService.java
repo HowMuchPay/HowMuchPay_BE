@@ -5,7 +5,7 @@ import com.example.howmuch.domain.entity.AcEvent;
 import com.example.howmuch.domain.entity.User;
 import com.example.howmuch.domain.repository.AcEventRepository;
 import com.example.howmuch.domain.repository.UserRepository;
-import com.example.howmuch.dto.Home.HomeResponseDto;
+import com.example.howmuch.dto.home.HomeResponseDto;
 import com.example.howmuch.exception.user.NotFoundUserException;
 import com.example.howmuch.exception.user.NotMatchUserException;
 import com.example.howmuch.exception.user.PhoneNumberAlreadyExistsException;

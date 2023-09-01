@@ -1,4 +1,4 @@
-package com.example.howmuch.dto.Home;
+package com.example.howmuch.dto.home;
 
 import lombok.*;
 
