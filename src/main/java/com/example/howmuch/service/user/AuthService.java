@@ -2,7 +2,7 @@ package com.example.howmuch.service.user;
 
 
 import com.example.howmuch.domain.entity.User;
-import com.example.howmuch.dto.user.UserOauthLoginResponseDto;
+import com.example.howmuch.dto.user.login.UserOauthLoginResponseDto;
 import com.example.howmuch.exception.user.InvalidTokenException;
 import com.example.howmuch.exception.user.UnauthorizedUserException;
 import com.example.howmuch.util.AuthTransformUtil;

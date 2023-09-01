@@ -6,8 +6,8 @@ import com.example.howmuch.constant.RoleType;
 import com.example.howmuch.domain.entity.User;
 import com.example.howmuch.domain.repository.UserRepository;
 import com.example.howmuch.dto.user.OauthTokenResponseDto;
-import com.example.howmuch.dto.user.UserOauthLoginResponseDto;
 import com.example.howmuch.dto.user.info.KakaoOauthUserInfo;
+import com.example.howmuch.dto.user.login.UserOauthLoginResponseDto;
 import com.example.howmuch.util.JwtService;
 import com.example.howmuch.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
@@ -54,12 +54,15 @@ public class OauthService {
 
         ClientRegistration provider
                 = this.inMemoryClientRegistrationRepository.findByRegistrationId(providerName.toLowerCase());
+
         OauthTokenResponseDto responseDto = getToken(provider, code);
         return saveUserWithUserInfo(providerName.toLowerCase(), responseDto, provider);
     }
 
     /* 1. Kakao Authorization Server 로 부터 Access Token 받아오기 */
     private OauthTokenResponseDto getToken(ClientRegistration provider, String code) {
+        // https://kauth.kakao.com/oauth/token
+        // content-type : application/x-www-urlencoded
         return WebClient.create()
                 .post()
                 .uri(provider.getProviderDetails().getTokenUri())
@@ -73,7 +76,7 @@ public class OauthService {
                 .block();
     }
 
-    /* 2. token 요청 uri 생성 -> https://kauth.kakao.com/oauth/token? ~ */
+    /* 2. kakao server 로 token 요청 uri 생성 -> https://kauth.kakao.com/oauth/token? ~ */
     private MultiValueMap<String, String> tokenRequest(ClientRegistration provider, String code) {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("code", code);
@@ -85,10 +88,10 @@ public class OauthService {
     }
 
     /* 3. Oauth 로부터 받아온 회원 정보 회원 테이블 저장 */
-    private User saveUserWithUserInfo(String providerName, OauthTokenResponseDto responseDto,
+    private User saveUserWithUserInfo(String providerName,
+                                      OauthTokenResponseDto responseDto,
                                       ClientRegistration provider) {
         Map<String, Object> attributes = getUserAttributes(provider, responseDto);
-
         KakaoOauthUserInfo oauthUserInfo = new KakaoOauthUserInfo(attributes);
         String oauthNickName = oauthUserInfo.getNickName(); // nickName
         String oauthProvider = oauthUserInfo.getProvider(); // kakao
@@ -109,7 +112,8 @@ public class OauthService {
     }
 
     /* 4. 발급 받은 access token 을 이용해 user attributes 요청 이때 " provider 의 user-info-uri 로 요청 with token " */
-    private Map<String, Object> getUserAttributes(ClientRegistration provider, OauthTokenResponseDto responseDto) {
+    private Map<String, Object> getUserAttributes(ClientRegistration provider,
+                                                  OauthTokenResponseDto responseDto) {
         return WebClient.create()
                 .get()
                 .uri(provider.getProviderDetails().getUserInfoEndpoint().getUri())

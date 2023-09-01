@@ -25,7 +25,6 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     public static final String AUTHORIZATION = "Authorization";
-
     public static String BEARER_TYPE = "Bearer";
     private final JwtService jwtService;
     private final AuthService authService;
@@ -34,12 +33,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+                                    FilterChain filterChain
+    ) throws ServletException, IOException {
         if (request.getMethod().equals("OPTIONS")) {
             return;
         }
-
-
         /**
          * 전달 받은 Access token 부터 Authentication 인증 객체 Security Context에 저장
          */

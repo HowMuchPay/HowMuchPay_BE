@@ -15,6 +15,7 @@ public class OauthTokenResponseDto {
     @JsonProperty("access_token")
     private String accessToken;
 
+    @JsonProperty("scope")
     private String scope;
 
     @JsonProperty("token_type")
