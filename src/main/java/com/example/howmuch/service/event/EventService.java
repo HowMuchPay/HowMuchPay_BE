@@ -25,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -166,8 +165,8 @@ public class EventService {
     @Transactional(readOnly = true)
     public GetAllAcEventsResponseDto getAllAcEventsByFilter(Integer acTypes, Integer eventCategories) {
 
-        List<AcType> acTypeList = Arrays.asList(AcType.fromValue(acTypes));
-        List<EventCategory> eventCategoryList = Arrays.asList(EventCategory.fromValue(eventCategories));
+        List<AcType> acTypeList = List.of(AcType.fromValue(acTypes));
+        List<EventCategory> eventCategoryList = List.of(EventCategory.fromValue(eventCategories));
 
         List<AcEvent> result = acTypeList.stream()
                 .flatMap(acType -> eventCategoryList.stream()
@@ -204,9 +203,7 @@ public class EventService {
     public GetAcEventsResponseDto getAcEventsWithDay(Long acId) {
         AcEvent acEvent = getAcEvent(acId); // 특정 지인의 경조사 정보를 가져옴
         //dDay 로직
-        LocalDate currentDate = LocalDate.now();
-        long daysUntilEvent = ChronoUnit.DAYS.between(currentDate, acEvent.getEventAt());
-
+        long daysUntilEvent = -1 * ChronoUnit.DAYS.between(LocalDate.now(), acEvent.getEventAt());
         return GetAcEventsResponseDto.from(acEvent, (int) daysUntilEvent);
     }
 

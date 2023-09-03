@@ -1,6 +1,7 @@
 package com.example.howmuch.dto.event;
 
 import com.example.howmuch.domain.entity.AcEvent;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -15,6 +16,7 @@ public class GetAcEventsResponseDto {
 
     private LocalDate eventAt;
 
+    @JsonProperty("d-day")
     private int dDay;
 
     private Long payAmount;
