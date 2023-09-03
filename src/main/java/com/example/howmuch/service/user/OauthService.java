@@ -8,18 +8,28 @@ import com.example.howmuch.domain.repository.UserRepository;
 import com.example.howmuch.dto.user.OauthTokenResponseDto;
 import com.example.howmuch.dto.user.info.KakaoOauthUserInfo;
 import com.example.howmuch.dto.user.login.UserOauthLoginResponseDto;
+import com.example.howmuch.service.s3.S3Service;
 import com.example.howmuch.util.JwtService;
 import com.example.howmuch.util.RedisUtil;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.nio.charset.StandardCharsets;
@@ -41,22 +51,31 @@ public class OauthService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final RedisUtil redisUtil;
+    private final S3Service s3Service;
+
 
     /* providerName = kakao, code = Authorization code */
 
     /**
      * Spring security 에서는 어플리케이션 실행 시 yml 에 기재되어 있는 Oauth 설정 값들을 Oauth2ClientProperties 빈으로 등록
-     * Oauth2ClientProperties 는 내부 값들을 통해 각 OAuth2 서버 별로
-     * ClientRegistration 이라는 객체를 만들어 InMemoryClientRegistrationRepository 에 저장
+     * Oauth2ClientProperties 는 내부 값들을 통해 각 OAuth2 서버 별로 ClientRegistration 이라는 객체를 만들어
+     * InMemoryClientRegistrationRepository 에 저장
      */
     @Transactional
-    public User getOauth(String providerName, String code) {
+    public User getOauth(String providerName, String code) throws IOException {
 
         ClientRegistration provider
-                = this.inMemoryClientRegistrationRepository.findByRegistrationId(providerName.toLowerCase());
+            = this.inMemoryClientRegistrationRepository.findByRegistrationId(
+            providerName.toLowerCase());
 
         OauthTokenResponseDto responseDto = getToken(provider, code);
-        return saveUserWithUserInfo(providerName.toLowerCase(), responseDto, provider);
+        User user = saveUserWithUserInfo(providerName.toLowerCase(), responseDto, provider);
+
+        String imageUrl = user.getProfileImage(); // 사용자 프로필 이미지 URL
+        MultipartFile profileImageFile = convertImageURLToMultipartFile(imageUrl);
+        s3Service.uploadFile(profileImageFile);
+
+        return user;
     }
 
     /* 1. Kakao Authorization Server 로 부터 Access Token 받아오기 */
@@ -64,16 +83,16 @@ public class OauthService {
         // https://kauth.kakao.com/oauth/token
         // content-type : application/x-www-urlencoded
         return WebClient.create()
-                .post()
-                .uri(provider.getProviderDetails().getTokenUri())
-                .headers(header -> {
-                    header.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-                    header.setAcceptCharset(Collections.singletonList(StandardCharsets.UTF_8));
-                })
-                .bodyValue(tokenRequest(provider, code))
-                .retrieve()
-                .bodyToMono(OauthTokenResponseDto.class)
-                .block();
+            .post()
+            .uri(provider.getProviderDetails().getTokenUri())
+            .headers(header -> {
+                header.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+                header.setAcceptCharset(Collections.singletonList(StandardCharsets.UTF_8));
+            })
+            .bodyValue(tokenRequest(provider, code))
+            .retrieve()
+            .bodyToMono(OauthTokenResponseDto.class)
+            .block();
     }
 
     /* 2. kakao server 로 token 요청 uri 생성 -> https://kauth.kakao.com/oauth/token? ~ */
@@ -89,8 +108,8 @@ public class OauthService {
 
     /* 3. Oauth 로부터 받아온 회원 정보 회원 테이블 저장 */
     private User saveUserWithUserInfo(String providerName,
-                                      OauthTokenResponseDto responseDto,
-                                      ClientRegistration provider) {
+        OauthTokenResponseDto responseDto,
+        ClientRegistration provider) {
         Map<String, Object> attributes = getUserAttributes(provider, responseDto);
         KakaoOauthUserInfo oauthUserInfo = new KakaoOauthUserInfo(attributes);
         String oauthNickName = oauthUserInfo.getNickName(); // nickName
@@ -102,26 +121,26 @@ public class OauthService {
 
         // 존재하면 반환 없으면 함수 실행
         return optionalUser.orElseGet(() -> this.userRepository.save(User.builder()
-                .oauthId(oauthId)
-                .nickname(oauthNickName)
-                .profileImage(profileImage)
-                .roleType(RoleType.ROLE_USER)
-                .userTotalPayAmount(0L)
-                .userTotalReceiveAmount(0L)
-                .build()));
+            .oauthId(oauthId)
+            .nickname(oauthNickName)
+            .profileImage(profileImage)
+            .roleType(RoleType.ROLE_USER)
+            .userTotalPayAmount(0L)
+            .userTotalReceiveAmount(0L)
+            .build()));
     }
 
     /* 4. 발급 받은 access token 을 이용해 user attributes 요청 이때 " provider 의 user-info-uri 로 요청 with token " */
     private Map<String, Object> getUserAttributes(ClientRegistration provider,
-                                                  OauthTokenResponseDto responseDto) {
+        OauthTokenResponseDto responseDto) {
         return WebClient.create()
-                .get()
-                .uri(provider.getProviderDetails().getUserInfoEndpoint().getUri())
-                .headers(header -> header.setBearerAuth(responseDto.getAccessToken()))
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
-                })
-                .block();
+            .get()
+            .uri(provider.getProviderDetails().getUserInfoEndpoint().getUri())
+            .headers(header -> header.setBearerAuth(responseDto.getAccessToken()))
+            .retrieve()
+            .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
+            })
+            .block();
     }
 
 
@@ -135,18 +154,37 @@ public class OauthService {
         // user id(long) -> String
         Token accessToken = this.jwtService.createAccessToken(String.valueOf(user.getId()));
         Token refreshToken = this.jwtService.createRefreshToken();
-        LocalDateTime expireTime = LocalDateTime.now().plusSeconds(accessToken.getExpiredTime() / 1000);
+        LocalDateTime expireTime = LocalDateTime.now()
+            .plusSeconds(accessToken.getExpiredTime() / 1000);
 //        this.redisUtil.setDataExpire(String.valueOf(user.getId()), refreshToken.getTokenValue(), refreshToken.getExpiredTime());
 
         log.info("accessToken = {}", accessToken.getTokenValue());
         log.info("refreshToken = {}", refreshToken.getTokenValue());
 
         return UserOauthLoginResponseDto.builder()
-                .tokenType(BEARER_TYPE)
-                .accessToken(BEARER_TYPE + " " + accessToken.getTokenValue())
-                .expiredTime(expireTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))) // 만료 Local Date Time
-                .refreshToken(refreshToken.getTokenValue())
-                .build();
+            .tokenType(BEARER_TYPE)
+            .accessToken(BEARER_TYPE + " " + accessToken.getTokenValue())
+            .expiredTime(expireTime.format(
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))) // 만료 Local Date Time
+            .refreshToken(refreshToken.getTokenValue())
+            .build();
 
+    }
+
+    public MultipartFile convertImageURLToMultipartFile(String imageUrl) throws IOException {
+        // URL에서 이미지 다운로드
+        try (InputStream inputStream = new URL(imageUrl).openStream()) {
+            // 임시 파일로 저장
+            Path tempFile = Files.createTempFile("temp", ".jpg");
+            Files.copy(inputStream, tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+            // 임시 파일을 MultipartFile로 변환
+            return new MockMultipartFile(
+                "file",
+                "image.jpg",
+                "image/jpeg",
+                Files.newInputStream(tempFile)
+            );
+        }
     }
 }

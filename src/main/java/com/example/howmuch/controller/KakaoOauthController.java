@@ -6,6 +6,7 @@ import com.example.howmuch.dto.user.login.UserInfoLoginRequestDto;
 import com.example.howmuch.dto.user.login.UserOauthLoginResponseDto;
 import com.example.howmuch.service.user.KakaoOauthService;
 import com.example.howmuch.service.user.OauthService;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -23,19 +24,19 @@ public class KakaoOauthController {
 
     @GetMapping("/login/callback/{provider}")
     public ResponseEntity<UserOauthLoginResponseDto> oauthLogin(
-            @PathVariable String provider,
-            @RequestParam String code
-    ) {
+        @PathVariable String provider,
+        @RequestParam String code
+    ) throws IOException {
         User user = this.oauthService.getOauth(provider, code);
         return new ResponseEntity<>(this.oauthService.oauthLoginResult(user), HttpStatus.OK);
     }
 
     @PostMapping("/login/kakao")
     public ResponseEntity<UserOauthLoginResponseDto> kakaoLogin(
-            @RequestBody UserInfoLoginRequestDto userInfoLoginRequestDto
+        @RequestBody UserInfoLoginRequestDto userInfoLoginRequestDto
     ) {
         return new ResponseEntity<>(
-                this.kakaoOauthService.getOauth(userInfoLoginRequestDto), HttpStatus.OK
+            this.kakaoOauthService.getOauth(userInfoLoginRequestDto), HttpStatus.OK
         );
     }
 }
