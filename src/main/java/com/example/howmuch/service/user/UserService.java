@@ -30,9 +30,7 @@ public class UserService {
 
 
     /**
-     * 회원 탈퇴를 한다는 건
-     * 1. Redis 데이터 삭제
-     * 2. User DB 에서 User 삭제
+     * 회원 탈퇴를 한다는 건 1. Redis 데이터 삭제 2. User DB 에서 User 삭제
      */
 
     @Transactional
@@ -45,13 +43,13 @@ public class UserService {
     @Transactional(readOnly = true)
     public User findUserFromToken() {
         return this.userRepository.findById(SecurityUtil.getCurrentUserId())
-                .orElseThrow(() -> new NotMatchUserException("토큰 정보와 일치하는 회원 정보가 없습니다."));
+            .orElseThrow(() -> new NotMatchUserException("토큰 정보와 일치하는 회원 정보가 없습니다."));
     }
 
     @Transactional(readOnly = true)
     public User findById(Long id) {
         return this.userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundUserException("일치하는 회원 정보를 찾을 수 없습니다."));
+            .orElseThrow(() -> new NotFoundUserException("일치하는 회원 정보를 찾을 수 없습니다."));
     }
 
     @Transactional
@@ -69,24 +67,29 @@ public class UserService {
 
         log.info(user.toString());
         AcEvent closestEvent = findClosestEvent(user);
-        log.info(closestEvent.toString());
 
         long pay = user.getUserTotalPayAmount();
         long receive = user.getUserTotalReceiveAmount();
-
         int payPercentage = calculatePayPercentage(pay, receive);
 
-        LocalDate currentDate = LocalDate.now();
-        int daysUntilEvent = (int) ChronoUnit.DAYS.between(currentDate, closestEvent.getEventAt());
-
-        return HomeResponseDto.builder()
+        if (closestEvent == null) {
+            return HomeResponseDto.builder()
                 .userTotalPayAmount(pay)
                 .userTotalReceiveAmount(receive)
                 .payPercentage(payPercentage)
-                .nickname(closestEvent.getAcquaintanceNickname())
-                .eventCategory(closestEvent.getEventCategory().getValue())
-                .dDay(daysUntilEvent)
                 .build();
+        }
+
+        LocalDate currentDate = LocalDate.now();
+        int daysUntilEvent = (int) ChronoUnit.DAYS.between(currentDate, closestEvent.getEventAt());
+        return HomeResponseDto.builder()
+            .userTotalPayAmount(pay)
+            .userTotalReceiveAmount(receive)
+            .payPercentage(payPercentage)
+            .nickname(closestEvent.getAcquaintanceNickname())
+            .eventCategory(closestEvent.getEventCategory().getValue())
+            .dDay(daysUntilEvent)
+            .build();
     }
 
     private int calculatePayPercentage(long totalPayAmount, long totalReceiveAmount) {
@@ -97,7 +100,8 @@ public class UserService {
     }
 
     private AcEvent findClosestEvent(User user) {
-        return acEventRepository.findFirstByUserAndEventAtGreaterThanOrderByEventAtAsc(user, LocalDate.now()).orElse(null);
+        return acEventRepository.findFirstByUserAndEventAtGreaterThanOrderByEventAtAsc(user,
+            LocalDate.now()).orElse(null);
     }
 
     private boolean isPhoneNumberExists(String phone) {
