@@ -11,13 +11,11 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class GetAllMyEventsResponse {
 
-    private Integer month;
+    private String myEventDisplayName;
 
     private LocalDate eventAt;
 
     private Long receiveAmount;
 
     private Integer eventCategory;
-
-    private String myEventDisplayName;
 }
