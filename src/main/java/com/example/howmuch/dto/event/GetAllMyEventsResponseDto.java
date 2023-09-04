@@ -3,6 +3,7 @@ package com.example.howmuch.dto.event;
 import lombok.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -13,5 +14,6 @@ public class GetAllMyEventsResponseDto {
 
     private Long totalReceiveAmount;
 
-    private List<GetAllMyEventsResponse> allMyEvents;
+    private Map<String, List<GetAllMyEventsResponse>> allMyEvents;
+
 }
