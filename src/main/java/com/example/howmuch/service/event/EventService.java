@@ -24,8 +24,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -48,15 +50,18 @@ public class EventService {
     public GetAllMyEventsResponseDto getAllMyEvents() {
 
         User user = getUser();
-        Long totalReceiveAmount = user.getUserTotalReceiveAmount();
 
-        List<GetAllMyEventsResponse> allMyEvents =
-                this.myEventRepository.findAllByUser(user, Sort.by(Sort.Direction.DESC, "eventAt"))
-                        .stream()
-                        .map(MyEvent::toGetAllByEventsResponse)
-                        .toList();
+        Map<String, List<GetAllMyEventsResponse>> allMyEvents = this.myEventRepository.findAllByUserOrderByEventAt(user)
+                .stream()
+                .map(MyEvent::toGetAllByEventsResponse)
+                .collect(Collectors.groupingBy(
+                        response -> {
+                            return YearMonth.from(response.getEventAt()).toString();
+                        })
+                );
 
-        return new GetAllMyEventsResponseDto(totalReceiveAmount, allMyEvents);
+        return new GetAllMyEventsResponseDto(user.getUserTotalReceiveAmount(), allMyEvents);
+
     }
 
     // 나의 경조사 필터링 조회
@@ -77,7 +82,8 @@ public class EventService {
                 .map(MyEvent::toGetAllByEventsResponse)
                 .toList();
 
-        return new GetAllMyEventsResponseDto(getUser().getUserTotalPayAmount(), res);
+//        return new GetAllMyEventsResponseDto(getUser().getUserTotalPayAmount(), res);
+        return null;
     }
 
     // 나의 경조사 지인으로부터 받은 금액 등록
