@@ -45,9 +45,8 @@ public class AcEvent extends BaseTimeEntity {
     @JoinColumn(name = "usr_id")
     private User user;
 
-    public GetAllAcEventsResponse of() {
+    public GetAllAcEventsResponse toGetAllAcEventsResponse() {
         return GetAllAcEventsResponse.builder()
-                .month(eventAt.getMonthValue())
                 .eventAt(eventAt)
                 .payAmount(payAmount)
                 .eventCategory(eventCategory.getValue())
