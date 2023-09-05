@@ -15,5 +15,4 @@ public class GetAllMyEventsResponseDto {
     private Long totalReceiveAmount;
 
     private Map<String, List<GetAllMyEventsResponse>> allMyEvents;
-
 }
