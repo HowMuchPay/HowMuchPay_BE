@@ -19,7 +19,6 @@ import com.example.howmuch.exception.user.NotFoundUserException;
 import com.example.howmuch.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -162,33 +161,31 @@ public class EventService {
     // 지인 경조사 등록 + payAmount 누적
     @Transactional
     public Long createAcEvent(CreateAcEventRequestDto request) {
-        log.info(SecurityUtil.getCurrentUserId().toString());
-
-        getUser().addTotalPayAmount(request.getPayAmount()); //내가 지불한 총 금액 추가
+        getUser().addTotalPayAmount(request.getPayAmount()); // 내가 지불한 총 금액 추가
         return this.acEventRepository.save(request.toEntity(getUser())).getId();
     }
 
 
-    // 지인 경조사 필터링 조회
-    @Transactional(readOnly = true)
-    public GetAllAcEventsResponseDto getAllAcEventsByFilter(Integer acTypes, Integer eventCategories) {
-
-        List<AcType> acTypeList = List.of(AcType.fromValue(acTypes));
-        List<EventCategory> eventCategoryList = List.of(EventCategory.fromValue(eventCategories));
-
-        List<AcEvent> result = acTypeList.stream()
-                .flatMap(acType -> eventCategoryList.stream()
-                        .flatMap(eventCategory -> this.acEventRepository.findAllByAcquaintanceTypeAndEventCategoryOrderByEventAtDesc(acType, eventCategory).stream()))
-                .toList();
-
-        List<GetAllAcEventsResponse> res = result.stream()
-                .map(AcEvent::of)
-                .toList();
-
-        long totalPayAmount = sumPayAmount(getUser(), AcType.fromValue(acTypes), EventCategory.fromValue(eventCategories));
-
-        return new GetAllAcEventsResponseDto(totalPayAmount, res);
-    }
+//    // 지인 경조사 필터링 조회
+//    @Transactional(readOnly = true)
+//    public GetAllAcEventsResponseDto getAllAcEventsByFilter(Integer acTypes, Integer eventCategories) {
+//
+//        List<AcType> acTypeList = List.of(AcType.fromValue(acTypes));
+//        List<EventCategory> eventCategoryList = List.of(EventCategory.fromValue(eventCategories));
+//
+//        List<AcEvent> result = acTypeList.stream()
+//                .flatMap(acType -> eventCategoryList.stream()
+//                        .flatMap(eventCategory -> this.acEventRepository.findAllByAcquaintanceTypeAndEventCategoryOrderByEventAtDesc(acType, eventCategory).stream()))
+//                .toList();
+//
+//        List<GetAllAcEventsResponse> res = result.stream()
+//                .map(AcEvent::of)
+//                .toList();
+//
+//        long totalPayAmount = sumPayAmount(getUser(), AcType.fromValue(acTypes), EventCategory.fromValue(eventCategories));
+//
+//        return new GetAllAcEventsResponseDto(totalPayAmount, res);
+//    }
 
     // 지인 모든 경조사 조회
     @Transactional(readOnly = true)
@@ -197,13 +194,16 @@ public class EventService {
         User user = getUser();
         Long totalPayAmount = user.getUserTotalPayAmount();
 
-        List<GetAllAcEventsResponse> allAcEvents
-                = this.acEventRepository.findAllByUser(user, Sort.by(Sort.Direction.DESC, "eventAt"))
+        Map<String, List<GetAllAcEventsResponse>> allAcEvents = this.acEventRepository.findAllByUserOrderByEventAtDesc(user)
                 .stream()
-                .map(AcEvent::of)
-                .toList();
+                .map(AcEvent::toGetAllAcEventsResponse)
+                .collect(Collectors.groupingBy(
+                        response -> {
+                            return YearMonth.from(response.getEventAt()).toString();
+                        })
+                );
 
-        return new GetAllAcEventsResponseDto(totalPayAmount, allAcEvents);
+        return new GetAllAcEventsResponseDto(user.getUserTotalPayAmount(), allAcEvents);
     }
 
     // 지인 단일 경조사 조회 (디데이)
