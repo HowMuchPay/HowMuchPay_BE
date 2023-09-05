@@ -166,26 +166,29 @@ public class EventService {
     }
 
 
-//    // 지인 경조사 필터링 조회
-//    @Transactional(readOnly = true)
-//    public GetAllAcEventsResponseDto getAllAcEventsByFilter(Integer acTypes, Integer eventCategories) {
-//
-//        List<AcType> acTypeList = List.of(AcType.fromValue(acTypes));
-//        List<EventCategory> eventCategoryList = List.of(EventCategory.fromValue(eventCategories));
-//
-//        List<AcEvent> result = acTypeList.stream()
-//                .flatMap(acType -> eventCategoryList.stream()
-//                        .flatMap(eventCategory -> this.acEventRepository.findAllByAcquaintanceTypeAndEventCategoryOrderByEventAtDesc(acType, eventCategory).stream()))
-//                .toList();
-//
-//        List<GetAllAcEventsResponse> res = result.stream()
-//                .map(AcEvent::of)
-//                .toList();
-//
-//        long totalPayAmount = sumPayAmount(getUser(), AcType.fromValue(acTypes), EventCategory.fromValue(eventCategories));
-//
-//        return new GetAllAcEventsResponseDto(totalPayAmount, res);
-//    }
+    // 지인 경조사 필터링 조회
+    @Transactional(readOnly = true)
+    public GetAllAcEventsResponseDto getAllAcEventsByFilter(String acTypes, String eventCategories) {
+
+        List<String> acTypeList = List.of(acTypes.split(","));
+        List<String> eventCategoryList = List.of(eventCategories.split(","));
+
+
+        Map<String, List<GetAllAcEventsResponse>> allAcEvents = acTypeList.stream()
+                .map(acTypeString -> AcType.fromValue(Integer.parseInt(acTypeString.trim())))
+                .flatMap(acType -> eventCategoryList.stream()
+                        .map(eventCategoryString -> EventCategory.fromValue(Integer.parseInt(eventCategoryString.trim())))
+                        .flatMap(eventCategory -> this.acEventRepository.findAllByAcquaintanceTypeAndEventCategoryOrderByEventAtDesc(acType, eventCategory).stream()))
+                .toList()
+                .stream()
+                .map(AcEvent::toGetAllAcEventsResponse)
+                .collect(Collectors.groupingBy(
+                        response -> {
+                            return YearMonth.from(response.getEventAt()).toString();
+                        }
+                ));
+        return new GetAllAcEventsResponseDto(getUser().getUserTotalPayAmount(), allAcEvents);
+    }
 
     // 지인 모든 경조사 조회
     @Transactional(readOnly = true)

@@ -129,15 +129,15 @@ public class EventController {
     }
 
 
-//    // 지인 경조사 필터링 조회
-//    @GetMapping("/acquaintance/filter")
-//    public ResponseEntity<GetAllAcEventsResponseDto> getAllAcEventsByFilter(
-//            @RequestParam Integer acTypes,
-//            @RequestParam Integer eventCategories
-//    ) {
-//        return new ResponseEntity<>(
-//                this.eventService.getAllAcEventsByFilter(acTypes, eventCategories), HttpStatus.OK);
-//    }
+    // 지인 경조사 필터링 조회
+    @GetMapping("/acquaintance/filter")
+    public ResponseEntity<GetAllAcEventsResponseDto> getAllAcEventsByFilter(
+            @RequestParam String acTypes,
+            @RequestParam String eventCategories
+    ) {
+        return new ResponseEntity<>(
+                this.eventService.getAllAcEventsByFilter(acTypes, eventCategories), HttpStatus.OK);
+    }
 
 
     // 지인 경조사 등록
