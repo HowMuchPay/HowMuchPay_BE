@@ -71,19 +71,21 @@ public class EventService {
         List<String> myTypeList = List.of(myTypes.split(","));
         List<String> eventCategoryList = List.of(eventCategories.split(","));
 
-        List<MyEvent> result = myTypeList.stream()
+        Map<String, List<GetAllMyEventsResponse>> allMyEvents = myTypeList.stream()
                 .map(myTypeString -> MyType.fromValue(Integer.parseInt(myTypeString.trim())))
                 .flatMap(myType -> eventCategoryList.stream()
                         .map(eventCategoryString -> EventCategory.fromValue(Integer.parseInt(eventCategoryString.trim())))
-                        .flatMap(eventCategory -> this.myEventRepository.findAllByMyTypeAndEventCategoryOrderByEventAtDesc(myType, eventCategory).stream()))
-                .toList();
-
-        List<GetAllMyEventsResponse> res = result.stream()
+                        .flatMap(eventCategory -> this.myEventRepository.findAllByMyTypeAndEventCategoryOrderByEventAtDesc(myType, eventCategory).stream())
+                )
+                .toList()
+                .stream()
                 .map(MyEvent::toGetAllByEventsResponse)
-                .toList();
-
-//        return new GetAllMyEventsResponseDto(getUser().getUserTotalPayAmount(), res);
-        return null;
+                .collect(Collectors.groupingBy(
+                        response -> {
+                            return YearMonth.from(response.getEventAt()).toString();
+                        }
+                ));
+        return new GetAllMyEventsResponseDto(getUser().getUserTotalPayAmount(), allMyEvents);
     }
 
     // 나의 경조사 지인으로부터 받은 금액 등록

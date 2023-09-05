@@ -32,27 +32,34 @@ public class CalendarService {
     private final MyEventRepository myEventRepository;
     private final AcEventRepository acEventRepository;
 
+    private static YearMonth getYearMonth(String yearAndMonth) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
+        return YearMonth.parse(yearAndMonth, formatter);
+    }
 
     @Transactional(readOnly = true)
-    public GetCalendarResponseDto getSchedule(LocalDate time) {
-        List<MyEvent> myEvents = this.myEventRepository.findAllByEventAt(time);
-        List<AcEvent> acEvents = this.acEventRepository.findAllByEventAt(time);
+    public GetCalendarResponseDto getSchedule(String yearAndMonth) {
+        YearMonth yearMonth = getYearMonth(yearAndMonth);
 
-        return new GetCalendarResponseDto(
-                myEvents.stream()
-                        .map(GetMyEventsCalendarResponseDto::from)
-                        .collect(Collectors.toList()),
+        int year = yearMonth.getYear();
+        int month = yearMonth.getMonthValue();
 
-                acEvents.stream()
-                        .map(GetAcEventsCalendarResponseDto::from)
-                        .collect(Collectors.toList())
-        );
+        List<GetMyEventsCalendarResponseDto> myEvents = this.myEventRepository.findAllByYearAndMonth(year, month)
+                .stream()
+                .map(GetMyEventsCalendarResponseDto::from)
+                .toList();
+
+        List<GetAcEventsCalendarResponseDto> acEvents = this.acEventRepository.findAllByYearAndMonth(year, month)
+                .stream()
+                .map(GetAcEventsCalendarResponseDto::from)
+                .toList();
+
+        return new GetCalendarResponseDto(myEvents, acEvents);
     }
 
     @Transactional(readOnly = true)
     public GetStatisticsResponseDto getStatistics(String yearAndMonth) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
-        YearMonth yearMonth = YearMonth.parse(yearAndMonth, formatter);
+        YearMonth yearMonth = getYearMonth(yearAndMonth);
 
         int year = yearMonth.getYear();
         int month = yearMonth.getMonthValue();

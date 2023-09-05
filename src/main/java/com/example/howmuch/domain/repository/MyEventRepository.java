@@ -19,4 +19,5 @@ public interface MyEventRepository extends JpaRepository<MyEvent, Long> {
 
     @Query("select m from MyEvent m where year(m.eventAt) = :year and month(m.eventAt) = :month")
     List<MyEvent> findAllByYearAndMonth(int year, int month);
+
 }

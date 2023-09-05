@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDate;
-
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/calendar")
@@ -23,12 +21,15 @@ public class CalendarController {
 
     private final CalendarService calendarService;
 
+
     @GetMapping("/schedule")
     public ResponseEntity<GetCalendarResponseDto> getSchedule(
-            @RequestParam(value = "time") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate time
+            @RequestParam(value = "time") String yearAndMonth
     ) {
-        return new ResponseEntity<>(this.calendarService.getSchedule(time), HttpStatus.OK);
+        System.out.println(yearAndMonth);
+        return new ResponseEntity<>(this.calendarService.getSchedule(yearAndMonth), HttpStatus.OK);
     }
+
 
     @GetMapping("/statistics")
     public ResponseEntity<GetStatisticsResponseDto> getStatistics(
