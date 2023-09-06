@@ -54,12 +54,12 @@ public class EventService {
                 .stream()
                 .map(MyEvent::toGetAllMyEventsResponse)
                 .collect(Collectors.groupingBy(
-                        response -> {
-                            return YearMonth.from(response.getEventAt()).toString();
-                        })
-                );
+                        response -> YearMonth.from(response.getEventAt()).toString(),
+                        LinkedHashMap::new,
+                        Collectors.toList()
+                ));
 
-        return new GetAllMyEventsResponseDto(user.getUserTotalReceiveAmount(), allMyEvents);
+        return getGetAllMyEventsResponseDto(user, allMyEvents);
     }
 
     // 나의 경조사 필터링 조회
@@ -77,16 +77,13 @@ public class EventService {
                         .map(eventCategoryString -> EventCategory.fromValue(Integer.parseInt(eventCategoryString.trim())))
                         .flatMap(eventCategory -> this.myEventRepository.findAllByUserAndMyTypeAndEventCategoryOrderByEventAtDesc(user, myType, eventCategory).stream())
                 )
-                .toList()
-                .stream()
                 .map(MyEvent::toGetAllMyEventsResponse)
                 .collect(Collectors.groupingBy(
-                        response -> {
-                            return YearMonth.from(response.getEventAt()).toString();
-                        }
+                        response -> YearMonth.from(response.getEventAt()).toString(),
+                        Collectors.toList()
                 ));
 
-        return new GetAllMyEventsResponseDto(user.getUserTotalReceiveAmount(), allMyEvents);
+        return getGetAllMyEventsResponseDto(user, allMyEvents);
     }
 
     // 나의 경조사 지인으로부터 받은 금액 등록
@@ -181,17 +178,7 @@ public class EventService {
                         Collectors.toList()
                 ));
 
-        Map<String, List<GetAllAcEventsResponse>> sortedAcEvents = allAcEvents.entrySet()
-                .stream()
-                .sorted(Map.Entry.<String, List<GetAllAcEventsResponse>>comparingByKey().reversed())
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (oldValue, newValue) -> oldValue,
-                        LinkedHashMap::new
-                ));
-
-        return new GetAllAcEventsResponseDto(user.getUserTotalPayAmount(), sortedAcEvents);
+        return getGetAllAcEventsResponseDto(user, allAcEvents);
     }
 
     // 지인 경조사 필터링 조회
@@ -213,16 +200,7 @@ public class EventService {
                         Collectors.toList()
                 ));
 
-        Map<String, List<GetAllAcEventsResponse>> sortedAcEvents = allAcEvents.entrySet()
-                .stream()
-                .sorted(Map.Entry.<String, List<GetAllAcEventsResponse>>comparingByKey().reversed())
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (oldValue, newValue) -> oldValue,
-                        LinkedHashMap::new
-                ));
-        return new GetAllAcEventsResponseDto(user.getUserTotalPayAmount(), sortedAcEvents);
+        return getGetAllAcEventsResponseDto(user, allAcEvents);
     }
 
     // 지인 단일 경조사 조회 (디데이)
@@ -266,5 +244,33 @@ public class EventService {
     private long sumPayAmount(User user, AcType acType, EventCategory eventCategory) {
         return this.acEventRepository.sumPayAmountByUserAndCategoryAndType(user, eventCategory, acType)
                 .orElse(0L);
+    }
+
+    private GetAllMyEventsResponseDto getGetAllMyEventsResponseDto(User user, Map<String, List<GetAllMyEventsResponse>> allMyEvents) {
+        Map<String, List<GetAllMyEventsResponse>> sortedMyEvents = allMyEvents.entrySet()
+                .stream()
+                .sorted(Map.Entry.<String, List<GetAllMyEventsResponse>>comparingByKey().reversed())
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (oldValue, newValue) -> oldValue,
+                        LinkedHashMap::new
+                ));
+
+        return new GetAllMyEventsResponseDto(user.getUserTotalReceiveAmount(), sortedMyEvents);
+    }
+
+    private GetAllAcEventsResponseDto getGetAllAcEventsResponseDto(User user, Map<String, List<GetAllAcEventsResponse>> allAcEvents) {
+        Map<String, List<GetAllAcEventsResponse>> sortedAcEvents = allAcEvents.entrySet()
+                .stream()
+                .sorted(Map.Entry.<String, List<GetAllAcEventsResponse>>comparingByKey().reversed())
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (oldValue, newValue) -> oldValue,
+                        LinkedHashMap::new
+                ));
+
+        return new GetAllAcEventsResponseDto(user.getUserTotalPayAmount(), sortedAcEvents);
     }
 }
