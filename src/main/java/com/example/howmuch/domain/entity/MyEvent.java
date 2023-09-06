@@ -62,7 +62,7 @@ public class MyEvent extends BaseTimeEntity {
 
         String myEventDisplayName;
         if (myEventName == null) {
-            myEventDisplayName = myEventCharacterName + "의 " + eventCategory;
+            myEventDisplayName = myEventCharacterName + "의 " + eventCategory.getCategoryName();
         } else {
             myEventDisplayName = myEventCharacterName + "의 " + myEventName;
         }
@@ -81,7 +81,7 @@ public class MyEvent extends BaseTimeEntity {
         String myEventDisplayName;
 
         if (myEventName == null) {
-            myEventDisplayName = myEventCharacterName + "의 " + eventCategory;
+            myEventDisplayName = myEventCharacterName + "의 " + eventCategory.getCategoryName();
         } else {
             myEventDisplayName = myEventCharacterName + "의 " + myEventName;
         }

@@ -36,10 +36,10 @@ public class CreateMyEventRequestDto {
     private Integer eventCategory;
 
     @Size(max = 255)
-    private String myEventName; // eventCategory 가 etc 인 경우
+    private String myEventName; // eventCategory 가 etc 인 경우 !null
 
     @Size(max = 255)
-    private String myEventCharacterName; // myType 이 '나' 가 아닌 경우
+    private String myEventCharacterName; // myType 이 '나' 가 아닌 경우 !null
 
     private String eventTime; // 경조사 시각
 

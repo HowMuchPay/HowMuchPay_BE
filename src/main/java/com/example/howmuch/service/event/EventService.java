@@ -13,6 +13,7 @@ import com.example.howmuch.domain.repository.MyEventRepository;
 import com.example.howmuch.domain.repository.UserRepository;
 import com.example.howmuch.dto.event.*;
 import com.example.howmuch.dto.event.GetAllMyEventDetailResponseDto.GetAllMyEventDetails;
+import com.example.howmuch.exception.event.NeedEventCharacterNameException;
 import com.example.howmuch.exception.event.NeedEventNameException;
 import com.example.howmuch.exception.event.NotFoundEventDetailException;
 import com.example.howmuch.exception.event.NotFoundEventException;
@@ -40,9 +41,22 @@ public class EventService {
     private final AcEventRepository acEventRepository;
     private final MyEventDetailRepository myEventDetailRepository;
 
+    private static void checkRequest(CreateMyEventRequestDto request) {
+        if (request.getEventCategory() == 4 && request.getMyEventName() == null) {
+            throw new NeedEventNameException("경조사 종류가 기타인 경우에는 별도의 EventName 이 필요합니다.");
+        } else if (request.getMyType() != 0 && request.getMyEventCharacterName() == null) {
+            throw new NeedEventCharacterNameException("나의 경조사 타입이 다른 사람인 경우에는 별도의 경조사 별칭이 필요합니다");
+        } else if (request.getMyType() == 0 && request.getMyEventCharacterName() != null) {
+            throw new RuntimeException("서버 에러");
+        } else if (request.getEventCategory() != 4 && request.getMyEventName() != null) {
+            throw new RuntimeException("서버 에러");
+        }
+    }
+
     // 나의 경조사 등록
     @Transactional
     public Long createMyEvent(CreateMyEventRequestDto request) {
+        checkRequest(request);
         return this.myEventRepository.save(request.toEntity(getUser())).getId();
     }
 
@@ -181,14 +195,13 @@ public class EventService {
         this.myEventDetailRepository.delete(myEventDetail);
     }
 
-
     /*********/
 
     // 지인 경조사 등록 + payAmount 누적
     @Transactional
     public Long createAcEvent(CreateAcEventRequestDto request) {
         if (request.getEventCategory() == 4 && request.getEventName() == null) {
-            throw new NeedEventNameException("경조사 종류가 기타인 경우에는 별도의 EventName 이 필요합니다.");
+            throw new NeedEventNameException("경조사 종류가 기타인 경우에는 별도의 EventName이 필요합니다.");
         }
         getUser().addTotalPayAmount(request.getPayAmount()); // 내가 지불한 총 금액 추가
         return this.acEventRepository.save(request.toEntity(getUser())).getId();
@@ -279,7 +292,6 @@ public class EventService {
         this.acEventRepository.delete(acEvent);
     }
 
-
     private User getUser() {
         return this.userRepository.findById(SecurityUtil.getCurrentUserId())
                 .orElseThrow(() -> new NotFoundUserException("일치하는 회원이 존재하지 않습니다."));
@@ -294,7 +306,6 @@ public class EventService {
         return this.acEventRepository.findById(id)
                 .orElseThrow(() -> new NotFoundEventException("일치하는 경조사 정보가 존재하지 않습니다,"));
     }
-
 
     private long calculateRemainedDay(MyEvent myEvent) {
         return ChronoUnit.DAYS.between(myEvent.getEventAt(), LocalDate.now());
