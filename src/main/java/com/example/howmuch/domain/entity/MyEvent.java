@@ -58,7 +58,7 @@ public class MyEvent extends BaseTimeEntity {
     @OneToMany(mappedBy = "myEvent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MyEventDetail> myEventDetails = new ArrayList<>();
 
-    public GetAllMyEventsResponse toGetAllByEventsResponse() {
+    public GetAllMyEventsResponse toGetAllMyEventsResponse() {
 
         String myEventDisplayName;
         if (myEventName == null) {

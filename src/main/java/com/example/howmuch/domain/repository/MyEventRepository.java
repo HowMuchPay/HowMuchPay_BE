@@ -11,9 +11,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface MyEventRepository extends JpaRepository<MyEvent, Long> {
-    List<MyEvent> findAllByUserOrderByEventAt(User user);
+    List<MyEvent> findAllByUserOrderByEventAtDesc(User user);
 
-    List<MyEvent> findAllByMyTypeAndEventCategoryOrderByEventAtDesc(MyType myType, EventCategory eventCategory);
+    List<MyEvent> findAllByUserAndMyTypeAndEventCategoryOrderByEventAtDesc(User user, MyType myType, EventCategory eventCategory);
 
     List<MyEvent> findAllByEventAt(LocalDate eventAt);
 

@@ -1,7 +1,5 @@
 server:
   port: ${APPLICATION_PORT:8080}
-#  address: ${APPLICATION_ADDRESS:localhost}
-
 
 spring:
   profiles:
