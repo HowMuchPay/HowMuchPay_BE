@@ -64,6 +64,7 @@ public class AcEvent extends BaseTimeEntity {
             acEventDisplayName = acquaintanceNickname + "의 " + eventCategory.getCategoryName();
         }
         return GetAllAcEventsResponse.builder()
+                .id(id)
                 .acEventDisplayName(acEventDisplayName)
                 .eventAt(eventAt)
                 .payAmount(payAmount)

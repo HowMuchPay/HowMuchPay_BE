@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetAllMyEventsResponse {
+    private Long id;
     private String myEventDisplayName;
     private LocalDate eventAt;
     private Long receiveAmount;

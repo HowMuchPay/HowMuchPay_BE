@@ -67,6 +67,7 @@ public class MyEvent extends BaseTimeEntity {
             myEventDisplayName = myEventCharacterName + "의 " + myEventName;
         }
         return GetAllMyEventsResponse.builder()
+                .id(id)
                 .eventAt(eventAt)
                 .receiveAmount(totalReceiveAmount)
                 .eventCategory(eventCategory.getValue())
