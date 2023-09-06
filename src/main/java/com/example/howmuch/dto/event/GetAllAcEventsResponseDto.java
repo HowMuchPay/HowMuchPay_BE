@@ -16,13 +16,3 @@ public class GetAllAcEventsResponseDto {
 
     private Map<String, List<GetAllAcEventsResponse>> allAcEvents;
 }
-
-//    .toList()
-//                .stream()
-//                .map(MyEvent::toGetAllByEventsResponse)
-//                .collect(Collectors.groupingBy(
-//                        response -> {
-//                            return YearMonth.from(response.getEventAt()).toString();
-//                        }
-//                ));
-//        return new GetAllMyEventsResponseDto(getUser().getUserTotalPayAmount(), allMyEvents);
