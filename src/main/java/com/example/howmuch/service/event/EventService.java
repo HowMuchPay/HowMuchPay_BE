@@ -13,6 +13,7 @@ import com.example.howmuch.domain.repository.MyEventRepository;
 import com.example.howmuch.domain.repository.UserRepository;
 import com.example.howmuch.dto.event.*;
 import com.example.howmuch.dto.event.GetAllMyEventDetailResponseDto.GetAllMyEventDetails;
+import com.example.howmuch.exception.event.NeedEventNameException;
 import com.example.howmuch.exception.event.NotFoundEventDetailException;
 import com.example.howmuch.exception.event.NotFoundEventException;
 import com.example.howmuch.exception.user.NotFoundUserException;
@@ -186,6 +187,9 @@ public class EventService {
     // 지인 경조사 등록 + payAmount 누적
     @Transactional
     public Long createAcEvent(CreateAcEventRequestDto request) {
+        if (request.getEventCategory() == 4 && request.getEventName() == null) {
+            throw new NeedEventNameException("경조사 종류가 기타인 경우에는 별도의 EventName 이 필요합니다.");
+        }
         getUser().addTotalPayAmount(request.getPayAmount()); // 내가 지불한 총 금액 추가
         return this.acEventRepository.save(request.toEntity(getUser())).getId();
     }

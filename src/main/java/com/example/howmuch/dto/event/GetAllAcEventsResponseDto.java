@@ -11,8 +11,6 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetAllAcEventsResponseDto {
-
     private Long totalPayAmount;
-
     private Map<String, List<GetAllAcEventsResponse>> allAcEvents;
 }

@@ -37,6 +37,13 @@ public class CreateAcEventRequestDto {
 
     private String eventTime;
 
+    private String eventName; // eventCategory 가 etc 인 경우(4) !null
+
+    /**
+     * request json key 중 eventCategory 가 4이면 eventName 지정
+     * request json key 중 eventCategory 가 4가 아니면 eventName null 지정
+     **/
+
     public AcEvent toEntity(User user) {
         return AcEvent.builder()
                 .eventAt(eventAt)
@@ -45,6 +52,7 @@ public class CreateAcEventRequestDto {
                 .acquaintanceType(AcType.fromValue(acType))
                 .acquaintanceNickname(acName)
                 .eventTime(eventTime)
+                .eventName(eventName)
                 .user(user)
                 .build();
     }
