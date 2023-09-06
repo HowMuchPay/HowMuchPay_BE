@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetAllAcEventsResponse {
+    private String acEventDisplayName;
     private LocalDate eventAt;
     private Long payAmount;
     private Integer eventCategory;

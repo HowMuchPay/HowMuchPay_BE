@@ -38,4 +38,12 @@ public class EventExceptionHandler {
         return ResponseEntity.badRequest()
                 .body(ErrorMessage.of(exception, errorStatus));
     }
+
+    @ExceptionHandler(NeedEventNameException.class)
+    public ResponseEntity<ErrorMessage> needEventNameException(
+            NeedEventNameException exception
+    ) {
+        return ResponseEntity.badRequest()
+                .body(ErrorMessage.of(exception, errorStatus));
+    }
 }
