@@ -81,7 +81,7 @@ public class EventService {
 
         User user = getUser();
         long totalReceiveAmount = 0L;
-        
+
         List<MyEvent> myEvents = myTypeList.stream()
                 .map(myTypeString -> MyType.fromValue(Integer.parseInt(myTypeString.trim())))
                 .flatMap(myType -> eventCategoryList.stream()
@@ -225,18 +225,27 @@ public class EventService {
         List<String> eventCategoryList = List.of(eventCategories.split(","));
 
         User user = getUser();
-        Map<String, List<GetAllAcEventsResponse>> allAcEvents = acTypeList.stream()
+        long totalPayAmount = 0L;
+
+        List<AcEvent> acEvents = acTypeList.stream()
                 .map(acTypeString -> AcType.fromValue(Integer.parseInt(acTypeString.trim())))
                 .flatMap(acType -> eventCategoryList.stream()
                         .map(eventCategoryString -> EventCategory.fromValue(Integer.parseInt(eventCategoryString.trim())))
-                        .flatMap(eventCategory -> this.acEventRepository.findAllByUserAndAcquaintanceTypeAndEventCategoryOrderByEventAtDesc(user, acType, eventCategory).stream()))
+                        .flatMap(eventCategory
+                                -> this.acEventRepository.findAllByUserAndAcquaintanceTypeAndEventCategoryOrderByEventAtDesc(user, acType, eventCategory).stream())
+                ).toList();
+
+        for (AcEvent acEvent : acEvents) {
+            totalPayAmount += acEvent.getPayAmount();
+        }
+
+        Map<String, List<GetAllAcEventsResponse>> sortedAcEvents = acEvents
+                .stream()
                 .map(AcEvent::toGetAllAcEventsResponse)
                 .collect(Collectors.groupingBy(
                         response -> YearMonth.from(response.getEventAt()).toString(),
                         Collectors.toList()
-                ));
-
-        Map<String, List<GetAllAcEventsResponse>> sortedAcEvents = allAcEvents.entrySet()
+                )).entrySet()
                 .stream()
                 .sorted(Map.Entry.<String, List<GetAllAcEventsResponse>>comparingByKey().reversed())
                 .collect(Collectors.toMap(
@@ -247,7 +256,7 @@ public class EventService {
                 ));
 
 
-        return new GetAllAcEventsResponseDto(user.getUserTotalPayAmount(), allAcEvents);
+        return new GetAllAcEventsResponseDto(totalPayAmount, sortedAcEvents);
     }
 
     // 지인 단일 경조사 조회 (디데이)
@@ -283,13 +292,7 @@ public class EventService {
     }
 
 
-    // 현재 로부터 남은 일자 계산 하는 메소드
     private long calculateRemainedDay(MyEvent myEvent) {
         return ChronoUnit.DAYS.between(myEvent.getEventAt(), LocalDate.now());
-    }
-
-    private long sumPayAmount(User user, AcType acType, EventCategory eventCategory) {
-        return this.acEventRepository.sumPayAmountByUserAndCategoryAndType(user, eventCategory, acType)
-                .orElse(0L);
     }
 }
