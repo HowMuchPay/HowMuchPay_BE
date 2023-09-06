@@ -41,6 +41,9 @@ public class AcEvent extends BaseTimeEntity {
     @Column(name = "ac_name", nullable = false)
     private String acquaintanceNickname;
 
+    @Column(name = "event_time")
+    private String eventTime;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usr_id")
     private User user;

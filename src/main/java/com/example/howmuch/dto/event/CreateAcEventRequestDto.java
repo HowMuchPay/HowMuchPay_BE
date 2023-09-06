@@ -35,6 +35,8 @@ public class CreateAcEventRequestDto {
     @NotNull
     private LocalDate eventAt;
 
+    private String eventTime;
+
     public AcEvent toEntity(User user) {
         return AcEvent.builder()
                 .eventAt(eventAt)
@@ -42,6 +44,7 @@ public class CreateAcEventRequestDto {
                 .eventCategory(EventCategory.fromValue(eventCategory))
                 .acquaintanceType(AcType.fromValue(acType))
                 .acquaintanceNickname(acName)
+                .eventTime(eventTime)
                 .user(user)
                 .build();
     }
