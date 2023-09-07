@@ -123,7 +123,7 @@ public class EventController {
     @GetMapping("/acquaintance/{id}/detail")
     public ResponseEntity<GetAcEventsResponseDto> getAcEventDetail(
             @PathVariable Long id
-    ) {
+    ){
         return new ResponseEntity<>(
                 this.eventService.getAcEventsWithDay(id), HttpStatus.OK);
     }
@@ -132,8 +132,8 @@ public class EventController {
     // 지인 경조사 필터링 조회
     @GetMapping("/acquaintance/filter")
     public ResponseEntity<GetAllAcEventsResponseDto> getAllAcEventsByFilter(
-            @RequestParam String acTypes,
-            @RequestParam String eventCategories
+            @RequestParam Integer acTypes,
+            @RequestParam Integer eventCategories
     ) {
         return new ResponseEntity<>(
                 this.eventService.getAllAcEventsByFilter(acTypes, eventCategories), HttpStatus.OK);
