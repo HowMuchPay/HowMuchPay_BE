@@ -12,9 +12,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetAcEventsResponseDto {
-
-    private Long id;
-
     private String nickname;
 
     private LocalDate eventAt;
@@ -28,15 +25,14 @@ public class GetAcEventsResponseDto {
 
     private Integer acType;
 
-    public static GetAcEventsResponseDto of(AcEvent acEvent, int dDay) {
+    public static GetAcEventsResponseDto from(AcEvent acEvent, int dDay) {
         return GetAcEventsResponseDto.builder()
-            .id(acEvent.getId())
-            .nickname(acEvent.getAcquaintanceNickname())
-            .eventAt(acEvent.getEventAt())
-            .dDay(dDay)
-            .payAmount(acEvent.getPayAmount())
-            .eventCategory(acEvent.getEventCategory().getValue())
-            .acType(acEvent.getAcquaintanceType().getValue())
-            .build();
+                .nickname(acEvent.getAcquaintanceNickname())
+                .eventAt(acEvent.getEventAt())
+                .dDay(dDay)
+                .payAmount(acEvent.getPayAmount())
+                .eventCategory(acEvent.getEventCategory().getValue())
+                .acType(acEvent.getAcquaintanceType().getValue())
+                .build();
     }
 }
