@@ -20,6 +20,8 @@ public interface AcEventRepository extends JpaRepository<AcEvent, Long> {
 
     List<AcEvent> findAllByEventAt(LocalDate eventAt);
 
+    List<AcEvent> findByUserAndAcquaintanceNickname(User user, String acquaintanceName);
+
     Optional<AcEvent> findFirstByUserAndEventAtGreaterThanOrderByEventAtAsc(User user, LocalDate currentDate);
 
     @Query("SELECT SUM(a.payAmount) FROM AcEvent a WHERE a.user = ?1 AND a.eventCategory = ?2 AND a.acquaintanceType = ?3")
