@@ -79,7 +79,6 @@ public class UserService {
                 .payPercentage(payPercentage)
                 .build();
         }
-
         LocalDate currentDate = LocalDate.now();
         int daysUntilEvent = (int) ChronoUnit.DAYS.between(currentDate, closestEvent.getEventAt());
         return HomeResponseDto.builder()
@@ -87,6 +86,7 @@ public class UserService {
             .userTotalReceiveAmount(receive)
             .payPercentage(payPercentage)
             .nickname(closestEvent.getAcquaintanceNickname())
+            .eventName(closestEvent.getEventName())
             .eventCategory(closestEvent.getEventCategory().getValue())
             .dDay(daysUntilEvent)
             .build();
