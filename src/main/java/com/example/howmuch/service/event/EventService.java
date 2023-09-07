@@ -282,7 +282,7 @@ public class EventService {
         AcEvent acEvent = getAcEvent(acId); // 특정 지인의 경조사 정보를 가져옴
         //dDay 로직
         long daysUntilEvent = -1 * ChronoUnit.DAYS.between(LocalDate.now(), acEvent.getEventAt());
-        return GetAcEventsResponseDto.from(acEvent, (int) daysUntilEvent);
+        return GetAcEventsResponseDto.of(acEvent, (int) daysUntilEvent);
     }
 
     // 지인 경조사 삭제
@@ -290,6 +290,34 @@ public class EventService {
     public void deleteAcEvent(Long id) {
         AcEvent acEvent = getAcEvent(id);
         this.acEventRepository.delete(acEvent);
+    }
+
+    // 지인 경조사 조회 (이름)
+    // 이름으로 조회시 여러개의 경조사가 있을 수 있음
+    @Transactional(readOnly = true)
+    public GetAllAcEventsResponseDto getAcEventsByName(String acquaintanceName){
+        User user = getUser();
+
+        Map<String, List<GetAllAcEventsResponse>> allAcEvents = this.acEventRepository.findByUserAndAcquaintanceNickname(user, acquaintanceName)
+            .stream()
+            .map(AcEvent::toGetAllAcEventsResponse)
+            .collect(Collectors.groupingBy(
+                response -> YearMonth.from(response.getEventAt()).toString(),
+                LinkedHashMap::new,
+                Collectors.toList()
+            ));
+
+        Map<String, List<GetAllAcEventsResponse>> sortedAcEvents = allAcEvents.entrySet()
+            .stream()
+            .sorted(Map.Entry.<String, List<GetAllAcEventsResponse>>comparingByKey().reversed())
+            .collect(Collectors.toMap(
+                Map.Entry::getKey,
+                Map.Entry::getValue,
+                (oldValue, newValue) -> oldValue,
+                LinkedHashMap::new
+            ));
+
+        return new GetAllAcEventsResponseDto(user.getUserTotalPayAmount(), sortedAcEvents);
     }
 
     private User getUser() {
