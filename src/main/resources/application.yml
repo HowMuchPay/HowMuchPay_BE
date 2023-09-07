@@ -1,10 +1,8 @@
 server:
   port: ${APPLICATION_PORT:8080}
-#  address: ${APPLICATION_ADDRESS:localhost}
-
 
 spring:
   profiles:
     group:
-      "dev": "dev, datasource, oauth, redis"
-      "prod": "prod, datasource, oauth, redis"
+      "dev": "dev, datasource, oauth, redis, s3"
+      "prod": "prod, datasource, oauth, redis, s3"

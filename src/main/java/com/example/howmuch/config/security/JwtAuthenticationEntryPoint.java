@@ -56,6 +56,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         }
     }
 
+    // 인증 안된 경우
     private void sendErrorUnauthorized(HttpServletResponse response) throws IOException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json,charset=utf-8");
@@ -66,6 +67,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         );
     }
 
+    // 권한 없는 경우
     private void sendErrorDenied(HttpServletResponse response) throws IOException {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType("application/json,charset=utf-8");

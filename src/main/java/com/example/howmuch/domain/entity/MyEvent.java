@@ -58,16 +58,16 @@ public class MyEvent extends BaseTimeEntity {
     @OneToMany(mappedBy = "myEvent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MyEventDetail> myEventDetails = new ArrayList<>();
 
-    public GetAllMyEventsResponse toGetAllByEventsResponse() {
+    public GetAllMyEventsResponse toGetAllMyEventsResponse() {
 
         String myEventDisplayName;
         if (myEventName == null) {
-            myEventDisplayName = myEventCharacterName + "의 " + eventCategory;
+            myEventDisplayName = myEventCharacterName + "의 " + eventCategory.getCategoryName();
         } else {
             myEventDisplayName = myEventCharacterName + "의 " + myEventName;
         }
         return GetAllMyEventsResponse.builder()
-                .month(eventAt.getMonthValue())
+                .id(id)
                 .eventAt(eventAt)
                 .receiveAmount(totalReceiveAmount)
                 .eventCategory(eventCategory.getValue())
@@ -82,7 +82,7 @@ public class MyEvent extends BaseTimeEntity {
         String myEventDisplayName;
 
         if (myEventName == null) {
-            myEventDisplayName = myEventCharacterName + "의 " + eventCategory;
+            myEventDisplayName = myEventCharacterName + "의 " + eventCategory.getCategoryName();
         } else {
             myEventDisplayName = myEventCharacterName + "의 " + myEventName;
         }

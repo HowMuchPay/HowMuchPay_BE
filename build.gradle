@@ -65,6 +65,9 @@ dependencies {
     // admin SDK
     implementation 'com.google.firebase:firebase-admin:9.1.1'
 
+    // s3
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
 }
 
 jar {

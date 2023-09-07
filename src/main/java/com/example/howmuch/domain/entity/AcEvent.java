@@ -31,7 +31,7 @@ public class AcEvent extends BaseTimeEntity {
     private long payAmount;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "event_category", nullable = false)
+    @Column(name = "event_category")
     private EventCategory eventCategory;
 
     @Enumerated(EnumType.STRING)
@@ -41,13 +41,31 @@ public class AcEvent extends BaseTimeEntity {
     @Column(name = "ac_name", nullable = false)
     private String acquaintanceNickname;
 
+    @Column(name = "event_time")
+    private String eventTime;
+
+    @Column(name = "event_name")
+    private String eventName;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usr_id")
     private User user;
 
-    public GetAllAcEventsResponse of() {
+    /**
+     * 지인의 이름
+     * 지인 경조사 이름
+     */
+    public GetAllAcEventsResponse toGetAllAcEventsResponse() {
+
+        String acEventDisplayName;
+        if (eventCategory == EventCategory.ETC && eventName != null) {
+            acEventDisplayName = acquaintanceNickname + "의 " + eventName;
+        } else {
+            acEventDisplayName = acquaintanceNickname + "의 " + eventCategory.getCategoryName();
+        }
         return GetAllAcEventsResponse.builder()
-                .month(eventAt.getMonthValue())
+                .id(id)
+                .acEventDisplayName(acEventDisplayName)
                 .eventAt(eventAt)
                 .payAmount(payAmount)
                 .eventCategory(eventCategory.getValue())
