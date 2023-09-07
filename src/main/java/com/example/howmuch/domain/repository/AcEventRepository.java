@@ -4,6 +4,7 @@ import com.example.howmuch.constant.AcType;
 import com.example.howmuch.constant.EventCategory;
 import com.example.howmuch.domain.entity.AcEvent;
 import com.example.howmuch.domain.entity.User;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -12,16 +13,17 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AcEventRepository extends JpaRepository<AcEvent, Long> {
-    List<AcEvent> findAllByUserOrderByEventAtDesc(User user);
+    List<AcEvent> findAllByUser(User user, Sort sort);
 
     List<AcEvent> findAllByAcquaintanceType(AcType type);
 
-    List<AcEvent> findAllByUserAndAcquaintanceTypeAndEventCategoryOrderByEventAtDesc(User user, AcType acType, EventCategory category);
+    List<AcEvent> findAllByAcquaintanceTypeAndEventCategoryOrderByEventAtDesc(AcType acType, EventCategory category);
 
     List<AcEvent> findAllByEventAt(LocalDate eventAt);
 
-    List<AcEvent> findByUserAndAcquaintanceNickname(User user, String acquaintanceName);
 
+//    @Query("select a from AcEvent a where a.user = :user and a.eventAt > CURRENT_DATE order by a.eventAt asc limit 1")
+//    Optional<AcEvent> findClosestFutureEventByUser(User user);
     Optional<AcEvent> findFirstByUserAndEventAtGreaterThanOrderByEventAtAsc(User user, LocalDate currentDate);
 
     @Query("SELECT SUM(a.payAmount) FROM AcEvent a WHERE a.user = ?1 AND a.eventCategory = ?2 AND a.acquaintanceType = ?3")
