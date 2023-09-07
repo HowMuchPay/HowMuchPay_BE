@@ -17,6 +17,8 @@ public class HomeResponseDto {
 
     private String nickname;
 
+    private String eventName;
+
     private Integer eventCategory;
 
     private Integer dDay;
