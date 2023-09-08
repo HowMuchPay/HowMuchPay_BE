@@ -4,6 +4,7 @@ import com.example.howmuch.constant.AcType;
 import com.example.howmuch.constant.EventCategory;
 import com.example.howmuch.domain.BaseTimeEntity;
 import com.example.howmuch.dto.event.GetAllAcEventsResponse;
+import com.example.howmuch.dto.home.HomeResponseDto;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -70,5 +71,21 @@ public class AcEvent extends BaseTimeEntity {
                 .payAmount(payAmount)
                 .eventCategory(eventCategory.getValue())
                 .build();
+    }
+    public HomeResponseDto toHomeResponseDto(long pay, long receive, Integer payPercentage, int dDay ){
+        String acEventDisplayName;
+        if (eventCategory == EventCategory.ETC && eventName != null) {
+            acEventDisplayName = acquaintanceNickname + "의 " + eventName;
+        } else {
+            acEventDisplayName = acquaintanceNickname + "의 " + eventCategory.getCategoryName();
+        }
+        return HomeResponseDto.builder()
+            .userTotalPayAmount(pay)
+            .userTotalReceiveAmount(receive)
+            .payPercentage(payPercentage)
+            .acEventDisplayName(acEventDisplayName)
+            .eventCategory(eventCategory.getValue())
+            .dDay(dDay)
+            .build();
     }
 }
