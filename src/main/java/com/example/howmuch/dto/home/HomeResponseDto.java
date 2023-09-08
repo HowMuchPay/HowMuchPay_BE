@@ -15,12 +15,11 @@ public class HomeResponseDto {
 
     private Integer payPercentage;
 
-    private String nickname;
-
-    private String eventName;
+    private String acEventDisplayName;
 
     private Integer eventCategory;
 
     private Integer dDay;
 
 }
+
