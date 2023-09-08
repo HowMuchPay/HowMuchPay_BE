@@ -5,6 +5,7 @@ import com.example.howmuch.constant.MyType;
 import com.example.howmuch.domain.BaseTimeEntity;
 import com.example.howmuch.dto.event.GetAllMyEventsResponse;
 import com.example.howmuch.dto.event.GetMyEventInfoResponseDto;
+import com.example.howmuch.dto.home.HomeResponseDto;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -93,6 +94,24 @@ public class MyEvent extends BaseTimeEntity {
                 .eventTime(eventTime)
                 .remainedDay(remainedDay)
                 .build();
+    }
+
+    public HomeResponseDto toHomeResponseDto(long pay, long receive, Integer payPercentage, int dDay ){
+        String myEventDisplayName;
+        if (myEventName == null) {
+            myEventDisplayName = myEventCharacterName + "의 " + eventCategory.getCategoryName();
+        } else {
+            myEventDisplayName = myEventCharacterName + "의 " + myEventName;
+        }
+
+        return HomeResponseDto.builder()
+            .userTotalPayAmount(pay)
+            .userTotalReceiveAmount(receive)
+            .payPercentage(payPercentage)
+            .acEventDisplayName(myEventDisplayName)
+            .eventCategory(eventCategory.getValue())
+            .dDay(dDay)
+            .build();
     }
 
     public void addReceiveAmount(Long receiveAmount) {
