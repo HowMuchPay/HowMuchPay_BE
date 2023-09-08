@@ -45,9 +45,12 @@ public class SecurityConfig {
                 .headers().frameOptions().disable()
                 .and()
                 .authorizeRequests()
-                .antMatchers("/login/callback/**", "/user/reissue",
-                        "/test", "/login/kakao",
-                        "/recommendation/get", "/recommendation/save")
+                .antMatchers("/login/callback/**",
+                        "/user/reissue",
+                        "/test",
+                        "/login/kakao",
+                        "/recommendation/get",
+                        "/recommendation/save")
                 .permitAll()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
