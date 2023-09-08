@@ -2,8 +2,10 @@ package com.example.howmuch.service.user;
 
 
 import com.example.howmuch.domain.entity.AcEvent;
+import com.example.howmuch.domain.entity.MyEvent;
 import com.example.howmuch.domain.entity.User;
 import com.example.howmuch.domain.repository.AcEventRepository;
+import com.example.howmuch.domain.repository.MyEventRepository;
 import com.example.howmuch.domain.repository.UserRepository;
 import com.example.howmuch.dto.home.HomeResponseDto;
 import com.example.howmuch.exception.user.NotFoundUserException;
@@ -27,6 +29,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final RedisUtil redisUtil;
     private final AcEventRepository acEventRepository;
+
+    private final MyEventRepository myEventRepository;
 
 
     /**
@@ -66,32 +70,52 @@ public class UserService {
         User user = findUserFromToken();
 
         log.info(user.toString());
-        AcEvent closestEvent = findClosestEvent(user);
+        AcEvent closestAcEvent = findClosestAcEvent(user);
+        MyEvent closestMyEvent = findClosestMyEvent(user);
 
         long pay = user.getUserTotalPayAmount();
         long receive = user.getUserTotalReceiveAmount();
         int payPercentage = calculatePayPercentage(pay, receive);
+        int myDay = calculateDaysUntilMyEvent(closestMyEvent);
+        int acDay = calculateDaysUntilEvent(closestAcEvent);
 
-        if (closestEvent == null) {
+        if (closestAcEvent == null && closestMyEvent == null) {
+            // 둘 다 null이면 Event 정보를 빈 값으로 처리
             return HomeResponseDto.builder()
                 .userTotalPayAmount(pay)
                 .userTotalReceiveAmount(receive)
                 .payPercentage(payPercentage)
                 .build();
         }
-        LocalDate currentDate = LocalDate.now();
-        int daysUntilEvent = (int) ChronoUnit.DAYS.between(currentDate, closestEvent.getEventAt());
-        return HomeResponseDto.builder()
-            .userTotalPayAmount(pay)
-            .userTotalReceiveAmount(receive)
-            .payPercentage(payPercentage)
-            .nickname(closestEvent.getAcquaintanceNickname())
-            .eventName(closestEvent.getEventName())
-            .eventCategory(closestEvent.getEventCategory().getValue())
-            .dDay(daysUntilEvent)
-            .build();
+        if (closestAcEvent == null) {
+            return closestMyEvent.toHomeResponseDto(pay, receive, payPercentage, myDay);
+        }
+        if (closestMyEvent == null) {
+            return closestAcEvent.toHomeResponseDto(pay, receive, payPercentage, acDay);
+        }
+        if (acDay < myDay) {
+            return closestAcEvent.toHomeResponseDto(pay, receive, payPercentage, acDay);
+        } else {
+            return closestMyEvent.toHomeResponseDto(pay, receive, payPercentage, myDay);
+
+        }
     }
 
+    private int calculateDaysUntilEvent(AcEvent event) {
+        if (event == null) {
+            return Integer.MAX_VALUE;
+        }
+        LocalDate currentDate = LocalDate.now();
+        return (int) ChronoUnit.DAYS.between(currentDate, event.getEventAt());
+    }
+
+    private int calculateDaysUntilMyEvent(MyEvent event) {
+        if (event == null) {
+            return Integer.MAX_VALUE;
+        }
+        LocalDate currentDate = LocalDate.now();
+        return (int) ChronoUnit.DAYS.between(currentDate, event.getEventAt());
+    }
     private int calculatePayPercentage(long totalPayAmount, long totalReceiveAmount) {
         if (totalPayAmount + totalReceiveAmount == 0) {
             return 0; // 분모가 0인 경우 방지
@@ -99,8 +123,13 @@ public class UserService {
         return (int) (totalPayAmount / (totalPayAmount + totalReceiveAmount) * 100);
     }
 
-    private AcEvent findClosestEvent(User user) {
-        return acEventRepository.findFirstByUserAndEventAtGreaterThanOrderByEventAtAsc(user,
+    private AcEvent findClosestAcEvent(User user) {
+        return acEventRepository.findFirstByUserAndEventAtGreaterThanEqualOrderByEventAtAsc(user,
+            LocalDate.now()).orElse(null);
+    }
+
+    private MyEvent findClosestMyEvent(User user) {
+        return myEventRepository.findFirstByUserAndEventAtGreaterThanEqualOrderByEventAtAsc(user,
             LocalDate.now()).orElse(null);
     }
 
