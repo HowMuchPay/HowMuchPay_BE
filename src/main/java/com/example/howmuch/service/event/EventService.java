@@ -297,8 +297,10 @@ public class EventService {
     @Transactional(readOnly = true)
     public GetAllAcEventsResponseDto getAcEventsByName(String acquaintanceName){
         User user = getUser();
+        List<AcEvent> byUserAndAcquaintanceNickname = this.acEventRepository.findByUserAndAcquaintanceNickname(
+            user, acquaintanceName);
 
-        Map<String, List<GetAllAcEventsResponse>> allAcEvents = this.acEventRepository.findByUserAndAcquaintanceNickname(user, acquaintanceName)
+        Map<String, List<GetAllAcEventsResponse>> allAcEvents = byUserAndAcquaintanceNickname
             .stream()
             .map(AcEvent::toGetAllAcEventsResponse)
             .collect(Collectors.groupingBy(
@@ -306,6 +308,7 @@ public class EventService {
                 LinkedHashMap::new,
                 Collectors.toList()
             ));
+
 
         Map<String, List<GetAllAcEventsResponse>> sortedAcEvents = allAcEvents.entrySet()
             .stream()
@@ -316,8 +319,10 @@ public class EventService {
                 (oldValue, newValue) -> oldValue,
                 LinkedHashMap::new
             ));
+        // 경조사 비용 집계
+        double totalCost = byUserAndAcquaintanceNickname.stream().mapToDouble(AcEvent::getPayAmount).sum();
 
-        return new GetAllAcEventsResponseDto(user.getUserTotalPayAmount(), sortedAcEvents);
+        return new GetAllAcEventsResponseDto((long) totalCost, sortedAcEvents);
     }
 
     private User getUser() {
