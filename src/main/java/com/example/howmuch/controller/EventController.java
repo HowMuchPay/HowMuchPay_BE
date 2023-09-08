@@ -152,9 +152,9 @@ public class EventController {
     // 지인 경조사 이름 조회
     @GetMapping("/acquaintance/nickname")
     public ResponseEntity<GetAllAcEventsResponseDto> getAcEventsByNickname(
-        @RequestParam String acquaintanceNickname
+        @RequestParam String name
     ){
-        return ResponseEntity.ok(eventService.getAcEventsByName(acquaintanceNickname));
+        return ResponseEntity.ok(eventService.getAcEventsByName(name));
     }
 
 
