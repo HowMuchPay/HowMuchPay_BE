@@ -73,7 +73,7 @@ public class OauthService {
 
         String imageUrl = user.getProfileImage(); // 사용자 프로필 이미지 URL
         MultipartFile profileImageFile = convertImageURLToMultipartFile(imageUrl);
-        s3Service.uploadFile(profileImageFile);
+        s3Service.saveFile(profileImageFile);
 
         return user;
     }
