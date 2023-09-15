@@ -15,7 +15,7 @@ public enum MyType {
      */
 
     MY(0, "나"),
-    PARENT(1, "가족"),
+    FAMILY(1, "가족"),
     ETC(2, "기타");
 
     private final Integer value;

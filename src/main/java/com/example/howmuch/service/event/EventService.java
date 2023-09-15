@@ -41,17 +41,6 @@ public class EventService {
     private final AcEventRepository acEventRepository;
     private final MyEventDetailRepository myEventDetailRepository;
 
-    private static void checkRequest(CreateMyEventRequestDto request) {
-        if (request.getEventCategory() == 4 && request.getMyEventName() == null) {
-            throw new NeedEventNameException("경조사 종류가 기타인 경우에는 별도의 EventName 이 필요합니다.");
-        } else if (request.getMyType() != 0 && request.getMyEventCharacterName() == null) {
-            throw new NeedEventCharacterNameException("나의 경조사 타입이 다른 사람인 경우에는 별도의 경조사 별칭이 필요합니다");
-        } else if (request.getMyType() == 0 && request.getMyEventCharacterName() != null) {
-            throw new RuntimeException("서버 에러");
-        } else if (request.getEventCategory() != 4 && request.getMyEventName() != null) {
-            throw new RuntimeException("서버 에러");
-        }
-    }
 
     // 나의 경조사 등록
     @Transactional
@@ -181,8 +170,9 @@ public class EventService {
     // 나의 경조사 삭제
     @Transactional
     public void deleteMyEvent(Long id) {
-        MyEvent myEvent = getMyEvent(id);
-        this.myEventRepository.delete(myEvent);
+        User user = getUser();
+        user.minusUserTotalReceiveAmount(getMyEvent(id).getTotalReceiveAmount());
+        user.getMyEvents().remove(getMyEvent(id));
     }
 
     // 나의 경조사 세부사항 삭제
@@ -281,7 +271,7 @@ public class EventService {
     public GetAcEventsResponseDto getAcEventsWithDay(Long acId) {
         AcEvent acEvent = getAcEvent(acId); // 특정 지인의 경조사 정보를 가져옴
         //dDay 로직
-        long daysUntilEvent = 1 * ChronoUnit.DAYS.between(LocalDate.now(), acEvent.getEventAt());
+        long daysUntilEvent = ChronoUnit.DAYS.between(LocalDate.now(), acEvent.getEventAt());
         return GetAcEventsResponseDto.of(acEvent, (int) daysUntilEvent);
     }
 
@@ -295,30 +285,30 @@ public class EventService {
     // 지인 경조사 조회 (이름)
     // 이름으로 조회시 여러개의 경조사가 있을 수 있음
     @Transactional(readOnly = true)
-    public GetAllAcEventsResponseDto getAcEventsByName(String acquaintanceName){
+    public GetAllAcEventsResponseDto getAcEventsByName(String acquaintanceName) {
         User user = getUser();
         List<AcEvent> byUserAndAcquaintanceNickname = this.acEventRepository.findByUserAndAcquaintanceNickname(
-            user, acquaintanceName);
+                user, acquaintanceName);
 
         Map<String, List<GetAllAcEventsResponse>> allAcEvents = byUserAndAcquaintanceNickname
-            .stream()
-            .map(AcEvent::toGetAllAcEventsResponse)
-            .collect(Collectors.groupingBy(
-                response -> YearMonth.from(response.getEventAt()).toString(),
-                LinkedHashMap::new,
-                Collectors.toList()
-            ));
+                .stream()
+                .map(AcEvent::toGetAllAcEventsResponse)
+                .collect(Collectors.groupingBy(
+                        response -> YearMonth.from(response.getEventAt()).toString(),
+                        LinkedHashMap::new,
+                        Collectors.toList()
+                ));
 
 
         Map<String, List<GetAllAcEventsResponse>> sortedAcEvents = allAcEvents.entrySet()
-            .stream()
-            .sorted(Map.Entry.<String, List<GetAllAcEventsResponse>>comparingByKey().reversed())
-            .collect(Collectors.toMap(
-                Map.Entry::getKey,
-                Map.Entry::getValue,
-                (oldValue, newValue) -> oldValue,
-                LinkedHashMap::new
-            ));
+                .stream()
+                .sorted(Map.Entry.<String, List<GetAllAcEventsResponse>>comparingByKey().reversed())
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (oldValue, newValue) -> oldValue,
+                        LinkedHashMap::new
+                ));
         // 경조사 비용 집계
         double totalCost = byUserAndAcquaintanceNickname.stream().mapToDouble(AcEvent::getPayAmount).sum();
 
@@ -342,5 +332,17 @@ public class EventService {
 
     private long calculateRemainedDay(MyEvent myEvent) {
         return ChronoUnit.DAYS.between(myEvent.getEventAt(), LocalDate.now());
+    }
+
+    private void checkRequest(CreateMyEventRequestDto request) {
+        if (request.getEventCategory() == 4 && request.getMyEventName() == null) {
+            throw new NeedEventNameException("경조사 종류가 기타인 경우에는 별도의 EventName 이 필요합니다.");
+        } else if (request.getMyType() != 0 && request.getMyEventCharacterName() == null) {
+            throw new NeedEventCharacterNameException("나의 경조사 타입이 나가 아닌 경우에는 별도의 경조사 주인공 이름이 필요합니다");
+        } else if (request.getMyType() == 0 && request.getMyEventCharacterName() != null) {
+            throw new RuntimeException("서버 에러");
+        } else if (request.getEventCategory() != 4 && request.getMyEventName() != null) {
+            throw new RuntimeException("서버 에러");
+        }
     }
 }
