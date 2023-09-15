@@ -116,19 +116,20 @@ public class EventService {
         return new GetAllMyEventsResponseDto(totalReceiveAmount, sortedMyEvents);
     }
 
-    // 나의 경조사 지인으로부터 받은 금액 등록
+    // 나의 경조사 세부 사항 등록
+
+    /**
+     * 1. MyEvent receiveAmount 필드 증가
+     * 2. 해당 User TotalReceiveAmount 필드 증가
+     **/
     @Transactional
     public Long createMyEventDetail(Long id, CreateMyEventDetailRequestDto request) {
-
         MyEvent myEvent = getMyEvent(id);
-
-        getUser().addTotalReceiveAmount(request.getReceiveAmount()); // 내가 받은 총 금액 추가
-        myEvent.addReceiveAmount(request.getReceiveAmount()); // 해당 경조사 받은 금액 추가
-
+        myEvent.addReceiveAmount(getUser(), request.getReceiveAmount()); // 해당 경조사 받은 금액 추가
         return this.myEventDetailRepository.save(request.toEntity(myEvent)).getId();
     }
 
-    // 나의 경조사 지인으로부터 받은 금액 전체 조회
+    // 나의 경조사 세부 사항 전체 조회
     @Transactional(readOnly = true)
     public GetAllMyEventDetailResponseDto getAllMyEventDetails(Long id, String sort) {
         MyEvent myEvent = getMyEvent(id);
@@ -156,12 +157,10 @@ public class EventService {
         }
     }
 
-    // 나의 경조사 지인으로부터 받은 금액 이름 조회
+    // 나의 경조사 세부 사항 이름 조회
     @Transactional(readOnly = true)
     public List<GetAllMyEventDetails> getAllMyEventDetailsByName(Long id, String name) {
-
-        getMyEvent(id);
-        return this.myEventDetailRepository.findAllByAcquaintanceNicknameContainingIgnoreCase(name)
+        return this.myEventDetailRepository.findAllByMyEventAndAcquaintanceNicknameContainingIgnoreCase(getMyEvent(id), name)
                 .stream()
                 .map(MyEventDetail::toGetAllMyEventDetails)
                 .toList();
@@ -171,19 +170,25 @@ public class EventService {
     @Transactional
     public void deleteMyEvent(Long id) {
         User user = getUser();
-        user.minusUserTotalReceiveAmount(getMyEvent(id).getTotalReceiveAmount());
-        user.getMyEvents().remove(getMyEvent(id));
+        MyEvent myEvent = getMyEvent(id);
+        user.minusUserTotalReceiveAmount(myEvent.getTotalReceiveAmount());
+        user.getMyEvents().remove(myEvent);
     }
 
     // 나의 경조사 세부사항 삭제
+
+    /**
+     * 1. 나의 경조사 세부사항 삭제 시 MyEvent receiveAmount 필드 금액 차감 필요
+     * 2. 해당 사용자 User userTotalReceiveAmount 필드 금액 차감 필요
+     **/
     @Transactional
     public void deleteMyEventDetail(Long eventId, Long detailId) {
         MyEvent myEvent = getMyEvent(eventId);
-        MyEventDetail myEventDetail = this.myEventDetailRepository.findById(detailId)
-                .orElseThrow(() -> new NotFoundEventDetailException("일치하는 경조사 세부사항 정보가 존재하지 않습니다."));
-
-        this.myEventDetailRepository.delete(myEventDetail);
+        MyEventDetail myEventDetail = getMyEventDetail(detailId);
+        myEvent.minusReceiveAmount(getUser(), myEventDetail.getReceiveAmount());
+        myEvent.getMyEventDetails().remove(myEventDetail);
     }
+
 
     /*********/
 
@@ -344,5 +349,10 @@ public class EventService {
         } else if (request.getEventCategory() != 4 && request.getMyEventName() != null) {
             throw new RuntimeException("서버 에러");
         }
+    }
+
+    private MyEventDetail getMyEventDetail(Long detailId) {
+        return this.myEventDetailRepository.findById(detailId)
+                .orElseThrow(() -> new NotFoundEventDetailException("일치하는 경조사 세부사항 정보가 존재하지 않습니다."));
     }
 }

@@ -14,5 +14,6 @@ public interface MyEventDetailRepository extends JpaRepository<MyEventDetail, Lo
     // 나의 경조사 세부 사항 내림차순
     List<MyEventDetail> findAllByMyEventOrderByReceiveAmountDesc(MyEvent myEvent);
 
-    List<MyEventDetail> findAllByAcquaintanceNicknameContainingIgnoreCase(String acquaintanceNickname);
+
+    List<MyEventDetail> findAllByMyEventAndAcquaintanceNicknameContainingIgnoreCase(MyEvent myEvent, String acquaintanceNickname);
 }
