@@ -26,6 +26,7 @@ public class Notice extends BaseTimeEntity {
 
     public GetAllNoticeResponseDto from() {
         return GetAllNoticeResponseDto.builder()
+                .id(id)
                 .title(title)
                 .content(content)
                 .updatedAt(getUpdatedAt().toLocalDate())

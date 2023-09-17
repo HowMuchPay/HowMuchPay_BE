@@ -11,12 +11,6 @@ import com.example.howmuch.dto.user.login.UserOauthLoginResponseDto;
 import com.example.howmuch.service.s3.S3Service;
 import com.example.howmuch.util.JwtService;
 import com.example.howmuch.util.RedisUtil;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -29,10 +23,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
@@ -65,17 +64,11 @@ public class OauthService {
     public User getOauth(String providerName, String code) throws IOException {
 
         ClientRegistration provider
-            = this.inMemoryClientRegistrationRepository.findByRegistrationId(
-            providerName.toLowerCase());
+                = this.inMemoryClientRegistrationRepository.findByRegistrationId(
+                providerName.toLowerCase());
 
         OauthTokenResponseDto responseDto = getToken(provider, code);
-        User user = saveUserWithUserInfo(providerName.toLowerCase(), responseDto, provider);
-
-        String imageUrl = user.getProfileImage(); // 사용자 프로필 이미지 URL
-        MultipartFile profileImageFile = convertImageURLToMultipartFile(imageUrl);
-        s3Service.saveFile(profileImageFile);
-
-        return user;
+        return saveUserWithUserInfo(providerName.toLowerCase(), responseDto, provider);
     }
 
     /* 1. Kakao Authorization Server 로 부터 Access Token 받아오기 */
@@ -83,16 +76,16 @@ public class OauthService {
         // https://kauth.kakao.com/oauth/token
         // content-type : application/x-www-urlencoded
         return WebClient.create()
-            .post()
-            .uri(provider.getProviderDetails().getTokenUri())
-            .headers(header -> {
-                header.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-                header.setAcceptCharset(Collections.singletonList(StandardCharsets.UTF_8));
-            })
-            .bodyValue(tokenRequest(provider, code))
-            .retrieve()
-            .bodyToMono(OauthTokenResponseDto.class)
-            .block();
+                .post()
+                .uri(provider.getProviderDetails().getTokenUri())
+                .headers(header -> {
+                    header.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+                    header.setAcceptCharset(Collections.singletonList(StandardCharsets.UTF_8));
+                })
+                .bodyValue(tokenRequest(provider, code))
+                .retrieve()
+                .bodyToMono(OauthTokenResponseDto.class)
+                .block();
     }
 
     /* 2. kakao server 로 token 요청 uri 생성 -> https://kauth.kakao.com/oauth/token? ~ */
@@ -108,8 +101,8 @@ public class OauthService {
 
     /* 3. Oauth 로부터 받아온 회원 정보 회원 테이블 저장 */
     private User saveUserWithUserInfo(String providerName,
-        OauthTokenResponseDto responseDto,
-        ClientRegistration provider) {
+                                      OauthTokenResponseDto responseDto,
+                                      ClientRegistration provider) {
         Map<String, Object> attributes = getUserAttributes(provider, responseDto);
         KakaoOauthUserInfo oauthUserInfo = new KakaoOauthUserInfo(attributes);
         String oauthNickName = oauthUserInfo.getNickName(); // nickName
@@ -118,29 +111,32 @@ public class OauthService {
         String profileImage = oauthUserInfo.getImageUrl(); // profileImage
 
         Optional<User> optionalUser = this.userRepository.findByOauthId(oauthId);
-
-        // 존재하면 반환 없으면 함수 실행
+        // 승현님이 구현할 코드(s3 에서 이미지 가져와야함)
+        //  String imageUrl = user.getProfileImage(); // 사용자 프로필 이미지 URL
+        //        MultipartFile profileImageFile = convertImageURLToMultipartFile(imageUrl);
+        //        s3Service.saveFile(profileImageFile);
+        // 위에 구현했던 코드
         return optionalUser.orElseGet(() -> this.userRepository.save(User.builder()
-            .oauthId(oauthId)
-            .nickname(oauthNickName)
-            .profileImage(profileImage)
-            .roleType(RoleType.ROLE_USER)
-            .userTotalPayAmount(0L)
-            .userTotalReceiveAmount(0L)
-            .build()));
+                .oauthId(oauthId)
+                .nickname(oauthNickName)
+                .profileImage(profileImage)
+                .roleType(RoleType.ROLE_USER)
+                .userTotalPayAmount(0L)
+                .userTotalReceiveAmount(0L)
+                .build()));
     }
 
     /* 4. 발급 받은 access token 을 이용해 user attributes 요청 이때 " provider 의 user-info-uri 로 요청 with token " */
     private Map<String, Object> getUserAttributes(ClientRegistration provider,
-        OauthTokenResponseDto responseDto) {
+                                                  OauthTokenResponseDto responseDto) {
         return WebClient.create()
-            .get()
-            .uri(provider.getProviderDetails().getUserInfoEndpoint().getUri())
-            .headers(header -> header.setBearerAuth(responseDto.getAccessToken()))
-            .retrieve()
-            .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
-            })
-            .block();
+                .get()
+                .uri(provider.getProviderDetails().getUserInfoEndpoint().getUri())
+                .headers(header -> header.setBearerAuth(responseDto.getAccessToken()))
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
+                })
+                .block();
     }
 
 
@@ -155,19 +151,19 @@ public class OauthService {
         Token accessToken = this.jwtService.createAccessToken(String.valueOf(user.getId()));
         Token refreshToken = this.jwtService.createRefreshToken();
         LocalDateTime expireTime = LocalDateTime.now()
-            .plusSeconds(accessToken.getExpiredTime() / 1000);
+                .plusSeconds(accessToken.getExpiredTime() / 1000);
 //        this.redisUtil.setDataExpire(String.valueOf(user.getId()), refreshToken.getTokenValue(), refreshToken.getExpiredTime());
 
         log.info("accessToken = {}", accessToken.getTokenValue());
         log.info("refreshToken = {}", refreshToken.getTokenValue());
 
         return UserOauthLoginResponseDto.builder()
-            .tokenType(BEARER_TYPE)
-            .accessToken(BEARER_TYPE + " " + accessToken.getTokenValue())
-            .expiredTime(expireTime.format(
-                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))) // 만료 Local Date Time
-            .refreshToken(refreshToken.getTokenValue())
-            .build();
+                .tokenType(BEARER_TYPE)
+                .accessToken(BEARER_TYPE + " " + accessToken.getTokenValue())
+                .expiredTime(expireTime.format(
+                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))) // 만료 Local Date Time
+                .refreshToken(refreshToken.getTokenValue())
+                .build();
 
     }
 
@@ -180,10 +176,10 @@ public class OauthService {
 
             // 임시 파일을 MultipartFile로 변환
             return new MockMultipartFile(
-                "file",
-                "image.jpg",
-                "image/jpeg",
-                Files.newInputStream(tempFile)
+                    "file",
+                    "image.jpg",
+                    "image/jpeg",
+                    Files.newInputStream(tempFile)
             );
         }
     }
