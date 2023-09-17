@@ -276,7 +276,7 @@ public class EventService {
     public GetAcEventsResponseDto getAcEventsWithDay(Long acId) {
         AcEvent acEvent = getAcEvent(acId); // 특정 지인의 경조사 정보를 가져옴
         //dDay 로직
-        long daysUntilEvent = ChronoUnit.DAYS.between(LocalDate.now(), acEvent.getEventAt());
+        long daysUntilEvent = ChronoUnit.DAYS.between(acEvent.getEventAt(), LocalDate.now());
         return GetAcEventsResponseDto.of(acEvent, (int) daysUntilEvent);
     }
 
