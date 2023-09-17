@@ -68,5 +68,9 @@ public class User extends BaseTimeEntity {
     public void addPhoneNumber(String phone) {
         this.phoneNumber = phone;
     }
+
+    public void minusUserTotalReceiveAmount(long minusAmount) {
+        this.userTotalReceiveAmount -= minusAmount;
+    }
 }
 
