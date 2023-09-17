@@ -20,6 +20,7 @@ public interface AcEventRepository extends JpaRepository<AcEvent, Long> {
 
     List<AcEvent> findAllByEventAt(LocalDate eventAt);
 
+    @Query("SELECT ae FROM AcEvent ae WHERE ae.user = :user AND ae.acquaintanceNickname LIKE %:acquaintanceName%")
     List<AcEvent> findByUserAndAcquaintanceNickname(User user, String acquaintanceName);
 
     Optional<AcEvent> findFirstByUserAndEventAtGreaterThanEqualOrderByEventAtAsc(User user, LocalDate currentDate);
