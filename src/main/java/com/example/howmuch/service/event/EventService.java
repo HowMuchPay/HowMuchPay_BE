@@ -283,7 +283,9 @@ public class EventService {
     // 지인 경조사 삭제
     @Transactional
     public void deleteAcEvent(Long id) {
+        User user = getUser();
         AcEvent acEvent = getAcEvent(id);
+        user.minusUserTotalPayAmount(acEvent.getPayAmount());
         this.acEventRepository.delete(acEvent);
     }
 

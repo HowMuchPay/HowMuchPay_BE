@@ -72,5 +72,9 @@ public class User extends BaseTimeEntity {
     public void minusUserTotalReceiveAmount(long minusAmount) {
         this.userTotalReceiveAmount -= minusAmount;
     }
+
+    public void minusUserTotalPayAmount(long minusAmount){
+        this.userTotalPayAmount -= minusAmount;
+    }
 }
 
