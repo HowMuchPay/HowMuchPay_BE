@@ -12,10 +12,8 @@ import java.util.List;
 @Getter
 public class UserAuthentication extends AbstractAuthenticationToken {
 
-
     private static final String USER = "USER";
     private final Long userId;
-
 
     public UserAuthentication(User user) {
         super(authorities(user));

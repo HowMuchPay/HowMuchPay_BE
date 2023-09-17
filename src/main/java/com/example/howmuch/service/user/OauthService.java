@@ -64,8 +64,7 @@ public class OauthService {
     public User getOauth(String providerName, String code) throws IOException {
 
         ClientRegistration provider
-                = this.inMemoryClientRegistrationRepository.findByRegistrationId(
-                providerName.toLowerCase());
+                = this.inMemoryClientRegistrationRepository.findByRegistrationId(providerName.toLowerCase());
 
         OauthTokenResponseDto responseDto = getToken(provider, code);
         return saveUserWithUserInfo(providerName.toLowerCase(), responseDto, provider);

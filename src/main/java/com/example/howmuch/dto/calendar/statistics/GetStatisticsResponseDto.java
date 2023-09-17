@@ -13,6 +13,5 @@ public class GetStatisticsResponseDto {
     private long totalPayment;
     private long totalReceiveAmount;
     private String eventCategory;
-
     private List<StatisticsListResponse> statisticsListResponse;
 }

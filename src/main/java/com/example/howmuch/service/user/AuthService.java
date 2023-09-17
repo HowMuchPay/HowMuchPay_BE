@@ -56,24 +56,13 @@ public class AuthService {
     }
 
     public User findUserByToken(String accessToken) {
-        if (!accessToken.isEmpty()) {
-            validationAccessToken(accessToken);
-        }
         Long id = Long.parseLong(jwtService.getPayLoad(accessToken));
         return userService.findById(id);
     }
 
     private void validationRefreshToken(String refreshToken) {
         if (!this.jwtService.validateToken(refreshToken)) {
-            {
-                throw new UnauthorizedUserException("인가되지 않은 Refresh Token 입니다.");
-            }
-        }
-    }
-
-    private void validationAccessToken(String accessToken) {
-        if (!jwtService.validateToken(accessToken)) {
-            throw new UnauthorizedUserException("인가되지 않은 access 토큰입니다.");
+            throw new UnauthorizedUserException("인가되지 않은 Refresh Token 입니다.");
         }
     }
 

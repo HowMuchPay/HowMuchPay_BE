@@ -49,6 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 UserAuthentication authentication = new UserAuthentication(user);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
+            // access token 이 만료된 경우 or access token 정보로 식별 안되는 경우
         } catch (IllegalArgumentException | JwtException e) {
             log.info("JwtAuthentication UnauthorizedUserException!");
             request.setAttribute("UnauthorizedUserException", e);
