@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetAllNoticeResponseDto {
+    private Long id;
     private String title;
     private String content;
     private LocalDate updatedAt;
