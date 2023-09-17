@@ -76,8 +76,8 @@ public class UserService {
         long pay = user.getUserTotalPayAmount();
         long receive = user.getUserTotalReceiveAmount();
         int payPercentage = calculatePayPercentage(pay, receive);
-        int myDay = calculateDaysUntilMyEvent(closestMyEvent);
-        int acDay = calculateDaysUntilEvent(closestAcEvent);
+        int myDay = Math.abs(calculateDaysUntilMyEvent(closestMyEvent));
+        int acDay = Math.abs(calculateDaysUntilEvent(closestAcEvent));
 
         if (closestAcEvent == null && closestMyEvent == null) {
             // 둘 다 null이면 Event 정보를 빈 값으로 처리
@@ -106,7 +106,7 @@ public class UserService {
             return Integer.MAX_VALUE;
         }
         LocalDate currentDate = LocalDate.now();
-        return (int) ChronoUnit.DAYS.between(currentDate, event.getEventAt());
+        return (int) ChronoUnit.DAYS.between(event.getEventAt(), currentDate);
     }
 
     private int calculateDaysUntilMyEvent(MyEvent event) {
@@ -114,7 +114,7 @@ public class UserService {
             return Integer.MAX_VALUE;
         }
         LocalDate currentDate = LocalDate.now();
-        return (int) ChronoUnit.DAYS.between(currentDate, event.getEventAt());
+        return (int) ChronoUnit.DAYS.between(event.getEventAt(), currentDate);
     }
     private int calculatePayPercentage(long totalPayAmount, long totalReceiveAmount) {
         if (totalPayAmount + totalReceiveAmount == 0) {
