@@ -4,6 +4,7 @@ import com.example.howmuch.constant.AcType;
 import com.example.howmuch.constant.EventCategory;
 import com.example.howmuch.domain.BaseTimeEntity;
 import com.example.howmuch.dto.event.GetAllAcEventsResponse;
+import com.example.howmuch.dto.event.UpdateAcEventRequestDto;
 import com.example.howmuch.dto.home.HomeResponseDto;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -88,4 +89,16 @@ public class AcEvent extends BaseTimeEntity {
             .dDay(dDay)
             .build();
     }
+
+    public void updateAcEvent(UpdateAcEventRequestDto request) {
+        // 삼항 연산자를 사용하여 필드 업데이트
+        this.acquaintanceNickname = (request.getAcName() != null) ? request.getAcName() : this.acquaintanceNickname;
+        this.acquaintanceType = (request.getAcType() != null) ? AcType.fromValue(request.getAcType()) : this.acquaintanceType;
+        this.eventCategory = (request.getEventCategory() != null) ? EventCategory.fromValue(request.getEventCategory()) : this.eventCategory;
+        this.payAmount = (request.getPayAmount() != null) ? request.getPayAmount() : this.payAmount;
+        this.eventAt = (request.getEventAt() != null) ? request.getEventAt() : this.eventAt;
+        this.eventTime = (request.getEventTime() != null) ? request.getEventTime() : this.eventTime;
+        this.eventName = (request.getEventName() != null) ? request.getEventName() : this.eventName;
+    }
+
 }
