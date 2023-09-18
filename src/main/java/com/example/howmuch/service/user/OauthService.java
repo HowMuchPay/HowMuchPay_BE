@@ -99,7 +99,7 @@ public class OauthService {
 
     /* 3. Oauth 로부터 받아온 회원 정보 회원 테이블 저장 */
     private User saveUserWithUserInfo(TokenFromOauthServer token,
-                                      ClientRegistration provider) {
+                                      ClientRegistration provider) throws IOException {
         Map<String, Object> attributes = getUserAttributes(provider, token);
         KakaoOauthUserInfo oauthUserInfo = new KakaoOauthUserInfo(attributes);
         String oauthNickName = oauthUserInfo.getNickName(); // nickName
@@ -107,15 +107,12 @@ public class OauthService {
         String profileImage = oauthUserInfo.getImageUrl(); // profileImage
 
         Optional<User> optionalUser = this.userRepository.findByOauthId(oauthId);
-        // 승현님이 구현할 코드(s3 에서 이미지 가져와야함)
-        //  String imageUrl = user.getProfileImage(); // 사용자 프로필 이미지 URL
-        //        MultipartFile profileImageFile = convertImageURLToMultipartFile(imageUrl);
-        //        s3Service.saveFile(profileImageFile);
-        // 위에 구현했던 코드
+        MultipartFile multipartFile = convertImageURLToMultipartFile(profileImage);
+        String imageUrl = s3Service.saveFile(multipartFile);
         return optionalUser.orElseGet(() -> this.userRepository.save(User.builder()
                 .oauthId(oauthId)
                 .nickname(oauthNickName)
-                .profileImage(profileImage)
+                .profileImage(imageUrl)
                 .roleType(RoleType.ROLE_USER)
                 .userTotalPayAmount(0L)
                 .userTotalReceiveAmount(0L)
