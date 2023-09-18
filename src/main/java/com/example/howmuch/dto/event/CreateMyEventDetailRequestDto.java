@@ -2,6 +2,7 @@ package com.example.howmuch.dto.event;
 
 import com.example.howmuch.domain.entity.MyEvent;
 import com.example.howmuch.domain.entity.MyEventDetail;
+import com.example.howmuch.domain.entity.User;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
@@ -22,11 +23,12 @@ public class CreateMyEventDetailRequestDto {
     @NotNull
     private long receiveAmount;
 
-    public MyEventDetail toEntity(MyEvent myEvent) {
+    public MyEventDetail toEntity(MyEvent myEvent, User user) {
         return MyEventDetail.builder()
-                .acquaintanceNickname(acquaintanceNickname)
-                .receiveAmount(receiveAmount)
-                .myEvent(myEvent)
-                .build();
+            .user(user)
+            .acquaintanceNickname(acquaintanceNickname)
+            .receiveAmount(receiveAmount)
+            .myEvent(myEvent)
+            .build();
     }
 }
