@@ -109,6 +109,15 @@ public class EventController {
         );
     }
 
+    // 지인 경조사 업데이트
+    @PatchMapping("/acquaintance/{id}")
+    public ResponseEntity<Long> updateAcEvents(
+        @PathVariable Long id,
+        @RequestBody UpdateAcEventRequestDto request
+    ) {
+        return ResponseEntity.ok(this.eventService.updateAcEvent(id, request));
+    }
+
     //지인 경조사 삭제
     @DeleteMapping("/acquaintance/{id}")
     public ResponseEntity<Void> deleteAcEvent(
@@ -153,7 +162,7 @@ public class EventController {
     @GetMapping("/acquaintance/nickname")
     public ResponseEntity<GetAllAcEventsResponseDto> getAcEventsByNickname(
         @RequestParam String name
-    ){
+    ) {
         return ResponseEntity.ok(eventService.getAcEventsByName(name));
     }
 
