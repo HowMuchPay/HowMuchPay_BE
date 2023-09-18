@@ -28,6 +28,10 @@ public class MyEventDetail extends BaseTimeEntity {
     private long receiveAmount;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usr_id")
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "my_event_id")
     private MyEvent myEvent;
 
