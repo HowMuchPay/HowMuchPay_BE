@@ -26,9 +26,8 @@ public class S3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    public User saveFile(MultipartFile multipartFile) throws RuntimeException {
-        String translatedFileName = uploadFileToS3(multipartFile);
-        return User.builder().profileImage(translatedFileName).build();
+    public String saveFile(MultipartFile multipartFile) throws RuntimeException {
+        return uploadFileToS3(multipartFile);
     }
 
     private String uploadFileToS3(MultipartFile multipartFile) {
