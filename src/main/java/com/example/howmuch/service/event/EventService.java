@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class EventService {
+
     private final UserRepository userRepository;
     private final MyEventRepository myEventRepository;
     private final AcEventRepository acEventRepository;
@@ -44,9 +45,10 @@ public class EventService {
 
     // 나의 지인 모든 경조사 조회
     @Transactional(readOnly = true)
-    public GetAllStatisticsResponseDto getStatistics(){
+    public GetAllStatisticsResponseDto getStatistics() {
         User user = getUser();
-        List<MyEventDetail> allMyEventByUser = myEventDetailRepository.findAllByUserOrderByCreatedAtDesc(user);
+        List<MyEventDetail> allMyEventByUser = myEventDetailRepository.findAllByUserOrderByCreatedAtDesc(
+            user);
 
         List<GetAllStatisticsMyEventDetailResponseDto> allMyEvent = allMyEventByUser.stream()
             .map(GetAllStatisticsMyEventDetailResponseDto::from)
@@ -77,7 +79,8 @@ public class EventService {
 
     // 나의 경조사 필터링 조회
     @Transactional(readOnly = true)
-    public GetAllMyEventsResponseDto getAllMyEventsByFilter(String myTypes, String eventCategories) {
+    public GetAllMyEventsResponseDto getAllMyEventsByFilter(String myTypes,
+        String eventCategories) {
 
         List<String> myTypeList = List.of(myTypes.split(","));
         List<String> eventCategoryList = List.of(eventCategories.split(","));
@@ -88,8 +91,11 @@ public class EventService {
         List<MyEvent> myEvents = myTypeList.stream()
             .map(myTypeString -> MyType.fromValue(Integer.parseInt(myTypeString.trim())))
             .flatMap(myType -> eventCategoryList.stream()
-                .map(eventCategoryString -> EventCategory.fromValue(Integer.parseInt(eventCategoryString.trim())))
-                .flatMap(eventCategory -> this.myEventRepository.findAllByUserAndMyTypeAndEventCategoryOrderByEventAtDesc(user, myType, eventCategory).stream())
+                .map(eventCategoryString -> EventCategory.fromValue(
+                    Integer.parseInt(eventCategoryString.trim())))
+                .flatMap(
+                    eventCategory -> this.myEventRepository.findAllByUserAndMyTypeAndEventCategoryOrderByEventAtDesc(
+                        user, myType, eventCategory).stream())
             )
             .toList();
         for (MyEvent myEvent : myEvents) {
@@ -118,8 +124,7 @@ public class EventService {
     // 나의 경조사 세부 사항 등록
 
     /**
-     * 1. MyEvent receiveAmount 필드 증가
-     * 2. 해당 User TotalReceiveAmount 필드 증가
+     * 1. MyEvent receiveAmount 필드 증가 2. 해당 User TotalReceiveAmount 필드 증가
      **/
     @Transactional
     public Long createMyEventDetail(Long id, CreateMyEventDetailRequestDto request) {
@@ -142,18 +147,20 @@ public class EventService {
         if (sort.equals("asc")) { // 오름 차순
             return GetAllMyEventDetailResponseDto.builder()
                 .myEventInfo(myEventInfo)
-                .myDetails(this.myEventDetailRepository.findAllByMyEventOrderByReceiveAmountAsc(myEvent)
-                    .stream()
-                    .map(MyEventDetail::toGetAllMyEventDetails)
-                    .collect(Collectors.toList()))
+                .myDetails(
+                    this.myEventDetailRepository.findAllByMyEventOrderByReceiveAmountAsc(myEvent)
+                        .stream()
+                        .map(MyEventDetail::toGetAllMyEventDetails)
+                        .collect(Collectors.toList()))
                 .build();
         } else { // 내림 차순
             return GetAllMyEventDetailResponseDto.builder()
                 .myEventInfo(myEventInfo)
-                .myDetails(this.myEventDetailRepository.findAllByMyEventOrderByReceiveAmountDesc(myEvent)
-                    .stream()
-                    .map(MyEventDetail::toGetAllMyEventDetails)
-                    .collect(Collectors.toList()))
+                .myDetails(
+                    this.myEventDetailRepository.findAllByMyEventOrderByReceiveAmountDesc(myEvent)
+                        .stream()
+                        .map(MyEventDetail::toGetAllMyEventDetails)
+                        .collect(Collectors.toList()))
                 .build();
         }
     }
@@ -161,7 +168,8 @@ public class EventService {
     // 나의 경조사 세부 사항 이름 조회
     @Transactional(readOnly = true)
     public List<GetAllMyEventDetails> getAllMyEventDetailsByName(Long id, String name) {
-        return this.myEventDetailRepository.findAllByMyEventAndAcquaintanceNicknameContainingIgnoreCase(getMyEvent(id), name)
+        return this.myEventDetailRepository.findAllByMyEventAndAcquaintanceNicknameContainingIgnoreCase(
+                getMyEvent(id), name)
             .stream()
             .map(MyEventDetail::toGetAllMyEventDetails)
             .toList();
@@ -179,8 +187,8 @@ public class EventService {
     // 나의 경조사 세부사항 삭제
 
     /**
-     * 1. 나의 경조사 세부사항 삭제 시 MyEvent receiveAmount 필드 금액 차감 필요
-     * 2. 해당 사용자 User userTotalReceiveAmount 필드 금액 차감 필요
+     * 1. 나의 경조사 세부사항 삭제 시 MyEvent receiveAmount 필드 금액 차감 필요 2. 해당 사용자 User userTotalReceiveAmount
+     * 필드 금액 차감 필요
      **/
     @Transactional
     public void deleteMyEventDetail(Long eventId, Long detailId) {
@@ -203,6 +211,19 @@ public class EventService {
         return this.acEventRepository.save(request.toEntity(getUser())).getId();
     }
 
+    @Transactional
+    public Long updateAcEvent(Long acEventId, UpdateAcEventRequestDto request) {
+        AcEvent acEvent = getAcEvent(acEventId);
+        User user = getUser();
+        Long updatePayAmount = request.getPayAmount();
+        if (updatePayAmount != null) {
+            user.minusUserTotalPayAmount(acEvent.getPayAmount());
+            user.addTotalPayAmount(updatePayAmount);
+        }
+        acEvent.updateAcEvent(request);
+        return acEvent.getId();
+    }
+
     // 지인 모든 경조사 조회
     @Transactional(readOnly = true)
     public GetAllAcEventsResponseDto getAllAcEvents() {
@@ -216,7 +237,8 @@ public class EventService {
 
     // 지인 경조사 필터링 조회
     @Transactional(readOnly = true)
-    public GetAllAcEventsResponseDto getAllAcEventsByFilter(String acTypes, String eventCategories) {
+    public GetAllAcEventsResponseDto getAllAcEventsByFilter(String acTypes,
+        String eventCategories) {
 
         List<String> acTypeList = List.of(acTypes.split(","));
         List<String> eventCategoryList = List.of(eventCategories.split(","));
@@ -227,9 +249,11 @@ public class EventService {
         List<AcEvent> acEvents = acTypeList.stream()
             .map(acTypeString -> AcType.fromValue(Integer.parseInt(acTypeString.trim())))
             .flatMap(acType -> eventCategoryList.stream()
-                .map(eventCategoryString -> EventCategory.fromValue(Integer.parseInt(eventCategoryString.trim())))
+                .map(eventCategoryString -> EventCategory.fromValue(
+                    Integer.parseInt(eventCategoryString.trim())))
                 .flatMap(eventCategory
-                    -> this.acEventRepository.findAllByUserAndAcquaintanceTypeAndEventCategoryOrderByEventAtDesc(user, acType, eventCategory).stream())
+                    -> this.acEventRepository.findAllByUserAndAcquaintanceTypeAndEventCategoryOrderByEventAtDesc(
+                    user, acType, eventCategory).stream())
             ).toList();
 
         for (AcEvent acEvent : acEvents) {
@@ -251,7 +275,6 @@ public class EventService {
                 (oldValue, newValue) -> oldValue,
                 LinkedHashMap::new
             ));
-
 
         return new GetAllAcEventsResponseDto(totalPayAmount, sortedAcEvents);
     }
@@ -285,7 +308,8 @@ public class EventService {
         Map<String, List<GetAllAcEventsResponse>> sortedAcEvents = getAllAcEventByAcquaintanceNickname(
             byUserAndAcquaintanceNickname);
         // 경조사 비용 집계
-        double totalCost = byUserAndAcquaintanceNickname.stream().mapToDouble(AcEvent::getPayAmount).sum();
+        double totalCost = byUserAndAcquaintanceNickname.stream().mapToDouble(AcEvent::getPayAmount)
+            .sum();
 
         return new GetAllAcEventsResponseDto((long) totalCost, sortedAcEvents);
     }
@@ -382,7 +406,8 @@ public class EventService {
         if (request.getEventCategory() == 4 && request.getMyEventName() == null) {
             throw new NeedEventNameException("경조사 종류가 기타인 경우에는 별도의 EventName 이 필요합니다.");
         } else if (request.getMyType() != 0 && request.getMyEventCharacterName() == null) {
-            throw new NeedEventCharacterNameException("나의 경조사 타입이 나가 아닌 경우에는 별도의 경조사 주인공 이름이 필요합니다");
+            throw new NeedEventCharacterNameException(
+                "나의 경조사 타입이 나가 아닌 경우에는 별도의 경조사 주인공 이름이 필요합니다");
         } else if (request.getMyType() == 0 && request.getMyEventCharacterName() != null) {
             throw new RuntimeException("서버 에러");
         } else if (request.getEventCategory() != 4 && request.getMyEventName() != null) {
