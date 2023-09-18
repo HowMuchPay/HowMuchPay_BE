@@ -144,7 +144,7 @@ public class OauthService {
         Token refreshToken = this.jwtService.createRefreshToken();
         LocalDateTime expireTime = LocalDateTime.now()
                 .plusSeconds(accessToken.getExpiredTime() / 1000);
-//        this.redisUtil.setDataExpire(String.valueOf(user.getId()), refreshToken.getTokenValue(), refreshToken.getExpiredTime());
+        this.redisUtil.setDataExpire(String.valueOf(user.getId()), refreshToken.getTokenValue(), refreshToken.getExpiredTime());
         return UserOauthLoginResponseDto.builder()
                 .tokenType(BEARER_TYPE)
                 .accessToken(BEARER_TYPE + " " + accessToken.getTokenValue())

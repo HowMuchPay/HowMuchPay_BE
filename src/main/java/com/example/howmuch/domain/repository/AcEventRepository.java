@@ -29,6 +29,6 @@ public interface AcEventRepository extends JpaRepository<AcEvent, Long> {
     Optional<Long> sumPayAmountByUserAndCategoryAndType(User user, EventCategory eventCategory, AcType acType);
 
 
-    @Query("select a from AcEvent a where year(a.eventAt) = :year and month(a.eventAt) = :month")
-    List<AcEvent> findAllByYearAndMonth(int year, int month);
+    @Query("select a from AcEvent a where a.user = :user and year(a.eventAt) = :year and month(a.eventAt) = :month")
+    List<AcEvent> findAllByUserAndYearAndMonth(User user, int year, int month);
 }
