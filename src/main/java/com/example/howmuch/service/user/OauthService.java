@@ -5,7 +5,7 @@ import com.example.howmuch.config.security.Token;
 import com.example.howmuch.constant.RoleType;
 import com.example.howmuch.domain.entity.User;
 import com.example.howmuch.domain.repository.UserRepository;
-import com.example.howmuch.dto.user.OauthTokenResponseDto;
+import com.example.howmuch.dto.user.TokenFromOauthServer;
 import com.example.howmuch.dto.user.info.KakaoOauthUserInfo;
 import com.example.howmuch.dto.user.login.UserOauthLoginResponseDto;
 import com.example.howmuch.service.s3.S3Service;
@@ -65,13 +65,12 @@ public class OauthService {
 
         ClientRegistration provider
                 = this.inMemoryClientRegistrationRepository.findByRegistrationId(providerName.toLowerCase());
-
-        OauthTokenResponseDto responseDto = getToken(provider, code);
-        return saveUserWithUserInfo(providerName.toLowerCase(), responseDto, provider);
+        TokenFromOauthServer token = getTokenFromOauthServer(provider, code);
+        return saveUserWithUserInfo(token, provider);
     }
 
     /* 1. Kakao Authorization Server 로 부터 Access Token 받아오기 */
-    private OauthTokenResponseDto getToken(ClientRegistration provider, String code) {
+    private TokenFromOauthServer getTokenFromOauthServer(ClientRegistration provider, String code) {
         // https://kauth.kakao.com/oauth/token
         // content-type : application/x-www-urlencoded
         return WebClient.create()
@@ -83,7 +82,7 @@ public class OauthService {
                 })
                 .bodyValue(tokenRequest(provider, code))
                 .retrieve()
-                .bodyToMono(OauthTokenResponseDto.class)
+                .bodyToMono(TokenFromOauthServer.class)
                 .block();
     }
 
@@ -99,13 +98,11 @@ public class OauthService {
     }
 
     /* 3. Oauth 로부터 받아온 회원 정보 회원 테이블 저장 */
-    private User saveUserWithUserInfo(String providerName,
-                                      OauthTokenResponseDto responseDto,
+    private User saveUserWithUserInfo(TokenFromOauthServer token,
                                       ClientRegistration provider) {
-        Map<String, Object> attributes = getUserAttributes(provider, responseDto);
+        Map<String, Object> attributes = getUserAttributes(provider, token);
         KakaoOauthUserInfo oauthUserInfo = new KakaoOauthUserInfo(attributes);
         String oauthNickName = oauthUserInfo.getNickName(); // nickName
-        String oauthProvider = oauthUserInfo.getProvider(); // kakao
         String oauthId = oauthUserInfo.getProviderId(); // oauthId
         String profileImage = oauthUserInfo.getImageUrl(); // profileImage
 
@@ -126,12 +123,11 @@ public class OauthService {
     }
 
     /* 4. 발급 받은 access token 을 이용해 user attributes 요청 이때 " provider 의 user-info-uri 로 요청 with token " */
-    private Map<String, Object> getUserAttributes(ClientRegistration provider,
-                                                  OauthTokenResponseDto responseDto) {
+    private Map<String, Object> getUserAttributes(ClientRegistration provider, TokenFromOauthServer token) {
         return WebClient.create()
                 .get()
                 .uri(provider.getProviderDetails().getUserInfoEndpoint().getUri())
-                .headers(header -> header.setBearerAuth(responseDto.getAccessToken()))
+                .headers(header -> header.setBearerAuth(token.getAccessToken()))
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
                 })
@@ -152,15 +148,10 @@ public class OauthService {
         LocalDateTime expireTime = LocalDateTime.now()
                 .plusSeconds(accessToken.getExpiredTime() / 1000);
 //        this.redisUtil.setDataExpire(String.valueOf(user.getId()), refreshToken.getTokenValue(), refreshToken.getExpiredTime());
-
-        log.info("accessToken = {}", accessToken.getTokenValue());
-        log.info("refreshToken = {}", refreshToken.getTokenValue());
-
         return UserOauthLoginResponseDto.builder()
                 .tokenType(BEARER_TYPE)
                 .accessToken(BEARER_TYPE + " " + accessToken.getTokenValue())
-                .expiredTime(expireTime.format(
-                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))) // 만료 Local Date Time
+                .expiredTime(expireTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))) // 만료 Local Date Time
                 .refreshToken(refreshToken.getTokenValue())
                 .build();
 
