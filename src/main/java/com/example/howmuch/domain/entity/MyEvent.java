@@ -108,7 +108,7 @@ public class MyEvent extends BaseTimeEntity {
                 .userTotalPayAmount(pay)
                 .userTotalReceiveAmount(receive)
                 .payPercentage(payPercentage)
-                .acEventDisplayName(myEventDisplayName)
+                .eventDisplayName(myEventDisplayName)
                 .eventCategory(eventCategory.getValue())
                 .dDay(dDay)
                 .build();
