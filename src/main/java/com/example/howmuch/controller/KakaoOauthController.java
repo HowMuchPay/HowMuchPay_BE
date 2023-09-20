@@ -34,7 +34,7 @@ public class KakaoOauthController {
     @PostMapping("/login/kakao")
     public ResponseEntity<UserOauthLoginResponseDto> kakaoLogin(
         @RequestBody UserInfoLoginRequestDto userInfoLoginRequestDto
-    ) {
+    ) throws IOException {
         return new ResponseEntity<>(
             this.kakaoOauthService.getOauth(userInfoLoginRequestDto), HttpStatus.OK
         );
