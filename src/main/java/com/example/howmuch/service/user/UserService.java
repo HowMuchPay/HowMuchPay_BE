@@ -120,7 +120,7 @@ public class UserService {
         if (totalPayAmount + totalReceiveAmount == 0) {
             return 0; // 분모가 0인 경우 방지
         }
-        return (int) (totalPayAmount / (totalPayAmount + totalReceiveAmount) * 100);
+        return (int) (100 * totalPayAmount / (totalPayAmount + totalReceiveAmount) * 100);
     }
 
     private AcEvent findClosestAcEvent(User user) {
