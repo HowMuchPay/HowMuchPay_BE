@@ -17,6 +17,8 @@ public class HomeResponseDto {
 
     private String eventDisplayName;
 
+    private Long eventId;
+
     private Integer eventCategory;
 
     private Integer dDay;

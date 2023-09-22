@@ -54,8 +54,7 @@ public class AcEvent extends BaseTimeEntity {
     private User user;
 
     /**
-     * 지인의 이름
-     * 지인 경조사 이름
+     * 지인의 이름 지인 경조사 이름
      */
     public GetAllAcEventsResponse toGetAllAcEventsResponse() {
 
@@ -66,15 +65,16 @@ public class AcEvent extends BaseTimeEntity {
             acEventDisplayName = acquaintanceNickname + "의 " + eventCategory.getCategoryName();
         }
         return GetAllAcEventsResponse.builder()
-                .id(id)
-                .acEventDisplayName(acEventDisplayName)
-                .eventAt(eventAt)
-                .payAmount(payAmount)
-                .eventCategory(eventCategory.getValue())
-                .build();
+            .id(id)
+            .acEventDisplayName(acEventDisplayName)
+            .eventAt(eventAt)
+            .payAmount(payAmount)
+            .eventCategory(eventCategory.getValue())
+            .build();
     }
 
-    public HomeResponseDto toHomeResponseDto(long pay, long receive, Integer payPercentage, int dDay) {
+    public HomeResponseDto toHomeResponseDto(long pay, long receive, Integer payPercentage,
+        int dDay, Long id) {
         String acEventDisplayName;
         if (eventCategory == EventCategory.ETC && eventName != null) {
             acEventDisplayName = acquaintanceNickname + "의 " + eventName;
@@ -82,20 +82,25 @@ public class AcEvent extends BaseTimeEntity {
             acEventDisplayName = acquaintanceNickname + "의 " + eventCategory.getCategoryName();
         }
         return HomeResponseDto.builder()
-                .userTotalPayAmount(pay)
-                .userTotalReceiveAmount(receive)
-                .payPercentage(payPercentage)
-                .eventDisplayName(acEventDisplayName)
-                .eventCategory(eventCategory.getValue())
-                .dDay(dDay)
-                .build();
+            .userTotalPayAmount(pay)
+            .userTotalReceiveAmount(receive)
+            .payPercentage(payPercentage)
+            .eventDisplayName(acEventDisplayName)
+            .eventCategory(eventCategory.getValue())
+            .dDay(dDay)
+            .eventId(id)
+            .build();
     }
 
     public void updateAcEvent(UpdateAcEventRequestDto request) {
         // 삼항 연산자를 사용하여 필드 업데이트
-        this.acquaintanceNickname = (request.getAcName() != null) ? request.getAcName() : this.acquaintanceNickname;
-        this.acquaintanceType = (request.getAcType() != null) ? AcType.fromValue(request.getAcType()) : this.acquaintanceType;
-        this.eventCategory = (request.getEventCategory() != null) ? EventCategory.fromValue(request.getEventCategory()) : this.eventCategory;
+        this.acquaintanceNickname =
+            (request.getAcName() != null) ? request.getAcName() : this.acquaintanceNickname;
+        this.acquaintanceType =
+            (request.getAcType() != null) ? AcType.fromValue(request.getAcType())
+                : this.acquaintanceType;
+        this.eventCategory = (request.getEventCategory() != null) ? EventCategory.fromValue(
+            request.getEventCategory()) : this.eventCategory;
         this.payAmount = (request.getPayAmount() != null) ? request.getPayAmount() : this.payAmount;
         this.eventAt = (request.getEventAt() != null) ? request.getEventAt() : this.eventAt;
         this.eventTime = (request.getEventTime() != null) ? request.getEventTime() : this.eventTime;
