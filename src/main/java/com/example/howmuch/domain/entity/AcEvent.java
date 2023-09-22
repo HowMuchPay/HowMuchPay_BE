@@ -73,7 +73,8 @@ public class AcEvent extends BaseTimeEntity {
                 .eventCategory(eventCategory.getValue())
                 .build();
     }
-    public HomeResponseDto toHomeResponseDto(long pay, long receive, Integer payPercentage, int dDay ){
+
+    public HomeResponseDto toHomeResponseDto(long pay, long receive, Integer payPercentage, int dDay) {
         String acEventDisplayName;
         if (eventCategory == EventCategory.ETC && eventName != null) {
             acEventDisplayName = acquaintanceNickname + "의 " + eventName;
@@ -81,13 +82,13 @@ public class AcEvent extends BaseTimeEntity {
             acEventDisplayName = acquaintanceNickname + "의 " + eventCategory.getCategoryName();
         }
         return HomeResponseDto.builder()
-            .userTotalPayAmount(pay)
-            .userTotalReceiveAmount(receive)
-            .payPercentage(payPercentage)
-            .acEventDisplayName(acEventDisplayName)
-            .eventCategory(eventCategory.getValue())
-            .dDay(dDay)
-            .build();
+                .userTotalPayAmount(pay)
+                .userTotalReceiveAmount(receive)
+                .payPercentage(payPercentage)
+                .eventDisplayName(acEventDisplayName)
+                .eventCategory(eventCategory.getValue())
+                .dDay(dDay)
+                .build();
     }
 
     public void updateAcEvent(UpdateAcEventRequestDto request) {

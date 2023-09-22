@@ -68,12 +68,12 @@ public class MyEvent extends BaseTimeEntity {
             myEventDisplayName = myEventCharacterName + "의 " + myEventName;
         }
         return GetAllMyEventsResponse.builder()
-            .id(id)
-            .eventAt(eventAt)
-            .receiveAmount(totalReceiveAmount)
-            .eventCategory(eventCategory.getValue())
-            .myEventDisplayName(myEventDisplayName)
-            .build();
+                .id(id)
+                .eventAt(eventAt)
+                .receiveAmount(totalReceiveAmount)
+                .eventCategory(eventCategory.getValue())
+                .myEventDisplayName(myEventDisplayName)
+                .build();
     }
 
     /**
@@ -89,11 +89,11 @@ public class MyEvent extends BaseTimeEntity {
         }
 
         return GetMyEventInfoResponseDto.builder()
-            .myEventDisplayName(myEventDisplayName)
-            .eventAt(eventAt)
-            .eventTime(eventTime)
-            .remainedDay(remainedDay)
-            .build();
+                .myEventDisplayName(myEventDisplayName)
+                .eventAt(eventAt)
+                .eventTime(eventTime)
+                .remainedDay(remainedDay)
+                .build();
     }
 
     public HomeResponseDto toHomeResponseDto(long pay, long receive, Integer payPercentage, int dDay) {
@@ -105,13 +105,13 @@ public class MyEvent extends BaseTimeEntity {
         }
 
         return HomeResponseDto.builder()
-            .userTotalPayAmount(pay)
-            .userTotalReceiveAmount(receive)
-            .payPercentage(payPercentage)
-            .eventDisplayName(myEventDisplayName)
-            .eventCategory(eventCategory.getValue())
-            .dDay(dDay)
-            .build();
+                .userTotalPayAmount(pay)
+                .userTotalReceiveAmount(receive)
+                .payPercentage(payPercentage)
+                .eventDisplayName(myEventDisplayName)
+                .eventCategory(eventCategory.getValue())
+                .dDay(dDay)
+                .build();
     }
 
     public void addReceiveAmount(User user, Long addAmount) {
