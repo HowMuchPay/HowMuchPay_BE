@@ -88,15 +88,19 @@ public class UserService {
                 .build();
         }
         if (closestAcEvent == null) {
-            return closestMyEvent.toHomeResponseDto(pay, receive, payPercentage, myDay);
+            return closestMyEvent.toHomeResponseDto(pay, receive, payPercentage, myDay,
+                closestMyEvent.getId());
         }
         if (closestMyEvent == null) {
-            return closestAcEvent.toHomeResponseDto(pay, receive, payPercentage, acDay);
+            return closestAcEvent.toHomeResponseDto(pay, receive, payPercentage, acDay,
+                closestAcEvent.getId());
         }
         if (acDay < myDay) {
-            return closestAcEvent.toHomeResponseDto(pay, receive, payPercentage, acDay);
+            return closestAcEvent.toHomeResponseDto(pay, receive, payPercentage, acDay,
+                closestAcEvent.getId());
         } else {
-            return closestMyEvent.toHomeResponseDto(pay, receive, payPercentage, myDay);
+            return closestMyEvent.toHomeResponseDto(pay, receive, payPercentage, myDay,
+                closestMyEvent.getId());
 
         }
     }
