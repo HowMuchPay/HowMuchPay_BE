@@ -16,8 +16,6 @@ public interface MyEventRepository extends JpaRepository<MyEvent, Long> {
 
     List<MyEvent> findAllByUserAndMyTypeAndEventCategoryOrderByEventAtDesc(User user, MyType myType, EventCategory eventCategory);
 
-    List<MyEvent> findAllByEventAt(LocalDate eventAt);
-
     @Query("select m from MyEvent m where m.user = :user and year(m.eventAt) = :year and month(m.eventAt) = :month")
     List<MyEvent> findAllByUserAndYearAndMonth(User user, int year, int month);
 
