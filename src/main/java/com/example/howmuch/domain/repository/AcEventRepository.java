@@ -14,6 +14,8 @@ import java.util.Optional;
 public interface AcEventRepository extends JpaRepository<AcEvent, Long> {
     List<AcEvent> findAllByUserOrderByEventAtDesc(User user);
 
+    List<AcEvent> findByUserOrderByAcquaintanceNicknameDesc(User user);
+
     List<AcEvent> findAllByAcquaintanceType(AcType type);
 
     List<AcEvent> findAllByUserAndAcquaintanceTypeAndEventCategoryOrderByEventAtDesc(User user, AcType acType, EventCategory category);
