@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class GetMyEventsCalendarResponseDto {
 
+    private String type;
     private LocalDate eventAt;
     private long totalReceiveAmount;
     private String eventName;
