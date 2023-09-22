@@ -120,7 +120,16 @@ public class UserService {
         if (totalPayAmount + totalReceiveAmount == 0) {
             return 0; // 분모가 0인 경우 방지
         }
-        return (int) (100 * totalPayAmount / (totalPayAmount + totalReceiveAmount) * 100);
+        double percentage = (double) totalPayAmount / (totalPayAmount + totalReceiveAmount) * 100;
+
+        // 퍼센트 값을 1부터 100 사이의 값으로 제한
+        if (percentage < 1) {
+            return 0;
+        } else if (percentage > 100) {
+            return 100;
+        } else {
+            return (int) percentage;
+        }
     }
 
     private AcEvent findClosestAcEvent(User user) {
