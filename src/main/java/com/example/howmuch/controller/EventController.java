@@ -109,6 +109,11 @@ public class EventController {
         );
     }
 
+    @GetMapping("/acquaintance/name")
+    public ResponseEntity<GetAllAcNicknameResponseDto> getAllAcName(){
+        return new ResponseEntity<>(this.eventService.getAcName(), HttpStatus.OK);
+    }
+
     // 지인 경조사 업데이트
     @PatchMapping("/acquaintance/{id}")
     public ResponseEntity<Long> updateAcEvents(
