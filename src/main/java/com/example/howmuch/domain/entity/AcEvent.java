@@ -114,7 +114,7 @@ public class AcEvent extends BaseTimeEntity {
         return GetCalendarScheduleResponseDto.builder()
                 .type("acEvent")
                 .eventAt(eventAt)
-                .payAmount(payAmount)
+                .amount(payAmount)
                 .eventDisplayName(eventDisplayName)
                 .build();
     }

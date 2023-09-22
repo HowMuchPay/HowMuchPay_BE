@@ -137,7 +137,7 @@ public class MyEvent extends BaseTimeEntity {
         return GetCalendarScheduleResponseDto.builder()
                 .type("myEvent")
                 .eventAt(eventAt)
-                .totalReceiveAmount(totalReceiveAmount)
+                .amount(totalReceiveAmount)
                 .eventDisplayName(eventDisplayName)
                 .build();
     }

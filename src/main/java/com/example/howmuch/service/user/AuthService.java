@@ -51,7 +51,7 @@ public class AuthService {
         // access token 가져오기
         String accessToken = AuthTransformUtil.resolveAccessTokenFromRequest(request);
         String id = this.jwtService.getPayLoad(accessToken);
-        this.redisUtil.deleteData(id);
+//        this.redisUtil.deleteData(id);
         // 클라이언트 에서 access token 삭제해야 함
     }
 

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
@@ -32,16 +33,18 @@ public class CalendarService {
 
     @Transactional(readOnly = true)
     public List<GetCalendarScheduleResponseDto> getSchedule(String time) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate eventDate = LocalDate.parse(time, formatter);
+        YearMonth yearMonth = getYearMonth(time);
+
+        int year = yearMonth.getYear();
+        int month = yearMonth.getMonthValue();
         User user = getUser();
 
         List<GetCalendarScheduleResponseDto> responseDtoList = new ArrayList<>();
-        this.myEventRepository.findByUserAndEventAt(user, eventDate).stream()
+        this.myEventRepository.findAllByUserAndYearAndMonth(user, year, month).stream()
                 .map(MyEvent::toGetCalendarScheduleResponseDto)
                 .forEach(responseDtoList::add);
 
-        this.acEventRepository.findByUserAndEventAt(user, eventDate).stream()
+        this.acEventRepository.findAllByUserAndYearAndMonth(user, year, month).stream()
                 .map(AcEvent::toGetCalendarScheduleResponseDto)
                 .forEach(responseDtoList::add);
 
@@ -111,6 +114,10 @@ public class CalendarService {
 //
 //    }
 
+    private YearMonth getYearMonth(String yearAndMonth) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
+        return YearMonth.parse(yearAndMonth, formatter);
+    }
 
     private String getFormattedDate(LocalDate date) {
         String month = date.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
