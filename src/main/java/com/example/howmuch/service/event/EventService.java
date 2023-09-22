@@ -314,6 +314,13 @@ public class EventService {
         return new GetAllAcEventsResponseDto((long) totalCost, sortedAcEvents);
     }
 
+    // 지인 이름 조회
+    @Transactional(readOnly = true)
+    public GetAllAcNicknameResponseDto getAcName(){
+        User user = getUser();
+        return GetAllAcNicknameResponseDto.from(acEventRepository.findByUserOrderByAcquaintanceNicknameDesc(user));
+    }
+
     private Map<String, List<GetAllMyEventsResponse>> getAllMyEvent(User user) {
         Map<String, List<GetAllMyEventsResponse>> allMyEvents = this.myEventRepository.findAllByUserOrderByEventAtDesc(
                 user)
