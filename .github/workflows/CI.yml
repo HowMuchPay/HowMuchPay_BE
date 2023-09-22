@@ -41,5 +41,5 @@ jobs:
         run: |
           docker login -u $ {{ secrets.DOCKER.USERNAME }} -p {{ secrets.DOCKER.PASSWORD }}
           docker build -t choidongkuen/howmuchpay_image .
-          docker tage howmuchpay_image choidongkuen/howmuchpay_image:latest
+          docker tag howmuchpay_image choidongkuen/howmuchpay_image:latest
           docker push $ {{ secrets.DOCKER_USERNAME }}/howmuchpay_image:latest
