@@ -27,6 +27,7 @@ public class RecommendationEventService {
         Integer ageGroup = requestDto.getAgeGroup();
         Integer annualIncome = requestDto.getAnnualIncome();
         List<RelationInfo> relationInfoList = requestDto.getRelationInfoList();
+        String phoneNumber = requestDto.getPhoneNumber();
 
         List<RecommendationEvent> recommendationEvents = new ArrayList<>();
 
@@ -38,6 +39,7 @@ public class RecommendationEventService {
                     .eventCategory(EventCategory.fromValue(relationInfo.getEventCategory()))
                     .intimacyLevel(relationInfo.getIntimacyLevel())
                     .payAmount(relationInfo.getPayAmount())
+                    .phoneNumber(phoneNumber)
                     .build();
 
             recommendationEvents.add(recommendationEvent);
