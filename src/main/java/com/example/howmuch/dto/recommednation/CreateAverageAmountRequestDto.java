@@ -17,6 +17,8 @@ public class CreateAverageAmountRequestDto {
     @NotNull
     private Integer ageGroup;
 
+    private String phoneNumber;
+
     //연수입 3000~ 8000
     @NotNull
     private Integer annualIncome;
