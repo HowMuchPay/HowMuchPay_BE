@@ -43,4 +43,7 @@ public class RecommendationEvent extends BaseTimeEntity {
     @Column(name = "annual_income", nullable = false)
     private int annualIncome;
 
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
 }
