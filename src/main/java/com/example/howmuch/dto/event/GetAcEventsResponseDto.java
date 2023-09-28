@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class GetAcEventsResponseDto {
 
-    private Long id;
+    private String acEventDisplayName;
 
     private String nickname;
 
@@ -30,13 +30,13 @@ public class GetAcEventsResponseDto {
 
     public static GetAcEventsResponseDto of(AcEvent acEvent, int dDay) {
         return GetAcEventsResponseDto.builder()
-            .id(acEvent.getId())
             .nickname(acEvent.getAcquaintanceNickname())
             .eventAt(acEvent.getEventAt())
             .dDay(dDay)
             .payAmount(acEvent.getPayAmount())
             .eventCategory(acEvent.getEventCategory().getValue())
             .acType(acEvent.getAcquaintanceType().getValue())
+            .acEventDisplayName(acEvent.getAcEventDisplayName())
             .build();
     }
 }
