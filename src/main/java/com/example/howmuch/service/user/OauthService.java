@@ -10,7 +10,6 @@ import com.example.howmuch.dto.user.info.KakaoOauthUserInfo;
 import com.example.howmuch.dto.user.login.UserOauthLoginResponseDto;
 import com.example.howmuch.service.s3.S3Service;
 import com.example.howmuch.util.JwtService;
-import com.example.howmuch.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -49,7 +48,6 @@ public class OauthService {
     private final InMemoryClientRegistrationRepository inMemoryClientRegistrationRepository;
     private final UserRepository userRepository;
     private final JwtService jwtService;
-    private final RedisUtil redisUtil;
     private final S3Service s3Service;
 
 
@@ -133,6 +131,7 @@ public class OauthService {
 
 
     /* 5. 소셜 로그인 정보 기반으로 회원 저장 후에 로그인 결과를 반환하는 메소드 */
+    @Transactional
     public UserOauthLoginResponseDto oauthLoginResult(User user) {
         return getOauthLoginResult(user);
     }
@@ -144,7 +143,7 @@ public class OauthService {
         Token refreshToken = this.jwtService.createRefreshToken();
         LocalDateTime expireTime = LocalDateTime.now()
                 .plusSeconds(accessToken.getExpiredTime() / 1000);
-//        this.redisUtil.setDataExpire(String.valueOf(user.getId()), refreshToken.getTokenValue(), refreshToken.getExpiredTime());
+        user.setRefreshToken(refreshToken.getTokenValue());
         return UserOauthLoginResponseDto.builder()
                 .tokenType(BEARER_TYPE)
                 .accessToken(BEARER_TYPE + " " + accessToken.getTokenValue())

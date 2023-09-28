@@ -40,6 +40,9 @@ public class User extends BaseTimeEntity {
     @Column(name = "usr_total_rcv")
     private long userTotalReceiveAmount;
 
+    @Column(name = "usr_refresh_token", unique = true)
+    private String refreshToken;
+
 
     @Enumerated(EnumType.STRING)
     @Column(name = "usr_role", nullable = false)
@@ -47,6 +50,7 @@ public class User extends BaseTimeEntity {
 
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "user")
     private FirebaseToken firebaseToken;
+
 
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -73,8 +77,16 @@ public class User extends BaseTimeEntity {
         this.userTotalReceiveAmount -= minusAmount;
     }
 
-    public void minusUserTotalPayAmount(long minusAmount){
+    public void minusUserTotalPayAmount(long minusAmount) {
         this.userTotalPayAmount -= minusAmount;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public void deleteRefreshToken() {
+        this.refreshToken = null;
     }
 }
 
