@@ -59,12 +59,7 @@ public class AcEvent extends BaseTimeEntity {
      */
     public GetAllAcEventsResponse toGetAllAcEventsResponse() {
 
-        String acEventDisplayName;
-        if (eventCategory == EventCategory.ETC && eventName != null) {
-            acEventDisplayName = acquaintanceNickname + "의 " + eventName;
-        } else {
-            acEventDisplayName = acquaintanceNickname + "의 " + eventCategory.getCategoryName();
-        }
+        String acEventDisplayName = getAcEventDisplayName();
         return GetAllAcEventsResponse.builder()
             .id(id)
             .acEventDisplayName(acEventDisplayName)
@@ -76,12 +71,7 @@ public class AcEvent extends BaseTimeEntity {
 
     public HomeResponseDto toHomeResponseDto(long pay, long receive, Integer payPercentage,
         int dDay, Long id) {
-        String acEventDisplayName;
-        if (eventCategory == EventCategory.ETC && eventName != null) {
-            acEventDisplayName = acquaintanceNickname + "의 " + eventName;
-        } else {
-            acEventDisplayName = acquaintanceNickname + "의 " + eventCategory.getCategoryName();
-        }
+        String acEventDisplayName = getAcEventDisplayName();
         return HomeResponseDto.builder()
             .userTotalPayAmount(pay)
             .userTotalReceiveAmount(receive)
@@ -109,12 +99,7 @@ public class AcEvent extends BaseTimeEntity {
     }
 
     public GetCalendarScheduleResponseDto toGetCalendarScheduleResponseDto() {
-        String eventDisplayName;
-        if (eventCategory == EventCategory.ETC && eventName != null) {
-            eventDisplayName = acquaintanceNickname + "의 " + eventName;
-        } else {
-            eventDisplayName = acquaintanceNickname + "의 " + eventCategory.getCategoryName();
-        }
+        String eventDisplayName = getAcEventDisplayName();
 
         return GetCalendarScheduleResponseDto.builder()
                 .type("acEvent")
@@ -124,4 +109,13 @@ public class AcEvent extends BaseTimeEntity {
                 .build();
     }
 
+    public String getAcEventDisplayName() {
+        String eventDisplayName;
+        if (eventCategory == EventCategory.ETC && eventName != null) {
+            eventDisplayName = acquaintanceNickname + "의 " + eventName;
+        } else {
+            eventDisplayName = acquaintanceNickname + "의 " + eventCategory.getCategoryName();
+        }
+        return eventDisplayName;
+    }
 }
