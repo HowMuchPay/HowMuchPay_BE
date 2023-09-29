@@ -15,6 +15,8 @@ public class HomeResponseDto {
 
     private Integer payPercentage;
 
+    private String eventType;
+
     private String eventDisplayName;
 
     private Long eventId;
