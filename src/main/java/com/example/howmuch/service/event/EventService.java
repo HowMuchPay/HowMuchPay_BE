@@ -13,6 +13,7 @@ import com.example.howmuch.domain.repository.MyEventRepository;
 import com.example.howmuch.domain.repository.UserRepository;
 import com.example.howmuch.dto.event.*;
 import com.example.howmuch.dto.event.GetAllMyEventDetailResponseDto.GetAllMyEventDetails;
+import com.example.howmuch.dto.home.CombinedEventResponse;
 import com.example.howmuch.dto.home.GetAllStatisticsResponseDto;
 import com.example.howmuch.exception.event.NeedEventCharacterNameException;
 import com.example.howmuch.exception.event.NeedEventNameException;
@@ -47,16 +48,15 @@ public class EventService {
     @Transactional(readOnly = true)
     public GetAllStatisticsResponseDto getStatistics() {
         User user = getUser();
-        List<MyEventDetail> allMyEventByUser = myEventDetailRepository.findAllByUserOrderByCreatedAtDesc(
-            user);
 
-        List<GetAllStatisticsMyEventDetailResponseDto> allMyEvent = allMyEventByUser.stream()
-            .map(GetAllStatisticsMyEventDetailResponseDto::from)
-            .collect(Collectors.toList());
+        Map<String, List<GetAllMyEventsResponse>> allMyEvent = getAllMyEvent(user);
 
         Map<String, List<GetAllAcEventsResponse>> allAcEvent = getAllAcEvent(user);
 
-        return new GetAllStatisticsResponseDto(allMyEvent, allAcEvent);
+        Map<String, List<CombinedEventResponse>> sortEvents = GetAllStatisticsResponseDto.combineAndSortEvents(
+            allMyEvent, allAcEvent);
+
+        return new GetAllStatisticsResponseDto(sortEvents);
     }
 
     // 나의 경조사 등록
@@ -349,6 +349,8 @@ public class EventService {
             ));
         return sortedMyEvents;
     }
+
+
 
     private Map<String, List<GetAllAcEventsResponse>> getAllAcEvent(User user) {
         Map<String, List<GetAllAcEventsResponse>> allAcEvents = this.acEventRepository.findAllByUserOrderByEventAtDesc(
