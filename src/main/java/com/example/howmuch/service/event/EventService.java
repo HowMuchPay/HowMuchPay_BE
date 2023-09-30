@@ -212,6 +212,12 @@ public class EventService {
     }
 
     @Transactional
+    public GetMyEventsResponseDto getMyEventDetails(Long myEventId){
+        MyEvent myEvent = getMyEvent(myEventId);
+        return GetMyEventsResponseDto.from(myEvent);
+    }
+
+    @Transactional
     public Long updateAcEvent(Long acEventId, UpdateAcEventRequestDto request) {
         AcEvent acEvent = getAcEvent(acEventId);
         User user = getUser();
