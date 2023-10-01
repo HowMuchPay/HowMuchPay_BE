@@ -32,18 +32,16 @@ public class UserController {
                 authService.accessTokenByRefreshToken(accessToken, refreshToken), HttpStatus.OK);
     }
 
-    // logout 메소드
+    // 로그아웃
     @PostMapping("/logout/me")
-    public ResponseEntity<Void> logout(
-            HttpServletRequest request
-    ) {
-        this.authService.logout(request);
+    public ResponseEntity<Void> logout() {
+        this.authService.logout();
         return ResponseEntity.ok().build();
     }
 
     // 회원 탈퇴 메소드
-    @DeleteMapping
-    public ResponseEntity<Void> withDrawUser() {
+    @DeleteMapping("/delete")
+    public ResponseEntity<Void> deleteUser() {
         this.userService.deleteUser();
         return ResponseEntity.ok().build();
     }

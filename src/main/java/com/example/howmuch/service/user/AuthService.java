@@ -5,14 +5,11 @@ import com.example.howmuch.domain.entity.User;
 import com.example.howmuch.dto.user.login.UserOauthLoginResponseDto;
 import com.example.howmuch.exception.user.InvalidTokenException;
 import com.example.howmuch.exception.user.UnauthorizedUserException;
-import com.example.howmuch.util.AuthTransformUtil;
 import com.example.howmuch.util.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.servlet.http.HttpServletRequest;
 /*
     access token 재 발급시 access token + refresh token 같이 보내는 이유
    -> refresh token 은 redis 에 저장되어 있는데 회원의 id가 필요 이 정보는 access token 에 저장되어 있음
@@ -34,16 +31,20 @@ public class AuthService {
         validationRefreshToken(refreshToken);
         // 2. 요청 refresh token 과 redis refresh token 동일성 검증
         isRefreshTokenMatch(refreshToken);
-
-        // 3. 기존 refresh token 을 redis 삭제 + 새로운 refresh token & access token 재발급
+        // 3. 기존 refresh token 을 삭제 + 새로운 refresh token & access token 재발급
         User user = this.userService.findUserFromToken();
+        user.deleteRefreshToken();
         return this.oauthService.oauthLoginResult(user);
     }
 
+    /**
+     * -/user/logout/me
+     * - User 에서 Refresh Token 삭제
+     * - 프론트에서 Access,Refresh Token 삭제
+     **/
     @Transactional
-    public void logout(HttpServletRequest request) {
+    public void logout() {
         // access token 가져오기
-        String accessToken = AuthTransformUtil.resolveAccessTokenFromRequest(request);
         this.userService.findUserFromToken().deleteRefreshToken();
     }
 
@@ -62,7 +63,7 @@ public class AuthService {
     private void isRefreshTokenMatch(String refreshToken) {
         User user = this.userService.findUserFromToken();
         if (!user.getRefreshToken().equals(refreshToken)) {
-            throw new InvalidTokenException("유효하지 않은 리프레시 토큰입니다.");
+            throw new InvalidTokenException("Refresh Token 값이 일치하지 않습니다.");
         }
     }
 }
