@@ -27,32 +27,32 @@ public class EventController {
     @GetMapping("/my")
     public ResponseEntity<GetAllMyEventsResponseDto> getAllMyEvents() {
         return new ResponseEntity<>(
-            this.eventService.getAllMyEvents(), HttpStatus.OK);
+                this.eventService.getAllMyEvents(), HttpStatus.OK);
     }
 
     // 나의 경조사 등록
     @PostMapping("/my")
     public ResponseEntity<Long> createMyEvent(
-        @Valid @RequestBody CreateMyEventRequestDto request
+            @Valid @RequestBody CreateMyEventRequestDto request
     ) {
         return new ResponseEntity<>(
-            this.eventService.createMyEvent(request), HttpStatus.CREATED);
+                this.eventService.createMyEvent(request), HttpStatus.CREATED);
     }
 
     // 나의 경조사 필터링 조회
     @GetMapping("/my/filter")
     public ResponseEntity<GetAllMyEventsResponseDto> getAllMyEventsByFilter(
-        @RequestParam String myTypes,
-        @RequestParam String eventCategories
+            @RequestParam String myTypes,
+            @RequestParam String eventCategories
     ) {
         return new ResponseEntity<>(
-            this.eventService.getAllMyEventsByFilter(myTypes, eventCategories), HttpStatus.OK);
+                this.eventService.getAllMyEventsByFilter(myTypes, eventCategories), HttpStatus.OK);
     }
 
-    // 나의 경조사 삭제
+    // 나의 경조사 삭
     @DeleteMapping("/my/{id}")
     public ResponseEntity<Void> deleteMyEvent(
-        @PathVariable Long id
+            @PathVariable Long id
     ) {
         this.eventService.deleteMyEvent(id);
         return ResponseEntity.ok().build();
@@ -62,38 +62,38 @@ public class EventController {
     // 나의 경조사 세부사항 조회
     @GetMapping("/my/{id}/details")
     public ResponseEntity<GetAllMyEventDetailResponseDto> getAllMyEventDetails(
-        @PathVariable Long id,
-        @RequestParam String sort
+            @PathVariable Long id,
+            @RequestParam String sort
     ) {
         return new ResponseEntity<>(
-            this.eventService.getAllMyEventDetails(id, sort), HttpStatus.OK);
+                this.eventService.getAllMyEventDetails(id, sort), HttpStatus.OK);
     }
 
     // 나의 경조사 세부사항 등록
     @PostMapping("/my/{id}/details")
     public ResponseEntity<Long> createMyEventDetail(
-        @PathVariable Long id,
-        @Valid @RequestBody CreateMyEventDetailRequestDto request
+            @PathVariable Long id,
+            @Valid @RequestBody CreateMyEventDetailRequestDto request
     ) {
         return new ResponseEntity<>(
-            this.eventService.createMyEventDetail(id, request), HttpStatus.CREATED);
+                this.eventService.createMyEventDetail(id, request), HttpStatus.CREATED);
     }
 
     // 나의 경조사 세부사항 이름 조회
     @GetMapping("/my/{id}/details/filter")
     public ResponseEntity<List<GetAllMyEventDetails>> getAllMyEventDetailsByName(
-        @PathVariable Long id,
-        @RequestParam String name
+            @PathVariable Long id,
+            @RequestParam String name
     ) {
         return new ResponseEntity<>(
-            this.eventService.getAllMyEventDetailsByName(id, name), HttpStatus.OK);
+                this.eventService.getAllMyEventDetailsByName(id, name), HttpStatus.OK);
     }
 
     // 나의 경조사 세부사항 삭제
     @DeleteMapping("/my/{eventId}/details/{detailId}")
     public ResponseEntity<Void> deleteMyEventDetail(
-        @PathVariable Long eventId,
-        @PathVariable Long detailId
+            @PathVariable Long eventId,
+            @PathVariable Long detailId
     ) {
         this.eventService.deleteMyEventDetail(eventId, detailId);
         return ResponseEntity.ok().build();
@@ -105,20 +105,20 @@ public class EventController {
     @GetMapping("/acquaintance")
     public ResponseEntity<GetAllAcEventsResponseDto> getAllAcEvents() {
         return new ResponseEntity<>(
-            this.eventService.getAllAcEvents(), HttpStatus.OK
+                this.eventService.getAllAcEvents(), HttpStatus.OK
         );
     }
 
     @GetMapping("/acquaintance/name")
-    public ResponseEntity<GetAllAcNicknameResponseDto> getAllAcName(){
+    public ResponseEntity<GetAllAcNicknameResponseDto> getAllAcName() {
         return new ResponseEntity<>(this.eventService.getAcName(), HttpStatus.OK);
     }
 
     // 지인 경조사 업데이트
     @PatchMapping("/acquaintance/{id}")
     public ResponseEntity<Long> updateAcEvents(
-        @PathVariable Long id,
-        @RequestBody UpdateAcEventRequestDto request
+            @PathVariable Long id,
+            @RequestBody UpdateAcEventRequestDto request
     ) {
         return ResponseEntity.ok(this.eventService.updateAcEvent(id, request));
     }
@@ -126,7 +126,7 @@ public class EventController {
     //지인 경조사 삭제
     @DeleteMapping("/acquaintance/{id}")
     public ResponseEntity<Void> deleteAcEvent(
-        @PathVariable Long id
+            @PathVariable Long id
     ) {
         this.eventService.deleteAcEvent(id);
         return ResponseEntity.ok().build();
@@ -135,30 +135,30 @@ public class EventController {
     //지인 경조사 단일(디데이) 조회
     @GetMapping("/acquaintance/{id}/detail")
     public ResponseEntity<GetAcEventsResponseDto> getAcEventDetail(
-        @PathVariable Long id
+            @PathVariable Long id
     ) {
         return new ResponseEntity<>(
-            this.eventService.getAcEventsWithDay(id), HttpStatus.OK);
+                this.eventService.getAcEventsWithDay(id), HttpStatus.OK);
     }
 
 
     // 지인 경조사 필터링 조회
     @GetMapping("/acquaintance/filter")
     public ResponseEntity<GetAllAcEventsResponseDto> getAllAcEventsByFilter(
-        @RequestParam String acTypes,
-        @RequestParam String eventCategories
+            @RequestParam String acTypes,
+            @RequestParam String eventCategories
     ) {
         return new ResponseEntity<>(
-            this.eventService.getAllAcEventsByFilter(acTypes, eventCategories), HttpStatus.OK);
+                this.eventService.getAllAcEventsByFilter(acTypes, eventCategories), HttpStatus.OK);
     }
 
     // 지인 경조사 등록
     @PostMapping("/acquaintance")
     public ResponseEntity<Long> createAcEvent(
-        @Valid @RequestBody CreateAcEventRequestDto request
+            @Valid @RequestBody CreateAcEventRequestDto request
     ) {
         return new ResponseEntity<>(
-            this.eventService.createAcEvent(request), HttpStatus.CREATED);
+                this.eventService.createAcEvent(request), HttpStatus.CREATED);
 
     }
 
@@ -166,7 +166,7 @@ public class EventController {
     // 지인 경조사 이름 조회
     @GetMapping("/acquaintance/nickname")
     public ResponseEntity<GetAllAcEventsResponseDto> getAcEventsByNickname(
-        @RequestParam String name
+            @RequestParam String name
     ) {
         return ResponseEntity.ok(eventService.getAcEventsByName(name));
     }
