@@ -78,6 +78,7 @@ public class AcEvent extends BaseTimeEntity {
             .payPercentage(payPercentage)
             .eventDisplayName(acEventDisplayName)
             .eventCategory(eventCategory.getValue())
+            .eventType("acEvent")
             .dDay(dDay)
             .eventId(id)
             .build();

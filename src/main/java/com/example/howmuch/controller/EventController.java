@@ -58,6 +58,13 @@ public class EventController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/my/{id}/detail")
+    public ResponseEntity<GetMyEventsResponseDto> getMyEventDetail(
+        @PathVariable Long id
+    ){
+        return ResponseEntity.ok(eventService.getMyEventDetails(id));
+    }
+
 
     // 나의 경조사 세부사항 조회
     @GetMapping("/my/{id}/details")
