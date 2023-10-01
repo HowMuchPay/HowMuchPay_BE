@@ -29,33 +29,34 @@ public class UserService {
     private final UserRepository userRepository;
     private final RedisUtil redisUtil;
     private final AcEventRepository acEventRepository;
-
     private final MyEventRepository myEventRepository;
 
-
     /**
-     * 회원 탈퇴를 한다는 건 1. Redis 데이터 삭제 2. User DB 에서 User 삭제
-     */
-
+     * - /user/delete
+     * - DB 해당 유저 삭제
+     * - 프론트에서 Access + Refresh 삭제
+     **/
     @Transactional
     public void deleteUser() {
         User user = findUserFromToken();
-        this.redisUtil.deleteData(String.valueOf(user.getId()));
+//        this.redisUtil.deleteData(String.valueOf(user.getId()));
         this.userRepository.delete(user);
     }
 
-    @Transactional(readOnly = true)
     public User findUserFromToken() {
         return this.userRepository.findById(SecurityUtil.getCurrentUserId())
-            .orElseThrow(() -> new NotMatchUserException("토큰 정보와 일치하는 회원 정보가 없습니다."));
+                .orElseThrow(() -> new NotMatchUserException("토큰 정보와 일치하는 회원 정보가 없습니다."));
     }
 
-    @Transactional(readOnly = true)
     public User findById(Long id) {
         return this.userRepository.findById(id)
-            .orElseThrow(() -> new NotFoundUserException("일치하는 회원 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundUserException("일치하는 회원 정보를 찾을 수 없습니다."));
     }
 
+    /**
+     * - /user/phone
+     * - User 테이블에 Phone 칼럼 추가
+     **/
     @Transactional
     public void addUserPhoneNumber(String phone) {
         User user = findUserFromToken();
@@ -82,25 +83,25 @@ public class UserService {
         if (closestAcEvent == null && closestMyEvent == null) {
             // 둘 다 null이면 Event 정보를 빈 값으로 처리
             return HomeResponseDto.builder()
-                .userTotalPayAmount(pay)
-                .userTotalReceiveAmount(receive)
-                .payPercentage(payPercentage)
-                .build();
+                    .userTotalPayAmount(pay)
+                    .userTotalReceiveAmount(receive)
+                    .payPercentage(payPercentage)
+                    .build();
         }
         if (closestAcEvent == null) {
             return closestMyEvent.toHomeResponseDto(pay, receive, payPercentage, myDay,
-                closestMyEvent.getId());
+                    closestMyEvent.getId());
         }
         if (closestMyEvent == null) {
             return closestAcEvent.toHomeResponseDto(pay, receive, payPercentage, acDay,
-                closestAcEvent.getId());
+                    closestAcEvent.getId());
         }
         if (acDay < myDay) {
             return closestAcEvent.toHomeResponseDto(pay, receive, payPercentage, acDay,
-                closestAcEvent.getId());
+                    closestAcEvent.getId());
         } else {
             return closestMyEvent.toHomeResponseDto(pay, receive, payPercentage, myDay,
-                closestMyEvent.getId());
+                    closestMyEvent.getId());
 
         }
     }
@@ -120,6 +121,7 @@ public class UserService {
         LocalDate currentDate = LocalDate.now();
         return (int) ChronoUnit.DAYS.between(event.getEventAt(), currentDate);
     }
+
     private int calculatePayPercentage(long totalPayAmount, long totalReceiveAmount) {
         if (totalPayAmount + totalReceiveAmount == 0) {
             return 0; // 분모가 0인 경우 방지
@@ -138,12 +140,12 @@ public class UserService {
 
     private AcEvent findClosestAcEvent(User user) {
         return acEventRepository.findFirstByUserAndEventAtGreaterThanEqualOrderByEventAtAsc(user,
-            LocalDate.now()).orElse(null);
+                LocalDate.now()).orElse(null);
     }
 
     private MyEvent findClosestMyEvent(User user) {
         return myEventRepository.findFirstByUserAndEventAtGreaterThanEqualOrderByEventAtAsc(user,
-            LocalDate.now()).orElse(null);
+                LocalDate.now()).orElse(null);
     }
 
     private boolean isPhoneNumberExists(String phone) {
