@@ -37,10 +37,8 @@ public class KakaoOauthService {
     public UserOauthLoginResponseDto getOauth(UserInfoLoginRequestDto userInfoLoginRequestDto)
             throws IOException {
         String profileImage = userInfoLoginRequestDto.getProfileImageUrl();
-        log.info(profileImage);
         MultipartFile multipartFile = convertImageURLToMultipartFile(profileImage);
         String imageUrl = s3Service.saveFile(multipartFile);
-        log.info(imageUrl);
         userInfoLoginRequestDto.setProfileImageUrl(imageUrl);
         return processKakaoToken(saveUser(userInfoLoginRequestDto));
     }
@@ -63,6 +61,7 @@ public class KakaoOauthService {
                 .accessToken(BEARER_TYPE + " " + accessToken.getTokenValue())
                 .expiredTime(expireTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .refreshToken(refreshToken.getTokenValue())
+                .roleType(user.getRoleType().name())
                 .build();
     }
 

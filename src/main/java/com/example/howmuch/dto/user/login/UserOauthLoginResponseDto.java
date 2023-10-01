@@ -16,4 +16,5 @@ public class UserOauthLoginResponseDto {
     private String accessToken;
     private String refreshToken;
     private String expiredTime;
+    private String roleType;
 }
