@@ -49,7 +49,7 @@ public class EventController {
                 this.eventService.getAllMyEventsByFilter(myTypes, eventCategories), HttpStatus.OK);
     }
 
-    // 나의 경조사 삭
+    // 나의 경조사 삭제
     @DeleteMapping("/my/{id}")
     public ResponseEntity<Void> deleteMyEvent(
             @PathVariable Long id
@@ -58,12 +58,12 @@ public class EventController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/my/{id}/detail")
-    public ResponseEntity<GetMyEventsResponseDto> getMyEventDetail(
-        @PathVariable Long id
-    ){
-        return ResponseEntity.ok(eventService.getMyEventDetails(id));
-    }
+//    @GetMapping("/my/{id}/detail")
+//    public ResponseEntity<GetMyEventsResponseDto> getMyEventDetail(
+//            @PathVariable Long id
+//    ) {
+//        return ResponseEntity.ok(eventService.getMyEventDetails(id));
+//    }
 
 
     // 나의 경조사 세부사항 조회
@@ -74,6 +74,22 @@ public class EventController {
     ) {
         return new ResponseEntity<>(
                 this.eventService.getAllMyEventDetails(id, sort), HttpStatus.OK);
+    }
+
+    // 나의 경조사 비용 낸 모든 사람 이름 조회
+    @GetMapping("/my/people")
+    public ResponseEntity<List<String>> getAllPeopleFromMyEvents() {
+        return new ResponseEntity<>(
+                this.eventService.getAllPeopleFromMyEvents(), HttpStatus.OK);
+    }
+
+    // 해당 지인이 낸 모든 경조사 조회
+    @GetMapping("/my/people/filter")
+    public ResponseEntity<GetAllMyEventsResponseDto> getAllMyEventsByAc(
+            @RequestParam String name
+    ) {
+        return new ResponseEntity<>(
+                this.eventService.getAllMyEventsByAc(name), HttpStatus.OK);
     }
 
     // 나의 경조사 세부사항 등록
