@@ -156,6 +156,13 @@ public class EventService {
         return new GetAllMyEventsResponseDto(totalPayAmount, sortedMyEvents);
     }
 
+    // 나의 경조사 아이디 조회
+    @Transactional
+    public GetMyEventsResponseDto getMyEventDetails(Long myEventId) {
+        MyEvent myEvent = getMyEventById(myEventId);
+        return GetMyEventsResponseDto.from(myEvent);
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // 나의 경조사 세부사항 등록
@@ -247,12 +254,6 @@ public class EventService {
         }
         getUser().addTotalPayAmount(request.getPayAmount()); // 내가 지불한 총 금액 추가
         return this.acEventRepository.save(request.toEntity(getUser())).getId();
-    }
-
-    @Transactional
-    public GetMyEventsResponseDto getMyEventDetails(Long myEventId) {
-        MyEvent myEvent = getMyEventById(myEventId);
-        return GetMyEventsResponseDto.from(myEvent);
     }
 
     @Transactional
