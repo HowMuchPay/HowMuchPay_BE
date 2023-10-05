@@ -43,7 +43,6 @@ public class CreateMyEventRequestDto {
 
     private String eventTime; // 경조사 시각
 
-
     public MyEvent toEntity(User user) {
         return MyEvent.builder()
                 .eventAt(eventAt)

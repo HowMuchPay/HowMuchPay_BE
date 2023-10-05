@@ -69,12 +69,29 @@ public class MyEvent extends BaseTimeEntity {
             myEventDisplayName = myEventCharacterName + "의 " + myEventName;
         }
         return GetAllMyEventsResponse.builder()
-            .id(id)
-            .eventAt(eventAt)
-            .receiveAmount(totalReceiveAmount)
-            .eventCategory(eventCategory.getValue())
-            .myEventDisplayName(myEventDisplayName)
-            .build();
+                .id(id)
+                .eventAt(eventAt)
+                .receiveAmount(totalReceiveAmount)
+                .eventCategory(eventCategory.getValue())
+                .myEventDisplayName(myEventDisplayName)
+                .build();
+    }
+
+    public GetAllMyEventsResponse toGetAllMyEventsResponse(Long receiveAmount) {
+
+        String myEventDisplayName;
+        if (myEventName == null) {
+            myEventDisplayName = myEventCharacterName + "의 " + eventCategory.getCategoryName();
+        } else {
+            myEventDisplayName = myEventCharacterName + "의 " + myEventName;
+        }
+        return GetAllMyEventsResponse.builder()
+                .id(id)
+                .eventAt(eventAt)
+                .receiveAmount(receiveAmount)
+                .eventCategory(eventCategory.getValue())
+                .myEventDisplayName(myEventDisplayName)
+                .build();
     }
 
     /**
@@ -90,15 +107,15 @@ public class MyEvent extends BaseTimeEntity {
         }
 
         return GetMyEventInfoResponseDto.builder()
-            .myEventDisplayName(myEventDisplayName)
-            .eventAt(eventAt)
-            .eventTime(eventTime)
-            .remainedDay(remainedDay)
-            .build();
+                .myEventDisplayName(myEventDisplayName)
+                .eventAt(eventAt)
+                .eventTime(eventTime)
+                .remainedDay(remainedDay)
+                .build();
     }
 
     public HomeResponseDto toHomeResponseDto(long pay, long receive, Integer payPercentage,
-        int dDay, Long id) {
+                                             int dDay, Long id) {
         String myEventDisplayName;
         if (myEventName == null) {
             myEventDisplayName = myEventCharacterName + "의 " + eventCategory.getCategoryName();
@@ -107,15 +124,15 @@ public class MyEvent extends BaseTimeEntity {
         }
 
         return HomeResponseDto.builder()
-            .userTotalPayAmount(pay)
-            .userTotalReceiveAmount(receive)
-            .payPercentage(payPercentage)
-            .eventDisplayName(myEventDisplayName)
-            .eventCategory(eventCategory.getValue())
-            .eventType("myEvent")
-            .dDay(dDay)
-            .eventId(id)
-            .build();
+                .userTotalPayAmount(pay)
+                .userTotalReceiveAmount(receive)
+                .payPercentage(payPercentage)
+                .eventDisplayName(myEventDisplayName)
+                .eventCategory(eventCategory.getValue())
+                .eventType("myEvent")
+                .dDay(dDay)
+                .eventId(id)
+                .build();
     }
 
     public void addReceiveAmount(User user, Long addAmount) {

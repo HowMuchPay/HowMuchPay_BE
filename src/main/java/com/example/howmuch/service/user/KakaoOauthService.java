@@ -62,6 +62,7 @@ public class KakaoOauthService {
                 .expiredTime(expireTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .refreshToken(refreshToken.getTokenValue())
                 .roleType(user.getRoleType().name())
+                .phoneExisted(user.getPhoneNumber() != null)
                 .build();
     }
 

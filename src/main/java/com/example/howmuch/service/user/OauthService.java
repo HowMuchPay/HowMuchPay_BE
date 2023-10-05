@@ -129,7 +129,6 @@ public class OauthService {
                 .block();
     }
 
-
     /* 5. 소셜 로그인 정보 기반으로 회원 저장 후에 로그인 결과를 반환하는 메소드 */
     @Transactional
     public UserOauthLoginResponseDto oauthLoginResult(User user) {
@@ -149,6 +148,8 @@ public class OauthService {
                 .accessToken(BEARER_TYPE + " " + accessToken.getTokenValue())
                 .expiredTime(expireTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))) // 만료 Local Date Time
                 .refreshToken(refreshToken.getTokenValue())
+                .roleType(user.getRoleType().name())
+                .phoneExisted(user.getPhoneNumber() != null)
                 .build();
 
     }
