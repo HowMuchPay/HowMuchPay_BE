@@ -15,5 +15,6 @@ public class GetCalendarScheduleResponseDto {
     private String type;
     private LocalDate eventAt;
     private Long amount;
+    private int eventCategory;
     private String eventDisplayName;
 }

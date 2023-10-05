@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class CalendarService {
-
     private final MyEventRepository myEventRepository;
     private final AcEventRepository acEventRepository;
     private final UserRepository userRepository;

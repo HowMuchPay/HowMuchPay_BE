@@ -159,6 +159,7 @@ public class MyEvent extends BaseTimeEntity {
                 .eventAt(eventAt)
                 .amount(totalReceiveAmount)
                 .eventDisplayName(eventDisplayName)
+                .eventCategory(eventCategory.getValue())
                 .build();
     }
 }
