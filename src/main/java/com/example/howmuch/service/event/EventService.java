@@ -120,7 +120,7 @@ public class EventService {
         return this.myEventDetailRepository.findAllByUser(this.getUser())
                 .stream()
                 .map(MyEventDetail::getAcquaintanceNickname)
-
+                .distinct()
                 .collect(Collectors.toList());
     }
 

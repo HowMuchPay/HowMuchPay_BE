@@ -176,7 +176,6 @@ public class EventController {
     ) {
         return new ResponseEntity<>(
                 this.eventService.createAcEvent(request), HttpStatus.CREATED);
-
     }
 
 
