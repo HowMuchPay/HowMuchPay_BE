@@ -48,21 +48,25 @@ public class RecommendationEventService {
     }
 
     @Transactional(readOnly = true)
-    public double getRecommendationEvent(GetAverageAmountRequestDto requestDto) {
+    public int getRecommendationEvent(GetAverageAmountRequestDto requestDto) {
         Integer intimacyLevel = requestDto.getIntimacyLevel();
-
-
         int minIntimacyLevel = calculateMinIntimacyLevel(intimacyLevel);
         int maxIntimacyLevel = calculateMaxIntimacyLevel(intimacyLevel);
 
-        return recommendationEventRepository.getPayAmountByRecommendationEvent(
-                EventCategory.fromValue(requestDto.getEventCategory()),
-                AcType.fromValue(requestDto.getAcquaintanceType()),
-                minIntimacyLevel,
-                maxIntimacyLevel,
-                requestDto.getAgeGroup(),
-                requestDto.getAnnualIncome()
-        ).orElse(0d);
+        List<Object[]> results = recommendationEventRepository.getMostSelectedPayAmountByRecommendationEvent(
+            EventCategory.fromValue(requestDto.getEventCategory()),
+            AcType.fromValue(requestDto.getAcquaintanceType()),
+            minIntimacyLevel,
+            maxIntimacyLevel,
+            requestDto.getAgeGroup(),
+            requestDto.getAnnualIncome()
+        );
+        if (!results.isEmpty()) {
+            Object[] firstResult = results.get(0);
+            return (int) firstResult[0];
+        } else {
+            return 0; // 결과가 없을 경우 기본값 0을 반환
+        }
     }
 
     private int calculateMinIntimacyLevel(int intimacyLevel) {
