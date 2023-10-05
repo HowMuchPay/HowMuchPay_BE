@@ -2,6 +2,7 @@ package com.example.howmuch.domain.entity;
 
 import com.example.howmuch.domain.BaseTimeEntity;
 import com.example.howmuch.dto.event.GetAllMyEventDetailResponseDto.GetAllMyEventDetails;
+import com.example.howmuch.dto.event.GetAllMyEventsResponse;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,7 +16,6 @@ import javax.persistence.*;
 @Entity
 @Table(name = "my_event_details")
 public class MyEventDetail extends BaseTimeEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "event_detail_id")
@@ -42,4 +42,22 @@ public class MyEventDetail extends BaseTimeEntity {
                 .receiveAmount(receiveAmount)
                 .build();
     }
+
+    public GetAllMyEventsResponse toGetAllMyEventsResponse(MyEvent myEvent) {
+
+        String myEventDisplayName;
+        if (myEvent.getMyEventName() == null) {
+            myEventDisplayName = myEvent.getMyEventCharacterName() + "의 " + myEvent.getEventCategory().getCategoryName();
+        } else {
+            myEventDisplayName = myEvent.getMyEventCharacterName() + "의 " + myEvent.getMyEventName();
+        }
+        return GetAllMyEventsResponse.builder()
+                .id(id)
+                .eventAt(myEvent.getEventAt())
+                .receiveAmount(receiveAmount)
+                .eventCategory(myEvent.getEventCategory().getValue())
+                .myEventDisplayName(myEventDisplayName)
+                .build();
+    }
+
 }

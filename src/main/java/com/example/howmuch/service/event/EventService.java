@@ -29,7 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,29 +45,6 @@ public class EventService {
     private final AcEventRepository acEventRepository;
     private final MyEventDetailRepository myEventDetailRepository;
 
-    private static Map<String, List<GetAllAcEventsResponse>> getAllAcEventByAcquaintanceNickname(
-            List<AcEvent> byUserAndAcquaintanceNickname) {
-        Map<String, List<GetAllAcEventsResponse>> allAcEvents = byUserAndAcquaintanceNickname
-                .stream()
-                .map(AcEvent::toGetAllAcEventsResponse)
-                .collect(Collectors.groupingBy(
-                        response -> YearMonth.from(response.getEventAt()).toString(),
-                        LinkedHashMap::new,
-                        Collectors.toList()
-                ));
-
-        Map<String, List<GetAllAcEventsResponse>> sortedAcEvents = allAcEvents.entrySet()
-                .stream()
-                .sorted(Map.Entry.<String, List<GetAllAcEventsResponse>>comparingByKey().reversed())
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (oldValue, newValue) -> oldValue,
-                        LinkedHashMap::new
-                ));
-        return sortedAcEvents;
-    }
-
     // 나의 경조사 등록
     @Transactional
     public Long createMyEvent(CreateMyEventRequestDto request) {
@@ -75,12 +52,21 @@ public class EventService {
         return this.myEventRepository.save(request.toEntity(getUser())).getId();
     }
 
-    // 나의 모든 경조사 조회
+    // 나의 경조사 삭제
+    @Transactional
+    public void deleteMyEvent(Long id) {
+        User user = getUser();
+        MyEvent myEvent = getMyEventById(id);
+        user.minusUserTotalReceiveAmount(myEvent.getTotalReceiveAmount());
+        user.getMyEvents().remove(myEvent);
+    }
+
+    // 나의 경조사 전체 조회
     @Transactional(readOnly = true)
     public GetAllMyEventsResponseDto getAllMyEvents() {
 
         User user = getUser();
-        Map<String, List<GetAllMyEventsResponse>> sortedMyEvents = getAllMyEvent(user);
+        Map<String, List<GetAllMyEventsResponse>> sortedMyEvents = this.getAllMyEvent(user);
 
         return new GetAllMyEventsResponseDto(user.getUserTotalReceiveAmount(), sortedMyEvents);
     }
@@ -89,7 +75,6 @@ public class EventService {
     @Transactional(readOnly = true)
     public GetAllMyEventsResponseDto getAllMyEventsByFilter(String myTypes,
                                                             String eventCategories) {
-
         List<String> myTypeList = List.of(myTypes.split(","));
         List<String> eventCategoryList = List.of(eventCategories.split(","));
 
@@ -129,30 +114,25 @@ public class EventService {
         return new GetAllMyEventsResponseDto(totalReceiveAmount, sortedMyEvents);
     }
 
-    // 나의 경조사 세부 사항 등록
-
     // 나의 경조사 비용을 낸 모든 사람 조회
     @Transactional(readOnly = true)
     public List<String> getAllPeopleFromMyEvents() {
-        List<String> result = new ArrayList<>();
-        User user = getUser();
-        List<MyEvent> myEvents = user.getMyEvents();
-        for (MyEvent myEvent : myEvents) {
-            for (MyEventDetail myEventDetail : myEvent.getMyEventDetails()) {
-                result.add(myEventDetail.getAcquaintanceNickname());
-            }
-        }
-        return result;
+        return this.myEventDetailRepository.findAllByUser(this.getUser())
+                .stream()
+                .map(MyEventDetail::getAcquaintanceNickname)
+
+                .collect(Collectors.toList());
     }
 
     // 해당 지인이 참여한 나의 모든 경조사 조회
     @Transactional(readOnly = true)
     public GetAllMyEventsResponseDto getAllMyEventsByAc(String name) {
-        List<MyEventDetail> myEventDetails = this.myEventDetailRepository.findByUserAndAcquaintanceNickname(getUser(), name);
+
+        // 1. MyEventDetail 은 User 와 AcquaintanceNickname 필드를 둘다 가지며, 로그인한 유저와 지인의 이름으로 나의 경조사 세부사항 전체검색
+        List<MyEventDetail> myEventDetails = this.myEventDetailRepository.findByUserAndAcquaintanceNickname(this.getUser(), name);
 
         Map<String, List<GetAllMyEventsResponse>> collect = myEventDetails.stream()
-                .map(MyEventDetail::getMyEvent)
-                .map(MyEvent::toGetAllMyEventsResponse)
+                .map(myEventDetail -> myEventDetail.toGetAllMyEventsResponse(myEventDetail.getMyEvent()))
                 .collect(Collectors.groupingBy(
                         response -> YearMonth.from(response.getEventAt()).toString(),
                         LinkedHashMap::new,
@@ -176,15 +156,15 @@ public class EventService {
         return new GetAllMyEventsResponseDto(totalPayAmount, sortedMyEvents);
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * 1. MyEvent receiveAmount 필드 증가 2. 해당 User TotalReceiveAmount 필드 증가
-     **/
+    // 나의 경조사 세부사항 등록
     @Transactional
     public Long createMyEventDetail(Long id, CreateMyEventDetailRequestDto request) {
-        MyEvent myEvent = getMyEvent(id);
-        User user = getUser();
-        myEvent.addReceiveAmount(getUser(), request.getReceiveAmount()); // 해당 경조사 받은 금액 추가
+        MyEvent myEvent = this.getMyEventById(id);
+        User user = this.getUser();
+        /* User의 userTotalReceiveAmount 및 MyEvent 의 totalReceiveAmount 증가 */
+        myEvent.addReceiveAmount(user, request.getReceiveAmount());
         return this.myEventDetailRepository.save(request.toEntity(myEvent, user)).getId();
     }
 
@@ -192,62 +172,52 @@ public class EventService {
     @Transactional(readOnly = true)
     public GetAllMyEventDetailResponseDto getAllMyEventDetails(Long id, String sort) {
 
-        MyEvent myEvent = getMyEvent(id);
+        // 1. MyEvent 존재 여부 확인
+        MyEvent myEvent = this.getMyEventById(id);
 
-        // MyEventInfo
         GetMyEventInfoResponseDto myEventInfo
-                = myEvent.toGetMyEventInfoResponsedto(calculateRemainedDay(myEvent));
+                = myEvent.toGetMyEventInfoResponsedto(this.calculateRemainedDay(myEvent));
 
-        if (sort.equals("asc")) { // 오름 차순
+        // 2. 금액 순 정렬 기준 따라 응답 구조 생성
+        // asc : MyEventDetail 클래스의 receiveAmount 필드 기준 오름차순
+        if (sort.equals("asc")) {
             return GetAllMyEventDetailResponseDto.builder()
                     .myEventInfo(myEventInfo)
-                    .myDetails(
-                            this.myEventDetailRepository.findAllByMyEventOrderByReceiveAmountAsc(myEvent)
-                                    .stream()
-                                    .map(MyEventDetail::toGetAllMyEventDetails)
-                                    .collect(Collectors.toList()))
-                    .build();
-        } else { // 내림 차순
+                    .myDetails(myEvent.getMyEventDetails()
+                            .stream()
+                            .sorted(Comparator.comparing(MyEventDetail::getReceiveAmount))
+                            .map(MyEventDetail::toGetAllMyEventDetails)
+                            .collect(Collectors.toList())
+                    ).build();
+            // desc : MyEventDetail 클래스의 receiveAmount 필드 기준 내림차순
+        } else {
             return GetAllMyEventDetailResponseDto.builder()
                     .myEventInfo(myEventInfo)
-                    .myDetails(
-                            this.myEventDetailRepository.findAllByMyEventOrderByReceiveAmountDesc(myEvent)
-                                    .stream()
-                                    .map(MyEventDetail::toGetAllMyEventDetails)
-                                    .collect(Collectors.toList()))
-                    .build();
+                    .myDetails(myEvent.getMyEventDetails()
+                            .stream()
+                            .sorted(Comparator.comparing(MyEventDetail::getReceiveAmount).reversed())
+                            .map(MyEventDetail::toGetAllMyEventDetails)
+                            .collect(Collectors.toList())
+                    ).build();
         }
     }
 
     // 나의 경조사 세부 사항 이름 조회
     @Transactional(readOnly = true)
     public List<GetAllMyEventDetails> getAllMyEventDetailsByName(Long id, String name) {
-        return this.myEventDetailRepository.findAllByMyEventAndAcquaintanceNicknameContainingIgnoreCase(
-                        getMyEvent(id), name)
+        return this.myEventDetailRepository.findAllByMyEventAndAcquaintanceNicknameContainingIgnoreCase(this.getMyEventById(id), name)
                 .stream()
                 .map(MyEventDetail::toGetAllMyEventDetails)
                 .toList();
     }
 
+
     // 나의 경조사 세부사항 삭제
-
-    // 나의 경조사 삭제
-    @Transactional
-    public void deleteMyEvent(Long id) {
-        User user = getUser();
-        MyEvent myEvent = getMyEvent(id);
-        user.minusUserTotalReceiveAmount(myEvent.getTotalReceiveAmount());
-        user.getMyEvents().remove(myEvent);
-    }
-
-    /**
-     * 1. 나의 경조사 세부사항 삭제 시 MyEvent receiveAmount 필드 금액 차감 필요 2. 해당 사용자 User userTotalReceiveAmount
-     * 필드 금액 차감 필요
-     **/
     @Transactional
     public void deleteMyEventDetail(Long eventId, Long detailId) {
-        MyEvent myEvent = getMyEvent(eventId);
-        MyEventDetail myEventDetail = getMyEventDetail(detailId);
+        MyEvent myEvent = this.getMyEventById(eventId);
+        MyEventDetail myEventDetail = this.getMyEventDetail(detailId);
+        /* User의 userTotalReceiveAmount 및 MyEvent 의 totalReceiveAmount 증가 */
         myEvent.minusReceiveAmount(getUser(), myEventDetail.getReceiveAmount());
         myEvent.getMyEventDetails().remove(myEventDetail);
     }
@@ -281,7 +251,7 @@ public class EventService {
 
     @Transactional
     public GetMyEventsResponseDto getMyEventDetails(Long myEventId) {
-        MyEvent myEvent = getMyEvent(myEventId);
+        MyEvent myEvent = getMyEventById(myEventId);
         return GetMyEventsResponseDto.from(myEvent);
     }
 
@@ -446,8 +416,8 @@ public class EventService {
                 .orElseThrow(() -> new NotFoundUserException("일치하는 회원이 존재하지 않습니다."));
     }
 
-    private MyEvent getMyEvent(Long id) {
-        return this.myEventRepository.findById(id)
+    private MyEvent getMyEventById(Long id) {
+        return this.myEventRepository.findByUserAndId(getUser(), id)
                 .orElseThrow(() -> new NotFoundEventException("일치하는 경조사 정보가 존재하지 않습니다."));
     }
 
@@ -476,5 +446,29 @@ public class EventService {
     private MyEventDetail getMyEventDetail(Long detailId) {
         return this.myEventDetailRepository.findById(detailId)
                 .orElseThrow(() -> new NotFoundEventDetailException("일치하는 경조사 세부사항 정보가 존재하지 않습니다."));
+    }
+
+
+    private Map<String, List<GetAllAcEventsResponse>> getAllAcEventByAcquaintanceNickname(
+            List<AcEvent> byUserAndAcquaintanceNickname) {
+        Map<String, List<GetAllAcEventsResponse>> allAcEvents = byUserAndAcquaintanceNickname
+                .stream()
+                .map(AcEvent::toGetAllAcEventsResponse)
+                .collect(Collectors.groupingBy(
+                        response -> YearMonth.from(response.getEventAt()).toString(),
+                        LinkedHashMap::new,
+                        Collectors.toList()
+                ));
+
+        Map<String, List<GetAllAcEventsResponse>> sortedAcEvents = allAcEvents.entrySet()
+                .stream()
+                .sorted(Map.Entry.<String, List<GetAllAcEventsResponse>>comparingByKey().reversed())
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (oldValue, newValue) -> oldValue,
+                        LinkedHashMap::new
+                ));
+        return sortedAcEvents;
     }
 }

@@ -14,6 +14,11 @@ import java.util.Optional;
 public interface MyEventRepository extends JpaRepository<MyEvent, Long> {
     List<MyEvent> findAllByUserOrderByEventAtDesc(User user);
 
+    Optional<MyEvent> findByUserAndId(User user, Long id);
+
+    // 나의 모든 경조사 조회
+    List<MyEvent> findAllByUser(User user);
+
     List<MyEvent> findAllByUserAndMyTypeAndEventCategoryOrderByEventAtDesc(User user, MyType myType, EventCategory eventCategory);
 
     @Query("select m from MyEvent m where m.user = :user and year(m.eventAt) = :year and month(m.eventAt) = :month")

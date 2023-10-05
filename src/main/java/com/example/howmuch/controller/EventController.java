@@ -23,7 +23,7 @@ public class EventController {
     private final EventService eventService;
     private final NoticeService noticeService;
 
-    // 나의 모든 경조사 조회
+    // 나의 경조사 전체 조회
     @GetMapping("/my")
     public ResponseEntity<GetAllMyEventsResponseDto> getAllMyEvents() {
         return new ResponseEntity<>(
@@ -58,13 +58,23 @@ public class EventController {
         return ResponseEntity.ok().build();
     }
 
-//    @GetMapping("/my/{id}/detail")
-//    public ResponseEntity<GetMyEventsResponseDto> getMyEventDetail(
-//            @PathVariable Long id
-//    ) {
-//        return ResponseEntity.ok(eventService.getMyEventDetails(id));
-//    }
+    // 나의 경조사 비용 낸 모든 사람 이름 조회
+    @GetMapping("/my/people")
+    public ResponseEntity<List<String>> getAllPeopleFromMyEvents() {
+        return new ResponseEntity<>(
+                this.eventService.getAllPeopleFromMyEvents(), HttpStatus.OK);
+    }
 
+    // 해당 지인이 낸 모든 나의 경조사 조회
+    @GetMapping("/my/people/filter")
+    public ResponseEntity<GetAllMyEventsResponseDto> getAllMyEventsByAc(
+            @RequestParam String name
+    ) {
+        return new ResponseEntity<>(
+                this.eventService.getAllMyEventsByAc(name), HttpStatus.OK);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // 나의 경조사 세부사항 조회
     @GetMapping("/my/{id}/details")
@@ -74,22 +84,6 @@ public class EventController {
     ) {
         return new ResponseEntity<>(
                 this.eventService.getAllMyEventDetails(id, sort), HttpStatus.OK);
-    }
-
-    // 나의 경조사 비용 낸 모든 사람 이름 조회
-    @GetMapping("/my/people")
-    public ResponseEntity<List<String>> getAllPeopleFromMyEvents() {
-        return new ResponseEntity<>(
-                this.eventService.getAllPeopleFromMyEvents(), HttpStatus.OK);
-    }
-
-    // 해당 지인이 낸 모든 경조사 조회
-    @GetMapping("/my/people/filter")
-    public ResponseEntity<GetAllMyEventsResponseDto> getAllMyEventsByAc(
-            @RequestParam String name
-    ) {
-        return new ResponseEntity<>(
-                this.eventService.getAllMyEventsByAc(name), HttpStatus.OK);
     }
 
     // 나의 경조사 세부사항 등록
