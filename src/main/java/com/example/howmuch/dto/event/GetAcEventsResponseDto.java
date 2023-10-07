@@ -19,6 +19,8 @@ public class GetAcEventsResponseDto {
 
     private LocalDate eventAt;
 
+    private String eventTime;
+
     @JsonProperty("d-day")
     private int dDay;
 
@@ -37,6 +39,7 @@ public class GetAcEventsResponseDto {
             .eventCategory(acEvent.getEventCategory().getValue())
             .acType(acEvent.getAcquaintanceType().getValue())
             .acEventDisplayName(acEvent.getAcEventDisplayName())
+            .eventTime(acEvent.getEventTime())
             .build();
     }
 }
