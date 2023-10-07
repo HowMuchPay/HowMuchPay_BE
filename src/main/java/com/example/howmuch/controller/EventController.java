@@ -135,7 +135,7 @@ public class EventController {
         );
     }
 
-    @GetMapping("/acquaintance/name")
+    @GetMapping("/my/people")
     public ResponseEntity<GetAllAcNicknameResponseDto> getAllAcName() {
         return new ResponseEntity<>(this.eventService.getAcName(), HttpStatus.OK);
     }
