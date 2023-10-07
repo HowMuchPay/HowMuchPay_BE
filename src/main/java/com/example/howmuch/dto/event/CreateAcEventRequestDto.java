@@ -16,6 +16,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class CreateAcEventRequestDto {
 
+
     @NotBlank
     @Size(max = 255)
     private String acName;
@@ -35,7 +36,7 @@ public class CreateAcEventRequestDto {
     @NotNull
     private LocalDate eventAt;
 
-    private String eventTime;
+    private String eventTime; // 경조사 시각
 
     private String eventName; // eventCategory 가 etc 인 경우(4) !null
 
