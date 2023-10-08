@@ -21,10 +21,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -36,76 +33,75 @@ public class CalendarService {
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public List<GetCalendarScheduleResponseDto> getSchedule(String time) {
+    public Map<String, List<GetCalendarScheduleResponseDto>> getSchedule(String time) {
         YearMonth yearMonth = getYearMonth(time);
-
-        int year = yearMonth.getYear();
-        int month = yearMonth.getMonthValue();
+        LocalDate startDate = yearMonth.atDay(1);
+        LocalDate endDate = yearMonth.atEndOfMonth();
         User user = getUser();
 
+        // 1. 해당 Year, Month 에 해당하는 모든 경조사 정보 가져오기
         List<GetCalendarScheduleResponseDto> responseDtoList = new ArrayList<>();
-        this.myEventRepository.findAllByUserAndYearAndMonth(user, year, month).stream()
+        this.myEventRepository.findAllByUserAndEventAtBetween(user, startDate, endDate).stream()
                 .map(MyEvent::toGetCalendarScheduleResponseDto)
                 .forEach(responseDtoList::add);
 
-        this.acEventRepository.findAllByUserAndYearAndMonth(user, year, month).stream()
+        this.acEventRepository.findAllByUserAndEventAtBetween(user, startDate, endDate).stream()
                 .map(AcEvent::toGetCalendarScheduleResponseDto)
                 .forEach(responseDtoList::add);
 
-        return responseDtoList;
+        // 2. EventAt 최신순 정렬(내림차순)
+        responseDtoList.sort(Comparator.comparing(GetCalendarScheduleResponseDto::getEventAt).reversed());
+
+        // 3. Map 으로 그룹화해서 리턴
+        return responseDtoList.stream()
+                .collect(Collectors.groupingBy(dto -> dto.getEventAt().toString()));
     }
 
     @Transactional(readOnly = true)
-    public GetStatisticsResponseDto getStatistics(String yearAndMonth) {
-        YearMonth yearMonth = getYearMonth(yearAndMonth);
-
-        int year = yearMonth.getYear();
-        int month = yearMonth.getMonthValue();
-
+    public GetStatisticsResponseDto getStatistics(String time) {
+        YearMonth yearMonth = getYearMonth(time);
+        LocalDate startDate = yearMonth.atDay(1);
+        LocalDate endDate = yearMonth.atEndOfMonth();
         User user = getUser();
 
-        List<MyEvent> myEvents = this.myEventRepository.findAllByUserAndYearAndMonth(user, year, month);
-        List<AcEvent> acEvents = this.acEventRepository.findAllByUserAndYearAndMonth(user, year, month);
-//
-//        if (myEvents.isEmpty() && acEvents.isEmpty()) {
-//            return null;
-//        }
+        List<MyEvent> myEvents = this.myEventRepository.findAllByUserAndEventAtBetween(user, startDate, endDate);
+        List<AcEvent> acEvents = this.acEventRepository.findAllByUserAndEventAtBetween(user, startDate, endDate);
 
-        // Grouping myEvents by LocalDate
-        Map<LocalDate, List<MyEvent>> myEventsGroupedByDate = myEvents.stream()
-                .collect(Collectors.groupingBy(MyEvent::getEventAt));
+        // 1. 해당 Year, Month 에 해당하는 모든 경조사 정보 가져오기
+        List<StatisticsListResponse> responseDtoList = new ArrayList<>();
+        myEvents.stream()
+                .map(MyEvent::toStatisticsListResponseDto)
+                .forEach(responseDtoList::add);
 
-        // Grouping acEvents by LocalDate
-        Map<LocalDate, List<AcEvent>> acEventsGroupedByDate = acEvents.stream()
-                .collect(Collectors.groupingBy(AcEvent::getEventAt));
+        acEvents.stream()
+                .map(AcEvent::toStatisticsListResponseDto)
+                .forEach(responseDtoList::add);
+
+        // 2. EventAt 최신순 정렬(내림차순)
+        responseDtoList.sort(Comparator.comparing(StatisticsListResponse::getEventAt).reversed());
+
+        // 3. Map 으로 날짜별 그룹화
+        Map<String, List<StatisticsListResponse>> resultList = responseDtoList.stream()
+                .collect(Collectors.groupingBy(dto -> dto.getEventAt().toString()));
+
+        // 4 - 1. acEvents 에서 가장 많은 비용을 지출한 eventCategory
+        Map<EventCategory, Long> totalPayByCategory = acEvents.stream()
+                .collect(Collectors.groupingBy(AcEvent::getEventCategory,
+                        Collectors.summingLong(AcEvent::getPayAmount)));
+
+        // 4 - 2. 가장 많은 비용을 지출한 EventCategory를 찾습니다.
+        Optional<Map.Entry<EventCategory, Long>> maxEntry = totalPayByCategory.entrySet().stream()
+                .max(Map.Entry.comparingByValue());
 
 
+        // 5. GetStatisticsResponseDto 반환
         return GetStatisticsResponseDto.builder()
+                .totalPayment(myEvents.stream().mapToLong(MyEvent::getTotalReceiveAmount).sum())
                 .totalPayment(acEvents.stream().mapToLong(AcEvent::getPayAmount).sum())
-                .totalReceiveAmount(myEvents.stream().mapToLong(MyEvent::getTotalReceiveAmount).sum())
-                .mostEventCategory(findMostExpensiveCategory(acEvents).getCategoryName())
-                .statisticsListResponse(
-                        myEventsGroupedByDate.entrySet().stream()
-                                .map(entry -> {
-                                    LocalDate eventAt = entry.getKey();
-                                    List<MyEvent> myEventsForDate = entry.getValue();
-                                    List<AcEvent> acEventsForDate = acEventsGroupedByDate.getOrDefault(eventAt, List.of());
-
-                                    return StatisticsListResponse.builder()
-                                            .eventAt(getFormattedDate(eventAt))
-                                            .myEvents(myEventsForDate.stream()
-                                                    .map(StatisticsListResponse.MyEventStatisticList::from)
-                                                    .collect(Collectors.toList()))
-                                            .acEvents(acEventsForDate.stream()
-                                                    .map(StatisticsListResponse.AcEventStatisticList::from)
-                                                    .collect(Collectors.toList()))
-                                            .build();
-                                })
-                                .collect(Collectors.toList())
-                )
+                .statisticsListResponse(resultList)
+                .mostEventCategory(maxEntry.orElse(null).getKey().getCategoryName())
+                .mostEventPayAmount(maxEntry.orElse(null).getValue())
                 .build();
-
-
     }
 
     private YearMonth getYearMonth(String yearAndMonth) {
