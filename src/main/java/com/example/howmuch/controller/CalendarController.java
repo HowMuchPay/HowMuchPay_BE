@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -23,7 +22,7 @@ public class CalendarController {
     private final CalendarService calendarService;
 
     @GetMapping("/schedule")
-    public ResponseEntity<Map<String, List<GetCalendarScheduleResponseDto>>> getSchedule(
+    public ResponseEntity<List<GetCalendarScheduleResponseDto>> getSchedule(
             @RequestParam String time
     ) {
         return new ResponseEntity<>(this.calendarService.getSchedule(time), HttpStatus.OK);

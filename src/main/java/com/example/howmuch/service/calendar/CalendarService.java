@@ -33,7 +33,7 @@ public class CalendarService {
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public Map<String, List<GetCalendarScheduleResponseDto>> getSchedule(String time) {
+    public List<GetCalendarScheduleResponseDto> getSchedule(String time) {
         YearMonth yearMonth = getYearMonth(time);
         LocalDate startDate = yearMonth.atDay(1);
         LocalDate endDate = yearMonth.atEndOfMonth();
@@ -48,13 +48,7 @@ public class CalendarService {
         this.acEventRepository.findAllByUserAndEventAtBetween(user, startDate, endDate).stream()
                 .map(AcEvent::toGetCalendarScheduleResponseDto)
                 .forEach(responseDtoList::add);
-
-        // 2. EventAt 최신순 정렬(내림차순)
-        responseDtoList.sort(Comparator.comparing(GetCalendarScheduleResponseDto::getEventAt).reversed());
-
-        // 3. Map 으로 그룹화해서 리턴
-        return responseDtoList.stream()
-                .collect(Collectors.groupingBy(dto -> dto.getEventAt().toString()));
+        return responseDtoList;
     }
 
     @Transactional(readOnly = true)
