@@ -4,6 +4,7 @@ import com.example.howmuch.constant.EventCategory;
 import com.example.howmuch.constant.MyType;
 import com.example.howmuch.domain.BaseTimeEntity;
 import com.example.howmuch.dto.calendar.schedule.GetCalendarScheduleResponseDto;
+import com.example.howmuch.dto.calendar.statistics.StatisticsListResponse;
 import com.example.howmuch.dto.event.GetAllMyEventsResponse;
 import com.example.howmuch.dto.event.GetMyEventInfoResponseDto;
 import com.example.howmuch.dto.home.HomeResponseDto;
@@ -155,6 +156,23 @@ public class MyEvent extends BaseTimeEntity {
         }
 
         return GetCalendarScheduleResponseDto.builder()
+                .type("myEvent")
+                .eventAt(eventAt)
+                .amount(totalReceiveAmount)
+                .eventDisplayName(eventDisplayName)
+                .eventCategory(eventCategory.getValue())
+                .build();
+    }
+
+    public StatisticsListResponse toStatisticsListResponseDto() {
+
+        String eventDisplayName;
+        if (myEventName == null) {
+            eventDisplayName = myEventCharacterName + "의 " + eventCategory.getCategoryName();
+        } else {
+            eventDisplayName = myEventCharacterName + "의 " + myEventName;
+        }
+        return StatisticsListResponse.builder()
                 .type("myEvent")
                 .eventAt(eventAt)
                 .amount(totalReceiveAmount)

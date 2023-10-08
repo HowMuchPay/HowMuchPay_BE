@@ -16,7 +16,6 @@ public interface AcEventRepository extends JpaRepository<AcEvent, Long> {
 
     List<AcEvent> findByUserOrderByAcquaintanceNicknameDesc(User user);
 
-    List<AcEvent> findAllByAcquaintanceType(AcType type);
 
     List<AcEvent> findAllByUserAndAcquaintanceTypeAndEventCategoryOrderByEventAtDesc(User user, AcType acType, EventCategory category);
 
@@ -30,7 +29,7 @@ public interface AcEventRepository extends JpaRepository<AcEvent, Long> {
     @Query("SELECT SUM(a.payAmount) FROM AcEvent a WHERE a.user = ?1 AND a.eventCategory = ?2 AND a.acquaintanceType = ?3")
     Optional<Long> sumPayAmountByUserAndCategoryAndType(User user, EventCategory eventCategory, AcType acType);
 
-    List<AcEvent> findByUserAndEventAt(User user, LocalDate eventDate);
+    List<AcEvent> findAllByUserAndEventAtBetween(User user, LocalDate startDate, LocalDate endDate);
 
     @Query("select a from AcEvent a where a.user = :user and year(a.eventAt) = :year and month(a.eventAt) = :month")
     List<AcEvent> findAllByUserAndYearAndMonth(User user, int year, int month);
