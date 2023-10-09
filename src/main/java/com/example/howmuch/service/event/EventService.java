@@ -233,16 +233,22 @@ public class EventService {
 
     // 나의 지인 모든 경조사 조회
     @Transactional(readOnly = true)
-    public GetAllStatisticsResponseDto getStatistics() {
+    public GetAllStatisticsResponseDto getStatistics(String sort) {
         User user = getUser();
 
         Map<String, List<GetAllMyEventsResponse>> allMyEvent = getAllMyEvent(user);
 
         Map<String, List<GetAllAcEventsResponse>> allAcEvent = getAllAcEvent(user);
 
-        Map<String, List<CombinedEventResponse>> sortEvents = GetAllStatisticsResponseDto.combineAndSortEvents(
-                allMyEvent, allAcEvent);
+        Map<String, List<CombinedEventResponse>> sortEvents;
 
+        if(sort.equals("desc")){
+            sortEvents = GetAllStatisticsResponseDto.combineAndSortEvents(
+                allMyEvent, allAcEvent);
+        }else{
+            sortEvents = GetAllStatisticsResponseDto.combineAndSortEventsAsc(
+                allMyEvent, allAcEvent);
+        }
         return new GetAllStatisticsResponseDto(sortEvents);
     }
 
