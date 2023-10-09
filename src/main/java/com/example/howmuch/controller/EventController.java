@@ -3,6 +3,7 @@ package com.example.howmuch.controller;
 import com.example.howmuch.dto.event.*;
 import com.example.howmuch.dto.event.GetAllMyEventDetailResponseDto.GetAllMyEventDetails;
 import com.example.howmuch.dto.notice.GetAllNoticeResponseDto;
+import com.example.howmuch.dto.notice.GetNoticeResponseDto;
 import com.example.howmuch.service.event.EventService;
 import com.example.howmuch.service.notice.NoticeService;
 import lombok.RequiredArgsConstructor;
@@ -202,5 +203,14 @@ public class EventController {
     @GetMapping("/notice")
     public ResponseEntity<List<GetAllNoticeResponseDto>> getAllNoticeResponseDto() {
         return new ResponseEntity<>(this.noticeService.getAllNotices(), HttpStatus.OK);
+    }
+
+
+    // 사용자 공지 사항 상세 조회
+    @GetMapping("/notice/{id}")
+    public ResponseEntity<GetNoticeResponseDto> getNoticeResponseDto(
+            @PathVariable Long id
+    ) {
+        return new ResponseEntity<>(this.noticeService.getNoticeById(id), HttpStatus.OK);
     }
 }
