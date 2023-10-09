@@ -1,25 +1,26 @@
 package com.example.howmuch.dto.event;
 
 import com.example.howmuch.domain.entity.AcEvent;
+import java.util.ArrayList;
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class GetAllAcNicknameResponseDto {
 
-    List<GetAllAcNicknameResponse> names;
+    private List<String> names;
 
+    public static GetAllAcNicknameResponseDto from(List<AcEvent> names) {
+        GetAllAcNicknameResponseDto response = new GetAllAcNicknameResponseDto();
+        List<String> nameList = new ArrayList<>();
 
-    public static GetAllAcNicknameResponseDto from(List<AcEvent> acEvents) {
-        return new GetAllAcNicknameResponseDto(acEvents.stream()
-            .map(GetAllAcNicknameResponse::from).toList());
+        for (AcEvent acEvent : names) {
+            String name = acEvent.getAcquaintanceNickname();
+            nameList.add(name);
+        }
+        response.setNames(nameList);
+        return response;
     }
 }
