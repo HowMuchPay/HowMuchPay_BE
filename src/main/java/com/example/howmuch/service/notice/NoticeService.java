@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class NoticeService {
-
     private final NoticeRepository noticeRepository;
 
     @Transactional

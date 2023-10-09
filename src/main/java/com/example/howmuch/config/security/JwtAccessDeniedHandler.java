@@ -1,16 +1,16 @@
 package com.example.howmuch.config.security;
 
 import com.example.howmuch.exception.ErrorMessage;
-import com.example.howmuch.exception.user.UnauthorizedUserException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -19,45 +19,41 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
-@Slf4j
 @Component
-public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
+@Slf4j
+public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 
     private static void makeResultResponse(
             HttpServletResponse response,
-            Exception exception,
-            HttpStatus httpStatus
+            Exception exception
     ) throws IOException {
         try (OutputStream os = response.getOutputStream()) {
             JavaTimeModule javaTimeModule = new JavaTimeModule();
             LocalDateTimeSerializer localDateTimeSerializer = new LocalDateTimeSerializer(
-                    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Asia/Seoul"))
-            );
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Asia/Seoul")));
             javaTimeModule.addSerializer(LocalDateTime.class, localDateTimeSerializer);
             ObjectMapper objectMapper = new ObjectMapper().registerModule(javaTimeModule);
-            objectMapper.writeValue(os, ErrorMessage.of(exception, httpStatus));
+            objectMapper.writeValue(os, ErrorMessage.of(exception, HttpStatus.FORBIDDEN));
             os.flush();
         }
     }
 
-    /*
-        JwtAuthenticationFilter 에서 인증 되지 않은 요청 처리 -> 예외 처리 로직 구현(commence)
-     */
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response,
-                         AuthenticationException e) throws IOException {
-        log.error("Authentication Exception Occurs!");
-        sendErrorUnauthorized(response);
+    public void handle(HttpServletRequest request,
+                       HttpServletResponse response,
+                       AccessDeniedException accessDeniedException) throws IOException, ServletException {
+        log.error("AccessDenied Exception Occurs!");
+        sendErrorAccessDenied(response);
+
     }
 
-    // 인증 안된 경우
-    private void sendErrorUnauthorized(HttpServletResponse response) throws IOException {
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    // 권한 없는 경우
+    private void sendErrorAccessDenied(HttpServletResponse response) throws IOException {
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType("application/json,charset=utf-8");
         makeResultResponse(
                 response,
-                new UnauthorizedUserException("로그인이 필요합니다."),
-                HttpStatus.UNAUTHORIZED
+                new AccessDeniedException("접근 권한이 없습니다.")
         );
     }
 }
