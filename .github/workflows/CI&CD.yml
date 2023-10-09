@@ -83,8 +83,8 @@ jobs:
           script: |
             docker ps
             docker stop ${{ secrets.CONTAINER_NAME }}
-            docker rm (docker ps -a -q)
-            docker image rm (docker images -q)
+            docker rm $(docker ps -a -q)
+            docker image rm $(docker images -q)
             docker pull ${{ secrets.DOCKER_USERNAME }}/howmuchpay_image:latest
             docker run -d -p 8080:8080 --name ${{ secrets.CONTAINER_NAME }} --env-file .env ${{ secrets.DOCKER_USERNAME }}/howmuchpay_image:latest
             docker ps
