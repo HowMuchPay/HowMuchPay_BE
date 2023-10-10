@@ -35,7 +35,7 @@ public class FcmNotificationService {
             sendNotification(phoneNumber, requestDto.getTitle(), requestDto.getBody(), validUserPhoneNumber, invalidUserPhoneNumber);
         }
 
-        return buildResponse(validUserPhoneNumber, invalidUserPhoneNumber, requestDto.getAcId(), requestDto.getTargetUserPhoneNumber());
+        return buildResponse(validUserPhoneNumber, invalidUserPhoneNumber, requestDto.getTargetUserPhoneNumber());
     }
 
     // 1 대 1 으로
@@ -82,7 +82,7 @@ public class FcmNotificationService {
         sendNotification(phoneNumber, title, body, new ArrayList<>(), new ArrayList<>());
     }
 
-    private FcmNotificationResponseDto buildResponse(List<String> validUserPhoneNumber, List<String> invalidUserPhoneNumber, Long acId, List<String> targetUserPhoneNumber) {
+    private FcmNotificationResponseDto buildResponse(List<String> validUserPhoneNumber, List<String> invalidUserPhoneNumber, List<String> targetUserPhoneNumber) {
         FcmNotificationResponseDto responseDto = new FcmNotificationResponseDto();
 
         if (validUserPhoneNumber.isEmpty()) {
@@ -93,9 +93,6 @@ public class FcmNotificationService {
             log.info("유효하지 않은 유저 수: {}", invalidUserPhoneNumber.size());
             responseDto.setResponseMessage("알림을 성공적으로 전달하였습니다. 유효한 유저 수: " + validUserPhoneNumber.size());
         }
-
-        responseDto.setAcId(acId); // ACID 설정
-
         return responseDto;
     }
 

@@ -11,7 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FcmNotificationRequestListDto {
-    private Long acId;
     private List<String> targetUserPhoneNumber;
     private String title;
     private String body;
