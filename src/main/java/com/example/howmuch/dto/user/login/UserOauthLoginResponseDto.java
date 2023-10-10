@@ -17,5 +17,5 @@ public class UserOauthLoginResponseDto {
     private String refreshToken;
     private String expiredTime;
     private String roleType;
-    private Boolean phoneExisted;
+    private String phoneNumber;
 }
