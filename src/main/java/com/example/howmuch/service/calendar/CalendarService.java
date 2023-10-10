@@ -72,7 +72,7 @@ public class CalendarService {
                 .forEach(responseDtoList::add);
 
         if (responseDtoList.isEmpty()) {
-            return null;
+            return new GetStatisticsResponseDto();
         }
 
         // 2. EventAt 최신순 정렬(내림차순)
