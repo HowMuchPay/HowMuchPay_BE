@@ -98,7 +98,7 @@ public class CalendarService {
 
         // 5. GetStatisticsResponseDto 반환
         return GetStatisticsResponseDto.builder()
-                .totalPayment(myEvents.stream().mapToLong(MyEvent::getTotalReceiveAmount).sum())
+                .totalReceiveAmount(myEvents.stream().mapToLong(MyEvent::getTotalReceiveAmount).sum())
                 .totalPayment(acEvents.stream().mapToLong(AcEvent::getPayAmount).sum())
                 .statisticsListResponse(resultList)
                 .mostEventCategory(maxPayCategories)
