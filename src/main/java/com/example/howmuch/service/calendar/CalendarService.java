@@ -71,6 +71,10 @@ public class CalendarService {
                 .map(AcEvent::toStatisticsListResponseDto)
                 .forEach(responseDtoList::add);
 
+        if (responseDtoList.isEmpty()) {
+            return null;
+        }
+
         // 2. EventAt 최신순 정렬(내림차순)
         responseDtoList.sort(Comparator.comparing(StatisticsListResponse::getEventAt).reversed());
 
@@ -78,23 +82,27 @@ public class CalendarService {
         Map<String, List<StatisticsListResponse>> resultList = responseDtoList.stream()
                 .collect(Collectors.groupingBy(dto -> dto.getEventAt().toString()));
 
+
         // 4 - 1. acEvents 에서 가장 많은 비용을 지출한 eventCategory
         Map<EventCategory, Long> totalPayByCategory = acEvents.stream()
                 .collect(Collectors.groupingBy(AcEvent::getEventCategory,
                         Collectors.summingLong(AcEvent::getPayAmount)));
 
         // 4 - 2. 가장 많은 비용을 지출한 EventCategory를 찾습니다.
-        Optional<Map.Entry<EventCategory, Long>> maxEntry = totalPayByCategory.entrySet().stream()
-                .max(Map.Entry.comparingByValue());
+        OptionalLong maxPayAmount = totalPayByCategory.values().stream().mapToLong(Long::longValue).max();
 
+        List<String> maxPayCategories = totalPayByCategory.entrySet().stream()
+                .filter(entry -> entry.getValue().equals(maxPayAmount.orElseThrow()))
+                .map(entry -> entry.getKey().getCategoryName())
+                .collect(Collectors.toList());
 
         // 5. GetStatisticsResponseDto 반환
         return GetStatisticsResponseDto.builder()
                 .totalPayment(myEvents.stream().mapToLong(MyEvent::getTotalReceiveAmount).sum())
                 .totalPayment(acEvents.stream().mapToLong(AcEvent::getPayAmount).sum())
                 .statisticsListResponse(resultList)
-                .mostEventCategory(maxEntry.orElse(null).getKey().getCategoryName())
-                .mostEventPayAmount(maxEntry.orElse(null).getValue())
+                .mostEventCategory(maxPayCategories)
+                .mostEventPayAmount(maxPayAmount.orElse(0L))
                 .build();
     }
 
