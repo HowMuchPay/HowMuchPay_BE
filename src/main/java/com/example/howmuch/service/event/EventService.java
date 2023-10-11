@@ -279,7 +279,7 @@ public class EventService {
     @Transactional(readOnly = true)
     public GetAllAcEventsResponseDto getAllAcEvents() {
 
-        User user = getUser();
+        User user = this.getUser();
         Map<String, List<GetAllAcEventsResponse>> sortedAcEvents = getAllAcEvent(
                 user);
 
@@ -372,6 +372,7 @@ public class EventService {
         return acEventRepository.findByUserOrderByAcquaintanceNicknameDesc(user)
                 .stream()
                 .map(AcEvent::getAcquaintanceNickname)
+                .distinct()
                 .collect(Collectors.toList());
     }
 
