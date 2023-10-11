@@ -149,7 +149,7 @@ public class OauthService {
                 .expiredTime(expireTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))) // 만료 Local Date Time
                 .refreshToken(refreshToken.getTokenValue())
                 .roleType(user.getRoleType().name())
-                .phoneExisted(user.getPhoneNumber() != null)
+                .phoneNumber(user.getPhoneNumber())
                 .build();
 
     }
