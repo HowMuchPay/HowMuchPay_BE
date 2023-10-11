@@ -242,12 +242,12 @@ public class EventService {
 
         Map<String, List<CombinedEventResponse>> sortEvents;
 
-        if(sort.equals("desc")){
+        if (sort.equals("desc")) {
             sortEvents = GetAllStatisticsResponseDto.combineAndSortEvents(
-                allMyEvent, allAcEvent);
-        }else{
+                    allMyEvent, allAcEvent);
+        } else {
             sortEvents = GetAllStatisticsResponseDto.combineAndSortEventsAsc(
-                allMyEvent, allAcEvent);
+                    allMyEvent, allAcEvent);
         }
         return new GetAllStatisticsResponseDto(sortEvents);
     }
@@ -367,9 +367,12 @@ public class EventService {
 
     // 지인 이름 조회
     @Transactional(readOnly = true)
-    public GetAllAcNicknameResponseDto getAcName() {
-        User user = getUser();
-        return GetAllAcNicknameResponseDto.from(acEventRepository.findByUserOrderByAcquaintanceNicknameDesc(user));
+    public List<String> getAcName() {
+        User user = this.getUser();
+        return acEventRepository.findByUserOrderByAcquaintanceNicknameDesc(user)
+                .stream()
+                .map(AcEvent::getAcquaintanceNickname)
+                .collect(Collectors.toList());
     }
 
     private Map<String, List<GetAllMyEventsResponse>> getAllMyEvent(User user) {
@@ -406,7 +409,7 @@ public class EventService {
                         Collectors.toList()
                 ));
 
-        Map<String, List<GetAllAcEventsResponse>> sortedAcEvents = allAcEvents.entrySet()
+        return allAcEvents.entrySet()
                 .stream()
                 .sorted(Map.Entry.<String, List<GetAllAcEventsResponse>>comparingByKey().reversed())
                 .collect(Collectors.toMap(
@@ -415,7 +418,6 @@ public class EventService {
                         (oldValue, newValue) -> oldValue,
                         LinkedHashMap::new
                 ));
-        return sortedAcEvents;
     }
 
     private User getUser() {

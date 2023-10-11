@@ -83,7 +83,6 @@ public class EventController {
         return ResponseEntity.ok(eventService.getMyEventDetails(id));
     }
 
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // 나의 경조사 세부사항 조회
@@ -136,8 +135,9 @@ public class EventController {
         );
     }
 
+    // 내가 금액 지출한 모든 지인 이름 조회
     @GetMapping("/acquaintance/people")
-    public ResponseEntity<GetAllAcNicknameResponseDto> getAllAcName() {
+    public ResponseEntity<List<String>> getAllAcName() {
         return new ResponseEntity<>(this.eventService.getAcName(), HttpStatus.OK);
     }
 
