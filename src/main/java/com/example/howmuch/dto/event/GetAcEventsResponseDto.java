@@ -38,7 +38,7 @@ public class GetAcEventsResponseDto {
             .payAmount(acEvent.getPayAmount())
             .eventCategory(acEvent.getEventCategory().getValue())
             .acType(acEvent.getAcquaintanceType().getValue())
-            .acEventDisplayName(acEvent.getAcEventDisplayName())
+            .acEventDisplayName(acEvent.getAcEventDisplayNameWithDetail())
             .eventTime(acEvent.getEventTime())
             .build();
     }
