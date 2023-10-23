@@ -132,4 +132,14 @@ public class AcEvent extends BaseTimeEntity {
         }
         return eventDisplayName;
     }
+
+    public String getAcEventDisplayNameWithDetail(){
+        String eventDisplayName;
+        if (eventCategory == EventCategory.ETC && eventName != null) {
+            eventDisplayName = eventName;
+        } else {
+            eventDisplayName = eventCategory.getCategoryName();
+        }
+        return eventDisplayName;
+    }
 }
