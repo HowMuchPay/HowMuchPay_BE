@@ -107,6 +107,7 @@ public class AcEvent extends BaseTimeEntity {
                 .type("acEvent")
                 .eventAt(eventAt)
                 .amount(payAmount)
+                .eventCategory(eventCategory.getValue())
                 .eventDisplayName(eventDisplayName)
                 .build();
     }
@@ -133,7 +134,7 @@ public class AcEvent extends BaseTimeEntity {
         return eventDisplayName;
     }
 
-    public String getAcEventDisplayNameWithDetail(){
+    public String getAcEventDisplayNameWithDetail() {
         String eventDisplayName;
         if (eventCategory == EventCategory.ETC && eventName != null) {
             eventDisplayName = eventName;
