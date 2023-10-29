@@ -2,6 +2,7 @@ package com.example.howmuch.service.user;
 
 
 import com.example.howmuch.config.security.Token;
+import com.example.howmuch.config.security.UserAuthentication;
 import com.example.howmuch.constant.RoleType;
 import com.example.howmuch.domain.entity.User;
 import com.example.howmuch.domain.repository.UserRepository;
@@ -15,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.stereotype.Service;
@@ -97,7 +99,8 @@ public class OauthService {
 
     /* 3. Oauth 로부터 받아온 회원 정보 회원 테이블 저장 */
     private User saveUserWithUserInfo(TokenFromOauthServer token,
-                                      ClientRegistration provider) throws IOException {
+                                      ClientRegistration provider
+    ) throws IOException {
         Map<String, Object> attributes = getUserAttributes(provider, token);
         KakaoOauthUserInfo oauthUserInfo = new KakaoOauthUserInfo(attributes);
         String oauthNickName = oauthUserInfo.getNickName(); // nickName
@@ -132,6 +135,8 @@ public class OauthService {
     /* 5. 소셜 로그인 정보 기반으로 회원 저장 후에 로그인 결과를 반환하는 메소드 */
     @Transactional
     public UserOauthLoginResponseDto oauthLoginResult(User user) {
+        // SecurityContext 에 UserAuthentication 객체 저장
+        SecurityContextHolder.getContext().setAuthentication(new UserAuthentication(user));
         return getOauthLoginResult(user);
     }
 
@@ -143,6 +148,7 @@ public class OauthService {
         LocalDateTime expireTime = LocalDateTime.now()
                 .plusSeconds(accessToken.getExpiredTime() / 1000);
         user.setRefreshToken(refreshToken.getTokenValue());
+
         return UserOauthLoginResponseDto.builder()
                 .tokenType(BEARER_TYPE)
                 .accessToken(BEARER_TYPE + " " + accessToken.getTokenValue())

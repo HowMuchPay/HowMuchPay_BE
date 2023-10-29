@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Objects;
 /*
     access token 재 발급시 access token + refresh token 같이 보내는 이유
    -> refresh token 은 redis 에 저장되어 있는데 회원의 id가 필요 이 정보는 access token 에 저장되어 있음
@@ -28,11 +30,11 @@ public class AuthService {
     /* jwt 만료시 access token 재발급 해주는 메소드 with 만료된 access token + refresh token */
     public UserOauthLoginResponseDto accessTokenByRefreshToken(String accessToken, String refreshToken) {
         // 1. refresh token 유효성
-        validationRefreshToken(refreshToken);
+        this.validationRefreshToken(refreshToken);
         // 2. 요청 refresh token 과 redis refresh token 동일성 검증
-        isRefreshTokenMatch(refreshToken);
+        User user = this.findUserByToken(accessToken);
+        this.isRefreshTokenMatch(user, refreshToken);
         // 3. 기존 refresh token 을 삭제 + 새로운 refresh token & access token 재발급
-        User user = this.userService.findUserFromToken();
         user.deleteRefreshToken();
         return this.oauthService.oauthLoginResult(user);
     }
@@ -48,7 +50,6 @@ public class AuthService {
         this.userService.findUserFromToken().deleteRefreshToken();
     }
 
-    @Transactional
     public User findUserByToken(String accessToken) {
         Long id = Long.parseLong(jwtService.getPayLoad(accessToken));
         return userService.findById(id);
@@ -56,13 +57,12 @@ public class AuthService {
 
     private void validationRefreshToken(String refreshToken) {
         if (!this.jwtService.validateToken(refreshToken)) {
-            throw new UnauthorizedUserException("인가되지 않은 Refresh Token 입니다.");
+            throw new UnauthorizedUserException("재 로그인이 필요합니다.");
         }
     }
 
-    private void isRefreshTokenMatch(String refreshToken) {
-        User user = this.userService.findUserFromToken();
-        if (!user.getRefreshToken().equals(refreshToken)) {
+    private void isRefreshTokenMatch(User user, String refreshToken) {
+        if (!Objects.equals(user.getRefreshToken(), refreshToken)) {
             throw new InvalidTokenException("Refresh Token 값이 일치하지 않습니다.");
         }
     }

@@ -2,10 +2,10 @@ package com.example.howmuch.service.notice;
 
 import com.example.howmuch.domain.entity.Notice;
 import com.example.howmuch.domain.repository.NoticeRepository;
+import com.example.howmuch.dto.notice.CreateNoticeRequestDto;
 import com.example.howmuch.dto.notice.GetAllNoticeResponseDto;
 import com.example.howmuch.dto.notice.GetNoticeResponseDto;
 import com.example.howmuch.dto.notice.UpdateNoticeRequestDto;
-import com.example.howmuch.dto.notice.createNoticeRequestDto;
 import com.example.howmuch.exception.notice.NotFoundNoticeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ public class NoticeService {
 
     /* 공지사항 등록 */
     @Transactional
-    public Long createNotice(createNoticeRequestDto request) {
+    public Long createNotice(CreateNoticeRequestDto request) {
         return this.noticeRepository.save(request.toEntity())
                 .getId();
     }

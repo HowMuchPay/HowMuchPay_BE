@@ -12,13 +12,13 @@ import javax.validation.constraints.Size;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class createNoticeRequestDto {
+public class CreateNoticeRequestDto {
 
-    @NotBlank
+    @NotBlank(message = "제목은 필수 입력값 입니다.")
     @Size(max = 255)
     private String title;
 
-    @NotBlank
+    @NotBlank(message = "내용은 필수 입력값 입니다.")
     @Lob
     private String content;
 

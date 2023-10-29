@@ -15,18 +15,16 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateAcEventRequestDto {
-
-
-    @NotBlank
+    @NotBlank(message = "지인의 이름은 필수 입력값 입니다.")
     @Size(max = 255)
     private String acName;
 
-    @NotNull
+    @NotNull(message = "지인의 유형은 필수 입력값 입니다.")
     @Min(0)
     @Max(4)
     private Integer acType;
 
-    @NotNull
+    @NotNull(message = "경조사 유형은 필수 입력값 입니다.")
     @Min(0)
     @Max(4)
     private Integer eventCategory;
