@@ -38,14 +38,14 @@ public class JwtService {
         return getToken(token, refreshTokenExpiration);
     }
 
-    private String createToken(String payLoad, Long tokenExpiration) {
+    private String createToken(String payLoad, Long expiration) {
         Claims claims = Jwts.claims().setSubject(payLoad);
-        Date accessTokenExpiresIn = new Date(new Date().getTime() + accessTokenExpiration);
+        Date tokenExpiresIn = new Date(new Date().getTime() + expiration);
 
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(new Date())
-                .setExpiration(accessTokenExpiresIn)
+                .setExpiration(tokenExpiresIn)
                 .signWith(SignatureAlgorithm.HS512, secretKey)
                 .compact();
     }

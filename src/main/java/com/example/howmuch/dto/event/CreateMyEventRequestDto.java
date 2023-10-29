@@ -22,15 +22,15 @@ public class CreateMyEventRequestDto {
     /**
      * 1. EventCategory 에서 기타 선택 시 경조사명을 자유롭게 입력하는 화면 등장
      */
-    @NotNull
+    @NotNull(message = "eventAt은 필수 입력값 입니다.")
     private LocalDate eventAt;
 
-    @NotNull
+    @NotNull(message = "myType은 필수 입력값 입니다.")
     @Min(0)
     @Max(2)
     private Integer myType;
 
-    @NotNull
+    @NotNull(message = "eventCategory는 필수 입력값 입니다.")
     @Min(0)
     @Max(4)
     private Integer eventCategory;

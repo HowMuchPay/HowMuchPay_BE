@@ -4,9 +4,9 @@ import com.example.howmuch.domain.entity.User;
 import com.example.howmuch.domain.repository.UserRepository;
 import com.example.howmuch.service.user.AuthService;
 import com.example.howmuch.util.JwtService;
-import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -50,7 +50,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
             // access token 이 만료된 경우 or access token 정보로 식별 안되는 경우
-        } catch (IllegalArgumentException | JwtException e) {
+            // 예외가 발생하기만 해도 ExceptionTranslationFilter 호출
+        } catch (InsufficientAuthenticationException e) {
             log.info("JwtAuthentication UnauthorizedUserException!");
         }
         filterChain.doFilter(request, response);
