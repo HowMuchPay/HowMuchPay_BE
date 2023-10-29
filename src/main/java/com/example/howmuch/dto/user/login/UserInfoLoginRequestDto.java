@@ -14,11 +14,11 @@ import javax.validation.constraints.NotBlank;
 @Builder
 @AllArgsConstructor
 public class UserInfoLoginRequestDto {
-    @NotBlank
+    @NotBlank(message = "oauthId 는 필수 입력값 입니다.")
     private String oauthId;
-    @NotBlank
+    @NotBlank(message = "닉네임은 필수 입력값 입니다.")
     private String nickname;
-    @NotBlank
+    @NotBlank(message = "profileImageUrl은 필수 입력값 입니다.")
     private String profileImageUrl;
 
     public User toEntity() {

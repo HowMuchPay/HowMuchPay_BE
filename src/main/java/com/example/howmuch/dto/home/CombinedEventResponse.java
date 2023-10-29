@@ -1,17 +1,17 @@
 package com.example.howmuch.dto.home;
 
-import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDate;
 
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 public class CombinedEventResponse {
-
     private Long id;
     private String displayName;
     private LocalDate eventAt;
