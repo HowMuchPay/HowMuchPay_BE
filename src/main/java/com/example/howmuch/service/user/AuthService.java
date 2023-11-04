@@ -26,8 +26,8 @@ public class AuthService {
     private final UserService userService;
     private final OauthService oauthService;
 
-    @Transactional
     /* jwt 만료시 access token 재발급 해주는 메소드 with 만료된 access token + refresh token */
+    @Transactional
     public UserOauthLoginResponseDto accessTokenByRefreshToken(String accessToken, String refreshToken) {
         // 1. refresh token 유효성
         this.validationRefreshToken(refreshToken);

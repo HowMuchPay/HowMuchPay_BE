@@ -65,6 +65,7 @@ public class JwtService {
                     .getBody()
                     .getSubject();
         } catch (ExpiredJwtException e) {
+            // accessToken 이 만료된 경우 또한 userId 반환
             return e.getClaims().getSubject();
         } catch (JwtException e) {
             throw new UnauthorizedUserException("로그인이 필요합니다.");

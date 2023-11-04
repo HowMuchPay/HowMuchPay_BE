@@ -23,4 +23,8 @@ public class SecurityUtil {
                 = (UserAuthentication) SecurityContextHolder.getContext().getAuthentication();
         return authentication.getAuthorities();
     }
+
+    public static void clearSecurityContext() {
+        SecurityContextHolder.clearContext();
+    }
 }
